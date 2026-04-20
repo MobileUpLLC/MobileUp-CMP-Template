@@ -15,6 +15,7 @@ import ru.mobileup.template.features.pokemons.presentation.list.PokemonListCompo
 
 class RealPokemonsComponent(
     componentContext: ComponentContext,
+    private val onOutput: (PokemonsComponent.Output) -> Unit,
     private val componentFactory: ComponentFactory
 ) : ComponentContext by componentContext, PokemonsComponent {
 
@@ -55,6 +56,10 @@ class RealPokemonsComponent(
         when (output) {
             is PokemonListComponent.Output.PokemonDetailsRequested -> {
                 navigation.safePush(ChildConfig.Details(output.pokemonId))
+            }
+
+            PokemonListComponent.Output.SettingsDemoRequested -> {
+                onOutput(PokemonsComponent.Output.SettingsDemoRequested)
             }
         }
     }

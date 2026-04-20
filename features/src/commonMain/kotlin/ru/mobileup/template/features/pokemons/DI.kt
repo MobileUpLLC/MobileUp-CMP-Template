@@ -23,9 +23,10 @@ val pokemonsModule = module {
 }
 
 fun ComponentFactory.createPokemonsComponent(
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
+    onOutput: (PokemonsComponent.Output) -> Unit
 ): PokemonsComponent {
-    return RealPokemonsComponent(componentContext, get())
+    return RealPokemonsComponent(componentContext, onOutput, get())
 }
 
 fun ComponentFactory.createPokemonListComponent(

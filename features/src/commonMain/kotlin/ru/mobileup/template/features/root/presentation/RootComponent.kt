@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.mobileup.template.core.message.presentation.MessageComponent
 import ru.mobileup.template.core.utils.PredictiveBackComponent
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
+import ru.mobileup.template.features.settingsdemo.presentation.SettingsDemoComponent
 
 /**
  * A root of a Decompose component tree.
@@ -19,5 +20,6 @@ interface RootComponent : PredictiveBackComponent {
 
     sealed interface Child {
         class Pokemons(val component: PokemonsComponent) : Child
+        class SettingsDemo(val component: SettingsDemoComponent) : Child
     }
 }

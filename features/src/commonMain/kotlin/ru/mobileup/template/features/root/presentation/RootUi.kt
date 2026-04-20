@@ -14,6 +14,7 @@ import ru.mobileup.template.core.utils.LocalSystemBarsSettings
 import ru.mobileup.template.core.utils.accumulate
 import ru.mobileup.template.core.utils.predictiveBackAnimation
 import ru.mobileup.template.features.pokemons.presentation.PokemonsUi
+import ru.mobileup.template.features.settingsdemo.presentation.SettingsDemoUi
 
 @Composable
 fun RootUi(
@@ -30,6 +31,7 @@ fun RootUi(
     ) { child ->
         when (val instance = child.instance) {
             is RootComponent.Child.Pokemons -> PokemonsUi(instance.component)
+            is RootComponent.Child.SettingsDemo -> SettingsDemoUi(instance.component)
         }
     }
 

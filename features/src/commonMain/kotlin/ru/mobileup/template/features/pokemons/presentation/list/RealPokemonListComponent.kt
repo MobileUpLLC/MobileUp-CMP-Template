@@ -56,6 +56,10 @@ class RealPokemonListComponent(
         pokemonsReplica.refresh()
     }
 
+    override fun onSettingsDemoClick() {
+        onOutput(PokemonListComponent.Output.SettingsDemoRequested)
+    }
+
     @Serializable
     private data class PersistentState(
         val selectedTypeId: PokemonTypeId

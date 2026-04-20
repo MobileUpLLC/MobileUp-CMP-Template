@@ -1,0 +1,18 @@
+<resources>
+    <string name="settings_demo_open">Settings demo</string>
+    <string name="settings_demo_title">Settings demo</string>
+    <string name="settings_demo_description">This screen helps verify regular and encrypted settings storage using the same set of keys and value types.</string>
+    <string name="settings_demo_regular_title">Regular settings</string>
+    <string name="settings_demo_regular_description">Backed by standard app settings storage.</string>
+    <string name="settings_demo_encrypted_title">Encrypted settings</string>
+    <string name="settings_demo_encrypted_description">Backed by encrypted settings storage on each platform.</string>
+    <string name="settings_demo_string_label">String</string>
+    <string name="settings_demo_long_label">Long</string>
+    <string name="settings_demo_boolean_label">Boolean</string>
+    <string name="settings_demo_int_label">Int</string>
+    <string name="settings_demo_float_label">Float</string>
+    <string name="settings_demo_save_all">Save all</string>
+    <string name="settings_demo_load_all">Load all</string>
+    <string name="settings_demo_clear_storage">Clear storage</string>
+    <string name="settings_demo_remove_key">Remove key</string>
+</resources>

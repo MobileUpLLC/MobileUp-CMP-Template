@@ -26,4 +26,6 @@ class FakePokemonListComponent : PokemonListComponent {
     override fun onPokemonClick(pokemonId: PokemonId) = Unit
 
     override fun onRefresh() = Unit
+
+    override fun onSettingsDemoClick() = Unit
 }

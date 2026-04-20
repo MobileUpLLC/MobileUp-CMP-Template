@@ -14,4 +14,8 @@ interface PokemonsComponent : PredictiveBackComponent {
         class List(val component: PokemonListComponent) : Child
         class Details(val component: PokemonDetailsComponent) : Child
     }
+
+    sealed interface Output {
+        data object SettingsDemoRequested : Output
+    }
 }
