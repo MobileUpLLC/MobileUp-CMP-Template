@@ -8,9 +8,11 @@ import kotlinx.serialization.Serializable
 import ru.mobileup.template.core.ComponentFactory
 import ru.mobileup.template.core.utils.safePush
 import ru.mobileup.template.core.utils.toStateFlow
+import ru.mobileup.template.features.pokemons.createDialogsDemoComponent
 import ru.mobileup.template.features.pokemons.createPokemonDetailsComponent
 import ru.mobileup.template.features.pokemons.createPokemonListComponent
 import ru.mobileup.template.features.pokemons.domain.PokemonId
+import ru.mobileup.template.features.pokemons.presentation.dialogs_demo.DialogsDemoComponent
 import ru.mobileup.template.features.pokemons.presentation.list.PokemonListComponent
 
 class RealPokemonsComponent(
@@ -49,6 +51,15 @@ class RealPokemonsComponent(
                 )
             )
         }
+
+        is ChildConfig.DialogsDemo -> {
+            PokemonsComponent.Child.DialogsDemo(
+                componentFactory.createDialogsDemoComponent(
+                    componentContext,
+                    ::onDialogsDemoOutput
+                )
+            )
+        }
     }
 
     private fun onPokemonListOutput(output: PokemonListComponent.Output) {
@@ -56,6 +67,16 @@ class RealPokemonsComponent(
             is PokemonListComponent.Output.PokemonDetailsRequested -> {
                 navigation.safePush(ChildConfig.Details(output.pokemonId))
             }
+
+            is PokemonListComponent.Output.DialogsDemoRequested -> {
+                navigation.safePush(ChildConfig.DialogsDemo)
+            }
+        }
+    }
+
+    private fun onDialogsDemoOutput(output: DialogsDemoComponent.Output) {
+        when (output) {
+            is DialogsDemoComponent.Output.BackRequested -> navigation.pop()
         }
     }
 
@@ -69,5 +90,8 @@ class RealPokemonsComponent(
 
         @Serializable
         data class Details(val pokemonId: PokemonId) : ChildConfig
+
+        @Serializable
+        data object DialogsDemo : ChildConfig
     }
 }

@@ -44,5 +44,21 @@ class PokemonsComponentTest : FunSpec({
             // Verify details screen is shown
             component.childStack.value.active.instance.shouldBeInstanceOf<PokemonsComponent.Child.Details>()
         }
+
+        integrationTest("navigates to dialogs demo when dialogs demo is clicked in the list") {
+            mockServer.enqueue(
+                RequestMatcher.containsPath("type/$FIRE_TYPE_ID"),
+                HttpResponse(TestPokemons.firePokemonsJson())
+            )
+            val component = setupComponent { createPokemonsComponent(it) }
+            advanceUntilIdle()
+
+            val listChild =
+                component.childStack.value.active.instance as PokemonsComponent.Child.List
+            listChild.component.onDialogsDemoClick()
+            runCurrent()
+
+            component.childStack.value.active.instance.shouldBeInstanceOf<PokemonsComponent.Child.DialogsDemo>()
+        }
     }
 })

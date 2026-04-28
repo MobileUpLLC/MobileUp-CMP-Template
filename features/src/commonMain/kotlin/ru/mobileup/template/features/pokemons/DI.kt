@@ -12,6 +12,8 @@ import ru.mobileup.template.features.pokemons.data.createPokemonApi
 import ru.mobileup.template.features.pokemons.domain.PokemonId
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
 import ru.mobileup.template.features.pokemons.presentation.RealPokemonsComponent
+import ru.mobileup.template.features.pokemons.presentation.dialogs_demo.DialogsDemoComponent
+import ru.mobileup.template.features.pokemons.presentation.dialogs_demo.RealDialogsDemoComponent
 import ru.mobileup.template.features.pokemons.presentation.details.PokemonDetailsComponent
 import ru.mobileup.template.features.pokemons.presentation.details.RealPokemonDetailsComponent
 import ru.mobileup.template.features.pokemons.presentation.list.PokemonListComponent
@@ -40,4 +42,11 @@ fun ComponentFactory.createPokemonDetailsComponent(
     pokemonId: PokemonId
 ): PokemonDetailsComponent {
     return RealPokemonDetailsComponent(componentContext, pokemonId, get(), get())
+}
+
+fun ComponentFactory.createDialogsDemoComponent(
+    componentContext: ComponentContext,
+    onOutput: (DialogsDemoComponent.Output) -> Unit
+): DialogsDemoComponent {
+    return RealDialogsDemoComponent(componentContext, onOutput, get())
 }

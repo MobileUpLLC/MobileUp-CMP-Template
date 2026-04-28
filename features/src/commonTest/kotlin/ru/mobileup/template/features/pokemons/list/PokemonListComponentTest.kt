@@ -56,6 +56,20 @@ class PokemonListComponentTest : FunSpec({
             capturer.last shouldBe PokemonListComponent.Output.PokemonDetailsRequested(pokemonId)
         }
 
+        integrationTest("emits dialogs demo output when dialogs demo is clicked") {
+            mockServer.enqueue(
+                RequestMatcher.containsPath("type/$FIRE_TYPE_ID"),
+                HttpResponse(TestPokemons.firePokemonsJson())
+            )
+            val capturer = OutputCapturer<PokemonListComponent.Output>()
+            val component = setupComponent { createPokemonListComponent(it, capturer) }
+            advanceUntilIdle()
+
+            component.onDialogsDemoClick()
+
+            capturer.last shouldBe PokemonListComponent.Output.DialogsDemoRequested
+        }
+
         integrationTest("shows loading during refresh") {
             // Prepare initial data and a delayed refresh response
             val firePokemonsJson = TestPokemons.firePokemonsJson()

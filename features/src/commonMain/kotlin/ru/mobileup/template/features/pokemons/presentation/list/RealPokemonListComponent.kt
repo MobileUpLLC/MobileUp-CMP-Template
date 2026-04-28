@@ -52,6 +52,10 @@ class RealPokemonListComponent(
         onOutput(PokemonListComponent.Output.PokemonDetailsRequested(pokemonId))
     }
 
+    override fun onDialogsDemoClick() {
+        onOutput(PokemonListComponent.Output.DialogsDemoRequested)
+    }
+
     override fun onRefresh() {
         pokemonsReplica.refresh()
     }

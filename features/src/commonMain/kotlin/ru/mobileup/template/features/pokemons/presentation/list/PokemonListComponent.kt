@@ -19,9 +19,12 @@ interface PokemonListComponent {
 
     fun onPokemonClick(pokemonId: PokemonId)
 
+    fun onDialogsDemoClick()
+
     fun onRefresh()
 
     sealed interface Output {
         data class PokemonDetailsRequested(val pokemonId: PokemonId) : Output
+        data object DialogsDemoRequested : Output
     }
 }

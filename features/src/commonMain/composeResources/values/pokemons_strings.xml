@@ -7,4 +7,30 @@
     <string name="pokemons_types">Types:</string>
     <string name="pokemons_weight">Weight: %1$d</string>
     <string name="pokemons_height">Height: %1$d</string>
+
+    <!-- Dialogs demo -->
+    <string name="pokemons_dialogs_demo_title">Dialogs and sheets</string>
+    <string name="pokemons_dialogs_demo_toolbar_action">Open dialogs demo</string>
+    <string name="pokemons_dialogs_demo_standard_dialog_button">Standard dialog</string>
+    <string name="pokemons_dialogs_demo_custom_dialog_button">Custom dialog</string>
+    <string name="pokemons_dialogs_demo_dismissible_sheet_button">Dismissible bottom sheet</string>
+    <string name="pokemons_dialogs_demo_non_dismissible_sheet_button">Non-dismissible bottom sheet</string>
+    <string name="pokemons_dialogs_demo_message_sheet_button">Bottom sheet with message</string>
+    <string name="pokemons_dialogs_demo_standard_dialog_title">Standard dialog</string>
+    <string name="pokemons_dialogs_demo_standard_dialog_message">This dialog uses the shared StandardDialog primitive with confirm and cancel actions.</string>
+    <string name="pokemons_dialogs_demo_standard_dialog_confirm">Confirm</string>
+    <string name="pokemons_dialogs_demo_standard_dialog_cancel">Cancel</string>
+    <string name="pokemons_dialogs_demo_custom_dialog_title">Custom dialog</string>
+    <string name="pokemons_dialogs_demo_custom_dialog_message">This dialog is rendered through the generic Dialog primitive and custom Compose content.</string>
+    <string name="pokemons_dialogs_demo_got_it">Got it</string>
+    <string name="pokemons_dialogs_demo_dismissible_sheet_title">Dismissible bottom sheet</string>
+    <string name="pokemons_dialogs_demo_dismissible_sheet_message">This sheet can be closed by swipe, back, outside tap, or the close button.</string>
+    <string name="pokemons_dialogs_demo_non_dismissible_sheet_title">Non-dismissible bottom sheet</string>
+    <string name="pokemons_dialogs_demo_non_dismissible_sheet_message">This sheet ignores user dismissal gestures and can only be closed with the button inside.</string>
+    <string name="pokemons_dialogs_demo_message_sheet_title">Bottom sheet with message</string>
+    <string name="pokemons_dialogs_demo_message_sheet_message">The message button shows a global Message while the sheet stays open.</string>
+    <string name="pokemons_dialogs_demo_show_message">Show message</string>
+    <string name="pokemons_dialogs_demo_message_text">Message over bottom sheet</string>
+    <string name="pokemons_dialogs_demo_message_action">OK</string>
+    <string name="pokemons_dialogs_demo_close">Close</string>
 </resources>
