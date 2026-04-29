@@ -1,6 +1,9 @@
 package ru.mobileup.template.core
 
 import com.arkivanov.decompose.ComponentContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import me.aartikov.replica.client.ReplicaClient
 import org.koin.core.component.get
 import org.koin.core.module.Module
@@ -16,6 +19,7 @@ import ru.mobileup.template.core.network.BackendUrl
 import ru.mobileup.template.core.network.NetworkApiFactory
 
 fun coreModule(configuration: Configuration) = module {
+    single<CoroutineScope> { CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate) }
     single { ReplicaClient(getOrNull()) }
     single<MessageService> { MessageServiceImpl() }
     single {

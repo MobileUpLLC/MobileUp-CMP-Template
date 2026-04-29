@@ -11,16 +11,19 @@ import ru.mobileup.template.core.error_handling.ErrorHandler
 import ru.mobileup.template.core.message.data.MessageService
 import ru.mobileup.template.core.network.BackendUrl
 import ru.mobileup.template.core.network.NetworkApiFactory
+import ru.mobileup.template.core.permissions.PermissionService
 import ru.mobileup.template.core_testing.message.data.TestMessageService
 import ru.mobileup.template.core_testing.network.MockServer
 import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
 import ru.mobileup.template.core_testing.network.createMockHttpEngine
+import ru.mobileup.template.core_testing.permissions.TestPermissionService
 
 fun coreTestModule(testDispatcher: TestDispatcher) = module {
     single<TestDispatcher> { testDispatcher }
 
     single { ErrorHandler(get(), showDebugInfo = false) }
     single<MessageService> { TestMessageService() }
+    single<PermissionService> { TestPermissionService() }
 
     single<HttpClientEngine> {
         createMockHttpEngine(get(), testDispatcher)

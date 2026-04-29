@@ -4,7 +4,7 @@ android-minSdk = "28"
 android-targetSdk = "36"
 ios-deploymentTarget = "16.0"
 
-kotlin = "2.3.20"
+kotlin = "2.3.21"
 androidGradlePlugin = "9.1.1"
 ksp = "2.3.2"
 ktorfit = "2.7.2"
@@ -14,7 +14,7 @@ detekt = "1.23.8"
 dateTime = "0.7.1"
 coroutines = "1.10.2"
 decompose = "3.5.0"
-ktor = "3.4.2"
+ktor = "3.4.3"
 replica = "1.6.0-alpha"
 koin = "4.2.1"
 kermit = "2.1.0"
@@ -31,6 +31,7 @@ materialIcons = "1.7.3"
 form = "2.2.0"
 securityCrypto = "1.1.0"
 kotest = "6.1.11"
+mokoPermissions = "0.20.1"
 
 [libraries]
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
@@ -65,6 +66,12 @@ replica-decompose = { module = "com.github.aartikov:replica-decompose", version.
 replica-devtools = { module = "com.github.aartikov:replica-devtools", version.ref = "replica" }
 
 form-validation = { module = "ru.mobileup:kmm-form-validation", version.ref = "form" }
+
+moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "mokoPermissions" }
+moko-permissions-camera = { module = "dev.icerock.moko:permissions-camera", version.ref = "mokoPermissions" }
+moko-permissions-contacts = { module = "dev.icerock.moko:permissions-contacts", version.ref = "mokoPermissions" }
+moko-permissions-location = { module = "dev.icerock.moko:permissions-location", version.ref = "mokoPermissions" }
+moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "mokoPermissions" }
 
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 logger-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
@@ -118,6 +125,13 @@ hyperion = [
 coil = [
     "coil",
     "coil-ktor"
+]
+moko-permissions = [
+    "moko-permissions",
+    "moko-permissions-camera",
+    "moko-permissions-contacts",
+    "moko-permissions-location",
+    "moko-permissions-notifications"
 ]
 
 [plugins]

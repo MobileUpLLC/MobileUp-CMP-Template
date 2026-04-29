@@ -69,6 +69,7 @@ kotlin {
             // Architecture
             implementation(libs.bundles.decompose)
             implementation(libs.bundles.replica.shared)
+            implementation(libs.form.validation)
         }
 
         commonTest.dependencies {

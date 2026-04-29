@@ -81,10 +81,16 @@ kotlin {
             // Security
             implementation(libs.security.crypto)
             implementation(libs.security.crypto.ktx)
+
+            // Permissions
+            implementation(libs.bundles.moko.permissions)
         }
 
         iosMain.dependencies {
             api(libs.ktor.darwin)
+
+            // Permissions
+            implementation(libs.bundles.moko.permissions)
         }
 
         jvmMain.dependencies {
