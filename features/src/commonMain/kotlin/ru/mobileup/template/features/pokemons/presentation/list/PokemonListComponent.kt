@@ -19,6 +19,8 @@ interface PokemonListComponent {
 
     fun onPokemonClick(pokemonId: PokemonId)
 
+    fun onCameraPermissionClick()
+
     fun onRefresh()
 
     sealed interface Output {

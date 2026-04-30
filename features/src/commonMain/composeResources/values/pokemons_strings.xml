@@ -2,6 +2,9 @@
     <!-- List -->
     <string name="pokemons_select_type">Pokemon types</string>
     <string name="pokemons_empty_description">Pokemons are not found</string>
+    <string name="pokemons_camera_permission_action">Request camera permission</string>
+    <string name="pokemons_camera_permission_granted">Camera permission granted</string>
+    <string name="pokemons_camera_permission_denied">Camera permission denied</string>
 
     <!-- Details -->
     <string name="pokemons_types">Types:</string>

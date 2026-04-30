@@ -32,7 +32,7 @@ fun ComponentFactory.createPokemonListComponent(
     componentContext: ComponentContext,
     onOutput: (PokemonListComponent.Output) -> Unit
 ): PokemonListComponent {
-    return RealPokemonListComponent(componentContext, onOutput, get(), get())
+    return RealPokemonListComponent(componentContext, onOutput, get(), get(), get(), get())
 }
 
 fun ComponentFactory.createPokemonDetailsComponent(

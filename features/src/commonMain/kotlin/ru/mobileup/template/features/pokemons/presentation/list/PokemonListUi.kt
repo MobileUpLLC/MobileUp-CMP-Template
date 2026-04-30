@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,10 +25,12 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.mobileup.template.core.theme.AppTheme
 import ru.mobileup.template.core.widget.toolbar.AppToolbar
+import ru.mobileup.template.core.widget.toolbar.AppToolbarButton
 import ru.mobileup.template.core.utils.plus
 import ru.mobileup.template.core.widget.EmptyPlaceholder
 import ru.mobileup.template.core.widget.PullRefreshLceWidget
 import ru.mobileup.template.features.generated.resources.Res
+import ru.mobileup.template.features.generated.resources.pokemons_camera_permission_action
 import ru.mobileup.template.features.generated.resources.pokemons_empty_description
 import ru.mobileup.template.features.generated.resources.pokemons_select_type
 import ru.mobileup.template.features.pokemons.domain.Pokemon
@@ -57,6 +61,13 @@ private fun PokemonListToolbar(component: PokemonListComponent) {
 
     AppToolbar(
         title = stringResource(Res.string.pokemons_select_type),
+        actions = {
+            AppToolbarButton(
+                imageVector = Icons.Default.Add,
+                contentDescription = stringResource(Res.string.pokemons_camera_permission_action),
+                onClick = component::onCameraPermissionClick
+            )
+        },
         bottomContent = {
             PokemonTypesRow(
                 types = component.types,
