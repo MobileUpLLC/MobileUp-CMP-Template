@@ -174,7 +174,7 @@ Concrete Android variants:
 For changes in common/Android code prefer this validation command:
 
 ```bash
-./gradlew detekt :features:jvmTest :androidApp:assembleDevDebug
+./gradlew detekt :features:testAndroidHostTest :androidApp:assembleDevDebug
 ```
 
 For iOS-specific or KMP shared API changes, also run:

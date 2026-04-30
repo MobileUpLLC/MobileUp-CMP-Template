@@ -29,13 +29,6 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
-    // for testing on Desktop
-    jvm {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-
     sourceSets {
         commonMain.dependencies {
             // Kotlin
@@ -91,10 +84,6 @@ kotlin {
 
             // Permissions
             implementation(libs.bundles.moko.permissions)
-        }
-
-        jvmMain.dependencies {
-            api(libs.ktor.okhttp)
         }
     }
 }

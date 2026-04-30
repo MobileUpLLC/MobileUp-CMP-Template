@@ -2,8 +2,7 @@ package ru.mobileup.template.core.configuration
 
 enum class PlatformType {
     Android,
-    Ios,
-    Jvm // for testing on Desktop
+    Ios
 }
 
 expect class Platform {

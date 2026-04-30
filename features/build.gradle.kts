@@ -22,6 +22,8 @@ kotlin {
             enable = true
         }
 
+        withHostTest {}
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
@@ -30,13 +32,6 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-
-    // for testing on Desktop
-    jvm {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
 
     sourceSets {
         commonMain.dependencies {
@@ -78,7 +73,7 @@ kotlin {
             implementation(libs.kotest.assertions.core)
         }
 
-        jvmTest.dependencies {
+        getByName("androidHostTest").dependencies {
             implementation(libs.kotest.runner.junit5)
         }
     }
