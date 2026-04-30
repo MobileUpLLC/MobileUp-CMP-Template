@@ -9,10 +9,12 @@ import org.koin.dsl.module
 import ru.mobileup.template.core.activity.ActivityProvider
 import ru.mobileup.template.core.configuration.BuildType
 import ru.mobileup.template.core.configuration.Configuration
+import ru.mobileup.template.core.external_app.AndroidExternalAppService
+import ru.mobileup.template.core.external_app.ExternalAppService
 import ru.mobileup.template.core.network.createKtorLogger
 import ru.mobileup.template.core.network.createOkHttpEngine
-import ru.mobileup.template.core.permissions.PermissionService
 import ru.mobileup.template.core.permissions.AndroidPermissionService
+import ru.mobileup.template.core.permissions.PermissionService
 import ru.mobileup.template.core.settings.AndroidSettingsFactory
 import ru.mobileup.template.core.settings.SettingsFactory
 
@@ -28,4 +30,5 @@ actual fun platformCoreModule(configuration: Configuration) = module {
     single<NetworkConnectivityProvider> { AndroidNetworkConnectivityProvider(get()) }
     single<SettingsFactory> { AndroidSettingsFactory(get(), Dispatchers.IO) }
     single<PermissionService>(createdAtStart = true) { AndroidPermissionService(get(), get(), get()) }
+    single<ExternalAppService> { AndroidExternalAppService(get()) }
 }

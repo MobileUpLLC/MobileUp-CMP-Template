@@ -171,7 +171,7 @@ Concrete Android variants:
 
 ## Validation Workflow
 
-For changes in common/Android code prefer this validation command:
+For changes in common/Android code always use this validation command:
 
 ```bash
 ./gradlew detekt :features:testAndroidHostTest :androidApp:assembleDevDebug
