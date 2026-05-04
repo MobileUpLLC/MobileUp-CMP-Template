@@ -1,8 +1,10 @@
 package ru.mobileup.template.core.theme
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import ru.mobileup.template.core.theme.custom.CustomTheme
 import ru.mobileup.template.core.theme.custom.toMaterialColors
 import ru.mobileup.template.core.theme.custom.toMaterialTypography
@@ -24,8 +26,13 @@ fun AppTheme(
     ) {
         MaterialTheme(
             colorScheme = colorScheme.toMaterialColors(),
-            typography = typography.toMaterialTypography(),
-            content = content
-        )
+            typography = typography.toMaterialTypography()
+        ) {
+            CompositionLocalProvider(
+                LocalIndication provides defaultClickIndication()
+            ) {
+                content()
+            }
+        }
     }
 }

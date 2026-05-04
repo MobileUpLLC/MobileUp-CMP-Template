@@ -11,6 +11,4 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 typealias BackAction = () -> Unit
 
-val LocalBackAction = staticCompositionLocalOf<BackAction> {
-    error("LocalBackAction not present")
-}
+val LocalBackAction = staticCompositionLocalOf<BackAction> { {} }

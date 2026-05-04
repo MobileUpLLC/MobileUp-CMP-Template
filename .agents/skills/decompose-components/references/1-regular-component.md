@@ -73,7 +73,7 @@ fun ItemListUi(
             state = itemsState,
             innerPadding = innerPadding,
             onRefresh = component::onRefresh,
-        ) { items, _, contentPadding ->
+        ) { items, contentPadding ->
             // Content
         }
     }

@@ -15,6 +15,7 @@ data class CustomColors(
 
 data class BackgroundColors(
     val screen: Color,
+    val surface: Color,
     val toast: Color,
 )
 

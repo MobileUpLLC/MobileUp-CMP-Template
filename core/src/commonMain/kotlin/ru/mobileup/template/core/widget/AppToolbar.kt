@@ -1,6 +1,8 @@
 package ru.mobileup.template.core.widget
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -8,26 +10,30 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
+import ru.mobileup.template.core.configuration.LocalPlatformType
+import ru.mobileup.template.core.configuration.PlatformType
 import ru.mobileup.template.core.generated.resources.Res
 import ru.mobileup.template.core.generated.resources.common_back
 import ru.mobileup.template.core.theme.AppTheme
@@ -48,36 +54,43 @@ fun AppToolbar(
     titleAlignment: AppToolbarTitleAlignment = AppToolbarTitleAlignment.Start,
     backgroundColor: Color = CustomTheme.colors.background.screen,
     contentColor: Color = CustomTheme.colors.text.primary,
-    shadowElevation: Dp = 4.dp,
     actions: @Composable RowScope.() -> Unit = {},
     bottomContent: @Composable ColumnScope.() -> Unit = {},
 ) {
+    val platformType = LocalPlatformType.current
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = backgroundColor,
-        shadowElevation = shadowElevation
+        shadowElevation = when (platformType) {
+            PlatformType.Android -> 4.dp
+            PlatformType.Ios -> 0.dp
+        }
     ) {
-            Column(Modifier.statusBarsPadding()) {
-                when (titleAlignment) {
-                    AppToolbarTitleAlignment.Start -> AppToolbarStartContent(
-                        title = title,
-                        showBackButton = showBackButton,
-                        onBackClick = onBackClick,
-                        contentColor = contentColor,
-                        actions = actions
-                    )
+        Column(Modifier.statusBarsPadding()) {
+            when (titleAlignment) {
+                AppToolbarTitleAlignment.Start -> AppToolbarStartContent(
+                    title = title,
+                    showBackButton = showBackButton,
+                    onBackClick = onBackClick,
+                    contentColor = contentColor,
+                    actions = actions
+                )
 
-                    AppToolbarTitleAlignment.Center -> AppToolbarCenterContent(
-                        title = title,
-                        showBackButton = showBackButton,
-                        onBackClick = onBackClick,
-                        contentColor = contentColor,
-                        actions = actions
-                    )
-                }
-
-                bottomContent()
+                AppToolbarTitleAlignment.Center -> AppToolbarCenterContent(
+                    title = title,
+                    showBackButton = showBackButton,
+                    onBackClick = onBackClick,
+                    contentColor = contentColor,
+                    actions = actions
+                )
             }
+
+            bottomContent()
+
+            if (platformType == PlatformType.Ios) {
+                HorizontalDivider(thickness = 0.5.dp)
+            }
+        }
     }
 }
 
@@ -87,13 +100,14 @@ fun AppToolbarButton(
     contentDescription: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
     tint: Color = CustomTheme.colors.icon.primary
 ) {
-    IconButton(
-        modifier = modifier,
-        onClick = onClick,
-        enabled = enabled
+    Box(
+        modifier = modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = imageVector,

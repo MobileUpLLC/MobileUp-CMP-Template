@@ -22,11 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.util.lerp
 import ru.mobileup.template.core.theme.custom.CustomTheme
 
 /**
@@ -79,21 +77,23 @@ fun ConfigureSystemBars(settings: SystemBarsSettings) {
             }
         }
     }
-    val defaultSystemBarColor = remember(backgroundColor) {
-        val luminance = backgroundColor.luminance()
-        val alpha = lerp(start = 0.5f, stop = 0.9f, fraction = luminance)
-        backgroundColor.copy(alpha = alpha)
+
+    val defaultStatusBarColor = Color.Transparent
+    val statusBarColor = remember(settings, defaultStatusBarColor) {
+        settings.statusBarColor.takeOrElse { defaultStatusBarColor }
     }
-    val statusBarColor = remember(settings, defaultSystemBarColor) {
-        settings.statusBarColor.takeOrElse { defaultSystemBarColor }
+
+    val defaultNavBarColor = remember(backgroundColor) {
+        backgroundColor.copy(alpha = 0.5f)
     }
-    val navBarColor = remember(settings, defaultSystemBarColor, isGestureNavigation) {
+    val navBarColor = remember(settings, defaultNavBarColor, isGestureNavigation) {
         if (isGestureNavigation) {
             Color.Transparent
         } else {
-            settings.navigationBarColor.takeOrElse { defaultSystemBarColor }
+            settings.navigationBarColor.takeOrElse { defaultNavBarColor }
         }
     }
+
     val darkStatusBarIcons = remember(settings.statusBarIconsColor, isLightTheme) {
         when (settings.statusBarIconsColor) {
             SystemBarIconsColor.Dark -> true

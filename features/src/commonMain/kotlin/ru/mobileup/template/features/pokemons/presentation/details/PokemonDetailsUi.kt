@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,7 +30,6 @@ import org.jetbrains.compose.resources.stringResource
 import ru.mobileup.template.core.generated.resources.common_retry
 import ru.mobileup.template.core.theme.AppTheme
 import ru.mobileup.template.core.theme.custom.CustomTheme
-import ru.mobileup.template.core.utils.LocalBackAction
 import ru.mobileup.template.core.widget.AppToolbar
 import ru.mobileup.template.core.widget.AppToolbarTitleAlignment
 import ru.mobileup.template.core.widget.PullRefreshLceWidget
@@ -83,7 +81,7 @@ private fun PokemonDetailsContent(
         innerPadding = innerPadding,
         onRefresh = component::onRefresh,
         modifier = modifier
-    ) { pokemon, _, contentPadding ->
+    ) { pokemon, contentPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -140,8 +138,6 @@ private fun PokemonDetailsContent(
 @Composable
 private fun PokemonDetailsUiPreview() {
     AppTheme {
-        CompositionLocalProvider(LocalBackAction provides {}) {
-            PokemonDetailsUi(FakePokemonDetailsComponent())
-        }
+        PokemonDetailsUi(FakePokemonDetailsComponent())
     }
 }

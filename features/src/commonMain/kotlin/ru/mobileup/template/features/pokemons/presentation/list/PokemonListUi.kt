@@ -80,7 +80,7 @@ private fun PokemonListContent(
         innerPadding = innerPadding,
         onRefresh = component::onRefresh,
         modifier = modifier
-    ) { pokemons, _, contentPadding ->
+    ) { pokemons, contentPadding ->
         if (pokemons.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

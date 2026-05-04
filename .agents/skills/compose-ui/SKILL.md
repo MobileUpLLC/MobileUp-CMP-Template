@@ -60,7 +60,7 @@ PullRefreshLceWidget(
     state = itemsState,
     innerPadding = innerPadding,
     onRefresh = component::onRefresh
-) { items, _, contentPadding ->
+) { items, contentPadding ->
     LazyColumn(
         contentPadding = contentPadding + PaddingValues(vertical = 12.dp)
     ) {

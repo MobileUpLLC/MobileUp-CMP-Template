@@ -54,8 +54,7 @@ class RootViewController(
             backIcon = null
         ) {
             CompositionLocalProvider(
-                LocalSystemBarIconsColorHandler provides systemBarIconsColorHandler,
-                LocalBackAction provides backDispatcher::back
+                LocalSystemBarIconsColorHandler provides systemBarIconsColorHandler
             ) {
                 rootUi()
             }

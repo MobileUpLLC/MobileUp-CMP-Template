@@ -13,6 +13,7 @@ val LightAppColors = CustomColors(
     isLight = true,
     background = BackgroundColors(
         screen = Color(0xFFFFFFFF),
+        surface = Color(0xFFF5F5F5),
         toast = Color(0xFF000000),
     ),
     text = TextColors(

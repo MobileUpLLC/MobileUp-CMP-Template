@@ -9,6 +9,7 @@ import com.arkivanov.essenty.lifecycle.asEssentyLifecycle
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import me.aartikov.replica.client.ReplicaClient
 import ru.mobileup.template.core.activity.ActivityProvider
+import ru.mobileup.template.core.configuration.LocalPlatformType
 import ru.mobileup.template.core.debug_tools.AndroidDebugTools
 import ru.mobileup.template.core.theme.AppTheme
 import ru.mobileup.template.core.utils.AndroidSystemBarIconsColorHandler
@@ -34,6 +35,7 @@ fun SharedApp.launchInActivity(activity: ComponentActivity) {
 
     activity.setContent {
         CompositionLocalProvider(
+            LocalPlatformType provides platformType,
             LocalSystemBarIconsColorHandler provides systemBarIconsColorHandler,
             LocalBackAction provides backAction
         ) {
