@@ -16,10 +16,6 @@ After cloning the template:
 6. Build a project-specific `CustomTheme` and reusable widget set in `core`.
 7. Continue with product feature implementation.
 
-Notes:
-- `setup-project` also runs Git history reset and hook setup scripts.
-- If needed separately, history reset script is: `./scripts/reset-git-history`.
-
 ## Modules
 The project is based on three gradle modules:
 
