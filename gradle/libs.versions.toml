@@ -1,42 +1,51 @@
 [versions]
-minSdk = "26"
-compileSdk = "35"
-targetSdk = "35"
-versionCode = "1"
-versionName = "1.0.0"
+android-compileSdk = "36"
+android-minSdk = "28"
+android-targetSdk = "36"
+ios-deploymentTarget = "16.0"
 
-kotlin = "2.1.20"
-androidGradlePlugin = "8.7.3"
-ksp = "2.1.20-1.0.31"
-ktorfit = "2.4.1"
-mokoResources = "0.24.5"
+kotlin = "2.3.21"
+androidGradlePlugin = "9.1.1"
+ksp = "2.3.2"
+ktorfit = "2.7.2"
+ktorfitCompiler = "2.3.3" # workaround for https://github.com/Foso/Ktorfit/issues/1010
 moduleGraph = "1.3.3"
 detekt = "1.23.8"
-dateTime = "0.6.2"
+dateTime = "0.7.1"
 coroutines = "1.10.2"
-decompose = "3.2.2"
-ktor = "3.1.2"
-replica = "1.3.1-alpha1"
-koin = "4.0.4"
-kermit = "2.0.5"
-composeBom = "2025.04.00"
-activity = "1.10.1"
-coil = "3.1.0"
-splashscreen = "1.0.1"
-accompanist = "0.36.0"
-chucker = "4.0.0"
+decompose = "3.5.0"
+ktor = "3.4.3"
+replica = "1.6.0-alpha"
+koin = "4.2.1"
+kermit = "2.1.0"
+activity = "1.13.0"
+coil = "3.4.0"
+splashscreen = "1.2.0"
+chucker = "4.3.1"
 hyperion = "0.9.38"
 hyperionAddons = "0.3.3"
-composeRules = "0.4.18"
-form = "1.2.0"
-securityCrypto = "1.1.0-alpha06"
-kotest = "5.9.1"
-kover = "0.9.1"
+composeRules = "0.5.7"
+composeMultiplatform = "1.10.3"
+material3 = "1.10.0-alpha05"
+materialIcons = "1.7.3"
+form = "2.2.0"
+securityCrypto = "1.1.0"
+kotest = "6.1.11"
+mokoPermissions = "0.20.1"
 
 [libraries]
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIcons" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
+compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
+compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
@@ -46,9 +55,9 @@ ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
-ktor-android = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
-ktorfit-ksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
 
 replica-core = { module = "com.github.aartikov:replica-core", version.ref = "replica" }
 replica-algebra = { module = "com.github.aartikov:replica-algebra", version.ref = "replica" }
@@ -58,39 +67,32 @@ replica-devtools = { module = "com.github.aartikov:replica-devtools", version.re
 
 form-validation = { module = "ru.mobileup:kmm-form-validation", version.ref = "form" }
 
+moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "mokoPermissions" }
+moko-permissions-camera = { module = "dev.icerock.moko:permissions-camera", version.ref = "mokoPermissions" }
+moko-permissions-contacts = { module = "dev.icerock.moko:permissions-contacts", version.ref = "mokoPermissions" }
+moko-permissions-location = { module = "dev.icerock.moko:permissions-location", version.ref = "mokoPermissions" }
+moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "mokoPermissions" }
+
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 logger-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
 
-# Used in build-logic/DetektPlugin
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-compose-rules = { module = "io.nlopez.compose.rules:detekt", version.ref = "composeRules" }
 
-# Used in build-logic/com/buildlogic/CommonComposeAndroid.kt/configureAndroidCompose
-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
-compose-ui = { module = "androidx.compose.ui:ui" }
-compose-material = { module = "androidx.compose.material3:material3" }
-compose-material-icons = { module = "androidx.compose.material:material-icons-core" }
-compose-tooling = { module = "androidx.compose.ui:ui-tooling" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 
 security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCrypto" }
 
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
-
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
-accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
-
-moko-resources = { module = "dev.icerock.moko:resources", version.ref = "mokoResources" }
-moko-resourcesCompose = { module = "dev.icerock.moko:resources-compose", version.ref = "mokoResources" }
 
 chucker = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }
 hyperion-core = { module = "com.willowtreeapps.hyperion:hyperion-core", version.ref = "hyperion" }
@@ -101,23 +103,15 @@ hyperion-addons-logs = { module = "me.nemiron.hyperion:logs", version.ref = "hyp
 hyperion-addons-networkEmulation = { module = "me.nemiron.hyperion:network-emulation", version.ref = "hyperionAddons" }
 hyperion-addons-chucker = { module = "me.nemiron.hyperion:chucker", version.ref = "hyperionAddons" }
 
-android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
-detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-
 [bundles]
 decompose = ["decompose-core", "decompose-compose"]
-replica = ["replica-core", "replica-algebra", "replica-android-network", "replica-decompose"]
-compose = ["compose-ui", "compose-material", "compose-tooling", "activity-compose"]
-accompanist = ["accompanist-systemuicontroller", "accompanist-swiperefresh"]
-ktor = [
+replica-shared = ["replica-core", "replica-algebra", "replica-decompose"]
+ktor-shared = [
     "ktor-core",
     "ktor-auth",
     "ktor-serialization",
     "ktor-content-negotiation",
-    "ktor-logging",
-    "ktor-android"
+    "ktor-logging"
 ]
 hyperion = [
     "hyperion-core",
@@ -130,23 +124,25 @@ hyperion = [
 ]
 coil = [
     "coil",
-    "coil-okhttp"
+    "coil-ktor"
+]
+moko-permissions = [
+    "moko-permissions",
+    "moko-permissions-camera",
+    "moko-permissions-contacts",
+    "moko-permissions-location",
+    "moko-permissions-notifications"
 ]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
-android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-module-graph = { id = "ru.mobileup.module-graph", version.ref = "moduleGraph" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidGradlePlugin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
-moko-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "mokoResources" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-
-#Convention plugins
-convetion-library = { id = "convention.android.library", version = "unspecified" }
-convetion-detekt = { id = "convention.detekt", version = "unspecified" }
-convetion-lint = { id = "convention.lint", version = "unspecified" }
+ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+module-graph = { id = "ru.mobileup.module-graph", version.ref = "moduleGraph" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kotest = { id = "io.kotest", version.ref = "kotest" }

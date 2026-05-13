@@ -1,81 +1,109 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.convetion.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
+    alias(libs.plugins.kotest)
     alias(libs.plugins.module.graph)
-    alias(libs.plugins.kover)
 }
 
-android {
-    namespace = "ru.mobileup.template.features"
+kotlin {
+    android {
+        namespace = "ru.mobileup.template.features"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        androidResources {
+            enable = true
+        }
+
+        withHostTest {}
+
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":core"))
+
+            // Kotlin
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.coroutines.core)
+
+            // UI
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.material.icons)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.compose.components.resources)
+            implementation(libs.bundles.coil)
+
+            // DI
+            implementation(libs.koin)
+
+            // Logging
+            implementation(libs.logger.kermit)
+
+            // Network
+            implementation(libs.bundles.ktor.shared)
+            implementation(libs.ktorfit.lib)
+
+            // Architecture
+            implementation(libs.bundles.decompose)
+            implementation(libs.bundles.replica.shared)
+            implementation(libs.form.validation)
+        }
+
+        commonTest.dependencies {
+            implementation(project(":core-testing"))
+            implementation(libs.kotest.framework.engine)
+            implementation(libs.kotest.assertions.core)
+        }
+
+        getByName("androidHostTest").dependencies {
+            implementation(libs.kotest.runner.junit5)
+        }
+    }
 }
 
 dependencies {
-    ksp(libs.ktorfit.ksp)
+    androidRuntimeClasspath(libs.compose.uiTooling) // for preview
+}
 
-    // Modules
-    implementation(project(":core"))
-    testImplementation(project(":core-testing"))
+compose.resources {
+    packageOfResClass = "ru.mobileup.template.features.generated.resources"
+}
 
-    // Kotlin
-    implementation(libs.kotlinx.datetime)
-    implementation(libs.coroutines.core)
-    implementation(libs.coroutines.android)
+ktorfit {
+    compilerPluginVersion.set(libs.versions.ktorfitCompiler.get())
+}
 
-    // UI
-    implementation(libs.bundles.compose)
-    implementation(libs.compose.material.icons)
-    implementation(libs.bundles.accompanist)
-    implementation(libs.bundles.coil)
-
-    // DI
-    implementation(libs.koin)
-
-    // Logging
-    implementation(libs.logger.kermit)
-
-    // Network
-    implementation(libs.bundles.ktor)
-    implementation(libs.ktorfit.lib)
-
-    implementation(libs.form.validation)
-
-    // Architecture
-    implementation(libs.bundles.decompose)
-    implementation(libs.bundles.replica)
-    api(libs.moko.resources)
-    implementation(libs.moko.resourcesCompose)
-
-    testImplementation(libs.kotest.runner.junit5)
+composeCompiler {
+    stabilityConfigurationFiles.add(
+        rootProject.layout.projectDirectory.file("stability_config.conf")
+    )
 }
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
-kover {
-    reports {
-        filters {
-            includes {
-                // We focus coverage on tested behavior: Real components + repositories + data/domain models + DI wiring.
-                classes(
-                    "*.presentation.Real*Component",
-                    "*.presentation.*.Real*Component",
-                    "*.data.*",
-                    "*.domain.*",
-                    "DIKt",
-                    "*.DIKt"
-                )
-            }
-        }
-    }
-}
-
 // Usage: ./gradlew generateModuleGraph detectGraphCycles
 moduleGraph {
     featuresPackage.set("ru.mobileup.template.features")
-    featuresDirectory.set(project.file("src/main/kotlin/ru/mobileup/template/features"))
+    featuresDirectory.set(project.file("src/commonMain/kotlin/ru/mobileup/template/features"))
     outputDirectory.set(project.file("module_graph"))
 }

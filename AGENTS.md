@@ -1,47 +1,27 @@
-# Project Context for Claude
+# Project Context for AI Agent
 
 ## Project Overview
 
-**Project Name:** MobileUp Android Template
+**Project Name:** MobileUp CMP Template
 
-Template repository for bootstrapping new Android projects at MobileUp.
+Template repository for bootstrapping new Mobile projects at MobileUp.
 After cloning, teams customize app identity, remove demo functionality, configure project keys, and evolve the template into a production product.
-
----
-
-## Template Initialization
-
-After cloning the template:
-
-1. Run project setup:
-   `./scripts/setup-project <new.application.id> <JIRA_PROJECT_KEY>`
-2. Update `AGENTS.md` for the concrete product you are building.
-3. Replace application name and icon with project-specific assets.
-4. Remove the demo `pokemons` feature and related wiring.
-5. Replace default error text resources with product text.
-6. Build a project-specific `CustomTheme` and reusable widget set in `core`.
-7. Continue with product feature implementation.
-
-Notes:
-- `setup-project` also runs Git history reset and hook setup scripts.
-- If needed separately, history reset script is: `./scripts/reset-git-history`.
-
----
 
 ## Tech Stack
 
-**Language:** Kotlin | **UI:** Jetpack Compose | **Min SDK:** 26 | **Target SDK:** 35
+**Platforms:** Android, iOS
+**Language:** Kotlin, Swift
 
 **Core libraries:**
+- **Compose Multiplatform** - UI
 - **Decompose** — component architecture and navigation
 - **Replica** — data loading, caching, state management
 - **Koin** — dependency injection
 - **Ktor** + **Ktorfit** — HTTP client
-- **Moko Resources** — string resources without Context
 - **Coil** — image loading
-- **Kotlinx DateTime**, **Coroutines**
+- **Kotlin Coroutines** - async operations
+- **Kotlinx DateTime** - date and time
 - **Kotlin Serialization** — JSON serialization/parsing
-- **Settings + SettingsFactory**, **Security Crypto**
 - **Detekt** — static code analysis
 - **Module Graph Gradle Plugin** — feature dependency graph validation
 - Debug only: **Chucker**, **Hyperion**, **Replica DevTools**
@@ -51,15 +31,20 @@ Notes:
 ## Module Structure
 
 ```
-app/        — Application, Activity, root DI, build configs
-core/       — Shared infrastructure: network, theme, error handling,
-              message service, widgets (LceWidget, buttons, inputs),
-              storage, security, string/resource services
+core/       — Shared infrastructure: network, theme, error handling, message service, widgets,
+              storage, utils
+              
 features/   — Feature modules, package-by-feature
-              features/src/main/kotlin/.../features/{feature_name}/
+              features/src/commonMain/kotlin/.../features/{feature_name}/
+              
+shared/     — It combines all features and provides the `SharedApp` entry point for platform apps.
+
+androidApp/ — Android entry points, icon resources, build configurations, Android-specific integrations.
+
+iosApp      — Xcode project, SwiftUI entry point, assets, iOS-specific integrations.
 ```
 
-Each feature: `data/` → `domain/` → `presentation` layers.
+Each feature contains `data`, `domain`, `presentation` layers.
 
 ---
 
@@ -73,11 +58,11 @@ Every screen is a **four-part component**:
 - `FakeXxxComponent` — mock data for previews
 - `XxxUi` — pure composable, no business logic
 
-Two types: **Simple** (single screen) and **Router** (manages ChildStack).
+Two types: **Regular** (single screen) and **Router** (manages navigation).
 
-Parent↔child communication via `Output` sealed interface — never direct calls.
+Child -> parent communication via `Output` sealed interface — never direct calls.
 
-> For details: **`component-creation`** skill
+> For details: **`decompose-components`** skill
 
 ### Data Loading (Replica)
 
@@ -85,23 +70,23 @@ Parent↔child communication via `Output` sealed interface — never direct call
 - **Component** observes Replicas → `StateFlow<LoadableState<T>>`
 - **UI** uses `LceWidget` or `PullRefreshLceWidget` to handle Loading / Content / Error
 
-> For details: **`replica-creation`**, **`replica-observing`**, **`replica-modification`** skills
+> For details: **`network`** skill
 
-### Feature File Structure
+### Feature Structure
 
-**Simple** (8–12 files) — flat `data/domain/presentation` for single-context features.
-**Complex** (20–50+ files) — subdomain packages for multi-role or multi-context features.
+Each feature uses the same base structure: `DI.kt`, `data/`, `domain/`, `presentation/`.
+Larger features may organize distinct domains or contexts as subfeature packages.
 
-> For details: **`feature-creation`** skill
+> For details: **`feature-structure`** skill
 
 ### Dependency Injection (Koin)
 
 Each feature has `DI.kt` with a Koin module and `ComponentFactory` extension functions.
 Components are always created via `componentFactory.createXxxComponent(...)`, never directly.
 
-### String Resources (Moko Resources)
+### String Resources
 
-`StringDesc` is the universal string type — resolved lazily via `.localized()` in Compose or via `StringService` outside Compose.
+`StringDesc` is the universal string type — resolved lazily via `.resolve()` in Compose.
 
 > For details: **`string-resources`** skill
 
@@ -110,36 +95,54 @@ Components are always created via `componentFactory.createXxxComponent(...)`, ne
 ## Critical Rules
 
 ### 1. CustomTheme, NOT MaterialTheme
-```kotlin
-// ✅
-style = CustomTheme.typography.body.regular
-color = CustomTheme.colors.text.primary
-
-// ❌
-style = MaterialTheme.typography.bodyMedium
-color = MaterialTheme.colorScheme.onSurface
-```
+Compose UI must use `CustomTheme` as the token source.
+Prefer existing widgets from `core.widget` over raw Material controls.
 
 ### 2. LCE Pattern for all data-loading screens
-- `LceWidget` — detail screens, forms (no pull-to-refresh needed)
-- `PullRefreshLceWidget` — lists, feeds, dashboards (pull-to-refresh expected)
+- `LceWidget` — forms, detail screens where no pull-to-refresh needed
+- `PullRefreshLceWidget` — lists, feeds, dashboards, refreshable details
 
-### 3. Strict Layer Separation
-- **Data** — API, DTOs, RepositoryImpl (Replica creation, DTO→Entity mapping)
+### 3. Previews for UI
+- Screen UI must have previews wrapped with `AppTheme`.
+- Use `FakeXxxComponent` for screen previews.
+- Custom reusable widgets should have previews for meaningful visual states.
+
+### 4. Strict Layer Separation
+- **Data** — API, DTOs, Repository (Replica creation, DTO → Entity mapping)
 - **Domain** — entities, queries, pure functions (no API, no UI)
 - **Presentation** — components, composables (no direct API calls)
+- DTOs must not leak outside the `data` layer
+- Create replicas in **Repository**, expose narrow interface (`Replica<T>`, not `PhysicalReplica<T>`)
+- Mutate (mutateData, invalidate, sendAction) in **Repository**
 - **No Interactors/UseCases** — logic lives in Repository + Component
 
-### 4. Replica Ownership
-- Create replicas in **Repository**, expose narrow interface (`Replica<T>`, not `PhysicalReplica<T>`)
-- Observe in **Component** (`private val xxxReplica` + `override val xxxState`)
-- Mutate (mutateData, invalidate, sendAction) in **Repository**
+### 5. Component Creation
+- Real components are created only through `ComponentFactory` extension functions.
+- Do not instantiate `RealXxxComponent` directly from parent components or UI.
 
-### 5. State in Components
-- Always `xxxState` suffix, never generic `val state`
-- Derived state: `computed()`, never `combine().stateIn()`
-- Mutable local state: `MutableStateFlow` directly, no wrapping in `computed()`
-- Keep replica and state as separate variables
+---
+
+## Agent Working Rules
+
+- Read existing code and state assumptions before changing anything.
+- Ask when intent, scope, or tradeoffs are unclear.
+- Prefer the simplest solution that fully satisfies the request.
+- Do not add speculative features, abstractions, or configurability.
+- Keep edits surgical and directly tied to the requested behavior.
+- Match local style, architecture, naming, and module boundaries.
+- Do not refactor, reformat, or clean up unrelated code.
+- Remove only unused code introduced by your own changes.
+- Define verifiable success criteria before implementation.
+- Validate with focused tests or checks, and report remaining risks.
+---
+
+## Testing Rules
+
+- Component-level tests live under `features/src/commonTest`.
+- Use Kotest `FunSpec` as the default test style.
+- Use the existing `integrationTest` DSL for scenarios that cover: 
+  `Component -> Repository -> Network -> State / Output`.
+- Name tests in English by observable behavior, not implementation details.
 
 ---
 
@@ -159,6 +162,23 @@ color = MaterialTheme.colorScheme.onSurface
 **Flavors:** `dev` (development backend) / `prod` (production backend)
 **Types:** `debug` (with dev tools) / `release` (ProGuard)
 
-Backend URLs:
-- Dev: `https://pokeapi.co/`
-- Prod: `https://pokeapi.co/`
+Concrete Android variants:
+- `devDebug` — default local validation target
+- `prodDebug` — validates production backend flavor wiring
+- `prodRelease` — validate shrinker, resources, signing, and ProGuard/R8 behavior
+
+---
+
+## Validation Workflow
+
+For changes in common/Android code use only this validation command:
+
+```bash
+./gradlew detekt :features:testAndroidHostTest :androidApp:assembleDevDebug
+```
+
+For iOS-specific or KMP shared API changes, also run:
+
+```bash
+./gradlew :features:compileKotlinIosSimulatorArm64 :shared:compileKotlinIosSimulatorArm64
+```

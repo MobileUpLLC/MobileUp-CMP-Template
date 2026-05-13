@@ -21,10 +21,7 @@ chmod +x "$SCRIPTS_DIR"/*
 ### Step 1: Rename package
 bash "$SCRIPTS_DIR/change-app-id" "$NEW_ID"
 
-### Step 2: Reset Git history
-bash "$SCRIPTS_DIR/reset-git-history"
-
-### Step 3: Setup Git hooks
+### Step 2: Setup Git hooks
 bash "$SCRIPTS_DIR/setup-git-hooks" "$ISSUE_PREFIX"
 
 echo "✅ Project setup complete."

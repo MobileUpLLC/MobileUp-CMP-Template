@@ -1,39 +1,43 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-}
-
-android {
-    namespace = "ru.mobileup.template.core_testing"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
 }
 
 kotlin {
+    android {
+        namespace = "ru.mobileup.template.features"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        androidResources {
+            enable = true
+        }
+
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
     compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
         freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
     }
-}
 
-dependencies {
-    // Expose types from core in public APIs (ComponentFactory, MessageService, etc.)
-    api(project(":core"))
-
-    // Public API types used by core-testing helpers
-    api(libs.coroutines.core)
-    api(libs.coroutines.test)
-    api(libs.koin)
-    api(libs.ktor.client.mock)
-    api(libs.bundles.decompose)
-    api(libs.bundles.replica)
-    api(libs.kotest.runner.junit5)
+    sourceSets {
+        commonMain.dependencies {
+            api(project(":core"))
+            api(libs.coroutines.core)
+            api(libs.coroutines.test)
+            api(libs.koin)
+            api(libs.ktor.client.mock)
+            api(libs.bundles.decompose)
+            api(libs.bundles.replica.shared)
+            api(libs.kotest.framework.engine)
+        }
+    }
 }
