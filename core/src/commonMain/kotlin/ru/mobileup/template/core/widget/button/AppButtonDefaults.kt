@@ -1,14 +1,19 @@
 package ru.mobileup.template.core.widget.button
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.mobileup.template.core.theme.custom.CustomTheme
 
@@ -22,7 +27,7 @@ enum class ButtonType {
 object AppButtonDefaults {
 
     @Stable
-    val buttonShape = CircleShape
+    val buttonShape = RoundedCornerShape(percent = 50)
 
     @Stable
     val contentPadding = PaddingValues(16.dp)
@@ -71,13 +76,6 @@ object AppButtonDefaults {
 
     @Stable
     @Composable
-    fun progressIndicatorColor(buttonType: ButtonType): Color = when (buttonType) {
-        ButtonType.Primary -> CustomTheme.colors.text.invert
-        ButtonType.Secondary -> CustomTheme.colors.text.primary
-    }
-
-    @Stable
-    @Composable
     fun border(buttonType: ButtonType, isEnabled: Boolean): BorderStroke = when (buttonType) {
         ButtonType.Secondary -> BorderStroke(
             1.dp,
@@ -86,4 +84,31 @@ object AppButtonDefaults {
 
         else -> BorderStroke(0.dp, Color.Transparent)
     }
+
+    @Stable
+    @Composable
+    fun elevation(
+        buttonType: ButtonType,
+        isEnabled: Boolean,
+        interactionSource: InteractionSource
+    ): Dp {
+        val defaultElevation = when (buttonType) {
+            ButtonType.Primary -> 5.dp
+            ButtonType.Secondary -> 0.dp
+        }
+
+        if (defaultElevation == 0.dp) return 0.dp
+
+        val isPressed by interactionSource.collectIsPressedAsState()
+        return animateDpAsState(
+            targetValue = when {
+                !isEnabled -> 0.dp
+                isPressed -> 1.dp
+                else -> defaultElevation
+            }
+        ).value
+    }
+
+    val MinWidth = 58.dp
+    val MinHeight = 40.dp
 }
