@@ -1,6 +1,6 @@
 # Example: Regular Component
 
-A regular component does not own `ChildStack`: it exposes state, user actions, and optional`Output`.
+A regular component does not own `ChildStack`: it exposes state, user actions, and optional `Output`.
 
 ## Interface
 

@@ -35,7 +35,7 @@ fun XxxUi(component: XxxComponent, modifier: Modifier = Modifier) {
 
 ## AppToolbar
 
-Use `AppToolbar` from `core.widget`.
+Use `AppToolbar` from `core.widget.toolbar`.
 - For a simple toolbar, use `AppToolbar` directly in `Scaffold(topBar = { ... })`.
 - If toolbar needs custom logic, or custom layout, extract it to private `XxxToolbar`.
 - `AppToolbar` handles status bar padding automatically.

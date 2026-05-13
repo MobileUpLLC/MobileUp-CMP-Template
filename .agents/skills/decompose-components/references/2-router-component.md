@@ -7,6 +7,7 @@ Router components must implement `PredictiveBackComponent`.
 
 ```kotlin
 interface ItemsComponent : PredictiveBackComponent {
+    
     val childStack: StateFlow<ChildStack<*, Child>>
 
     sealed interface Child {
@@ -127,6 +128,7 @@ class RealItemsComponent(
 class FakeItemsComponent(
     child: ItemsComponent.Child = ItemsComponent.Child.List(FakeItemListComponent())
 ) : ItemsComponent {
+    
     override val childStack = createFakeChildStackStateFlow(child)
 
     override fun onBack() = Unit
@@ -146,7 +148,7 @@ fun ItemsUi(
     Children(
         stack = childStack,
         modifier = modifier,
-        animation = component.predictiveBackAnimation(),
+        animation = component.predictiveBackAnimation()
     ) { child ->
         when (val instance = child.instance) {
             is ItemsComponent.Child.List -> ItemListUi(instance.component)

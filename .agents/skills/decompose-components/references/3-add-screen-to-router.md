@@ -43,7 +43,7 @@ is ChildConfig.Filter -> ItemsComponent.Child.Filter(
     componentFactory.createItemFilterComponent(
         componentContext = componentContext,
         currentFilter = childConfig.currentFilter,
-        onOutput = ::onItemFilterOutput,
+        onOutput = ::onItemFilterOutput
     )
 )
 ```
