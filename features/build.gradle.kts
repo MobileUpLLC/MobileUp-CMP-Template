@@ -29,7 +29,6 @@ kotlin {
         }
     }
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -85,10 +84,6 @@ dependencies {
 
 compose.resources {
     packageOfResClass = "ru.mobileup.template.features.generated.resources"
-}
-
-ktorfit {
-    compilerPluginVersion.set(libs.versions.ktorfitCompiler.get())
 }
 
 composeCompiler {

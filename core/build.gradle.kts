@@ -25,9 +25,12 @@ kotlin {
         }
     }
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -91,10 +94,6 @@ kotlin {
 compose.resources {
     publicResClass = true
     packageOfResClass = "ru.mobileup.template.core.generated.resources"
-}
-
-ktorfit {
-    compilerPluginVersion.set(libs.versions.ktorfitCompiler.get())
 }
 
 composeCompiler {

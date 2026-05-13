@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.mobileup.template.core.settings
 
 import android.content.Context

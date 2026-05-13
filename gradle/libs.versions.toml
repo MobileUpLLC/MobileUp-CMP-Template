@@ -5,14 +5,13 @@ android-targetSdk = "36"
 ios-deploymentTarget = "16.0"
 
 kotlin = "2.3.21"
-androidGradlePlugin = "9.1.1"
-ksp = "2.3.2"
-ktorfit = "2.7.2"
-ktorfitCompiler = "2.3.3" # workaround for https://github.com/Foso/Ktorfit/issues/1010
+androidGradlePlugin = "9.2.1"
+ksp = "2.3.8"
+ktorfit = "2.7.3"
 moduleGraph = "1.3.3"
 detekt = "1.23.8"
-dateTime = "0.7.1"
-coroutines = "1.10.2"
+dateTime = "0.8.0"
+coroutines = "1.11.0"
 decompose = "3.5.0"
 ktor = "3.4.3"
 replica = "1.6.0-alpha"
@@ -24,9 +23,9 @@ splashscreen = "1.2.0"
 chucker = "4.3.1"
 hyperion = "0.9.38"
 hyperionAddons = "0.3.3"
-composeRules = "0.5.7"
-composeMultiplatform = "1.10.3"
-material3 = "1.10.0-alpha05"
+composeRules = "0.5.8"
+composeMultiplatform = "1.11.0"
+material3 = "1.11.0-alpha07"
 materialIcons = "1.7.3"
 form = "2.2.0"
 securityCrypto = "1.1.0"
@@ -99,7 +98,6 @@ hyperion-core = { module = "com.willowtreeapps.hyperion:hyperion-core", version.
 hyperion-recorder = { module = "com.willowtreeapps.hyperion:hyperion-recorder", version.ref = "hyperion" }
 hyperion-crash = { module = "com.willowtreeapps.hyperion:hyperion-crash", version.ref = "hyperion" }
 hyperion-disk = { module = "com.willowtreeapps.hyperion:hyperion-disk", version.ref = "hyperion" }
-hyperion-addons-logs = { module = "me.nemiron.hyperion:logs", version.ref = "hyperionAddons" }
 hyperion-addons-networkEmulation = { module = "me.nemiron.hyperion:network-emulation", version.ref = "hyperionAddons" }
 hyperion-addons-chucker = { module = "me.nemiron.hyperion:chucker", version.ref = "hyperionAddons" }
 
@@ -118,7 +116,6 @@ hyperion = [
     "hyperion-recorder",
     "hyperion-crash",
     "hyperion-disk",
-    "hyperion-addons-logs",
     "hyperion-addons-networkEmulation",
     "hyperion-addons-chucker"
 ]
