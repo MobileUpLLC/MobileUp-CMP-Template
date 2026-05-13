@@ -1,7 +1,7 @@
-# MobileUp Android Template 🌀
+# MobileUp CMP Template 🌀
 
 
-Hi! This is a template for initializing an Android project in [MobileUp](https://mobileup.ru/).
+Hi! This is a template for initializing a Compose Multiplatform project in [MobileUp](https://mobileup.ru/).
 
 ## Creating Project
 
@@ -16,15 +16,8 @@ After cloning the template:
 6. Build a project-specific `CustomTheme` and reusable widget set in `core`.
 7. Continue with product feature implementation.
 
-Notes:
-- `setup-project` also runs Git history reset and hook setup scripts.
-- If needed separately, history reset script is: `./scripts/reset-git-history`.
-
 ## Modules
 The project is based on three gradle modules:
-
-#### app
-It pieces all the features together, contains `Application` and `Activity` classes.
 
 #### core
 It contains general purpose things: error handing, message showing, network, theme, utils, reusable widgets.
@@ -32,21 +25,29 @@ It contains general purpose things: error handing, message showing, network, the
 #### features
 It consists of concrete features. Each feature has its own package which contains:
 - DI configuration
-- **ui layer** - components, Jetpack Compose UI
+- **presentation layer** - components, Compose UI
 - **domain layer** - entities, queries, pure functions
 - **data layer** - repositories, storages
+
+#### shared
+It combines all features and provides the `SharedApp` entry point for platform apps.
+
+#### androidApp
+Android entry points, icon resources, build configurations, Android-specific integrations, and launch of `shared`.
+
+#### iosApp
+Xcode project, SwiftUI entry point, assets, iOS-specific integrations, and launch of `shared`.
 
 ## Features structure
 <img src="features/module_graph/modules.svg">
 
 ## Technology stack
-- [Jetpack Compose](https://developer.android.com/jetpack/compose) - UI
+- [Compose Multiplatform](https://kotlinlang.org/compose-multiplatform/) - UI
 - [Decompose](https://github.com/arkivanov/Decompose) - componentization and navigation
 - [Replica](https://github.com/aartikov/Replica) - organizing of network communication
 - [Koin](https://github.com/InsertKoinIO/koin) - Dependency Injection
 - [Ktor](https://ktor.io/) - Network
 - [Ktorfit](https://github.com/Foso/Ktorfit) - network requests in Retrofit way
-- [Moko Resources](https://github.com/icerockdev/moko-resources) - string resources without `Context`
 - [Coroutines](https://developer.android.com/kotlin/coroutines) - asynchronous operations
 - [Kotlin Serialization](https://github.com/Kotlin/kotlinx.serialization) - JSON serialization and parsing
 - [Kotlinx DateTime](https://github.com/Kotlin/kotlinx-datetime) - date/time models
@@ -70,10 +71,6 @@ To install the Git hooks for commit checks and automatic issue prefixes, simply 
 4. It is important to ensure that the java in the project (Project structure) 
    matches the java in JAVA_HOME (environment variables)
 
-### Geminio templates - creates boilerplate code
-1. Read installation instruction root/geminio/SETUP.MD
-2. Read user instruction  root/geminio/HOW_TO_USE.MD
-
 ### Compose detekt rules docs
 https://mrmans0n.github.io/compose-rules/
 
@@ -83,7 +80,7 @@ https://mrmans0n.github.io/compose-rules/
 ```
 MIT License
 
-Copyright (c) 2023 MobileUp
+Copyright (c) 2026 MobileUp
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

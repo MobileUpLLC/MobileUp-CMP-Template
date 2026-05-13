@@ -1,0 +1,18 @@
+{
+  "pokemon": [
+    {
+      "pokemon": {
+        "name": "charmander",
+        "url": "https://pokeapi.co/api/v2/pokemon/4/"
+      },
+      "slot": 1
+    },
+    {
+      "pokemon": {
+        "name": "ponyta",
+        "url": "https://pokeapi.co/api/v2/pokemon/77/"
+      },
+      "slot": 1
+    }
+  ]
+}

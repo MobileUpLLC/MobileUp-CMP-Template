@@ -1,0 +1,18 @@
+{
+  "pokemon": [
+    {
+      "pokemon": {
+        "name": "squirtle",
+        "url": "https://pokeapi.co/api/v2/pokemon/7/"
+      },
+      "slot": 1
+    },
+    {
+      "pokemon": {
+        "name": "psyduck",
+        "url": "https://pokeapi.co/api/v2/pokemon/54/"
+      },
+      "slot": 1
+    }
+  ]
+}

@@ -1,57 +1,108 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.convetion.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
 }
 
-android {
-    buildFeatures {
-        buildConfig = true
+kotlin {
+    android {
+        namespace = "ru.mobileup.template.core"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        androidResources {
+            enable = true
+        }
+
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
     }
 
-    namespace = "ru.mobileup.template.core"
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    sourceSets {
+        commonMain.dependencies {
+            // Kotlin
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.coroutines.core)
+
+            // UI
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.material.icons)
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.compose.components.resources)
+
+            // Architecture
+            implementation(libs.bundles.decompose)
+            implementation(libs.bundles.replica.shared)
+            implementation(libs.form.validation)
+
+            // DI
+            implementation(libs.koin)
+
+            // Logging
+            implementation(libs.logger.kermit)
+
+            // Network
+            implementation(libs.bundles.ktor.shared)
+            implementation(libs.ktorfit.lib)
+        }
+
+        androidMain.dependencies {
+            // Kotlin
+            implementation(libs.coroutines.android)
+
+            // UI
+            implementation(libs.activity.compose)
+
+            // Network
+            implementation(libs.ktor.okhttp)
+            implementation(libs.replica.android.network)
+
+            // Security
+            implementation(libs.security.crypto)
+            implementation(libs.security.crypto.ktx)
+
+            // Permissions
+            implementation(libs.bundles.moko.permissions)
+        }
+
+        iosMain.dependencies {
+            api(libs.ktor.darwin)
+
+            // Permissions
+            implementation(libs.bundles.moko.permissions)
+        }
+    }
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "ru.mobileup.template.core.generated.resources"
+}
+
+ktorfit {
+    compilerPluginVersion.set(libs.versions.ktorfitCompiler.get())
+}
+
+composeCompiler {
+    stabilityConfigurationFiles.add(
+        rootProject.layout.projectDirectory.file("stability_config.conf")
+    )
 }
 
 dependencies {
-    ksp(libs.ktorfit.ksp)
-
-    // Kotlin
-    implementation(libs.kotlinx.datetime)
-    implementation(libs.coroutines.core)
-    implementation(libs.coroutines.android)
-
-    // UI
-    implementation(libs.bundles.compose)
-    implementation(libs.compose.material.icons)
-    // TODO(Alpha version is required due to the usage of SecureTextField, remove when a stable release is available)
-    implementation("androidx.compose.material3:material3:1.4.0-alpha12")
-    implementation(libs.bundles.accompanist)
-
-    // DI
-    implementation(libs.koin)
-
-    // Logging
-    implementation(libs.logger.kermit)
-
-    // Network
-    implementation(libs.bundles.ktor)
-    implementation(libs.ktorfit.lib)
-
-    implementation(libs.security.crypto)
-    implementation(libs.security.crypto.ktx)
-
-    // Architecture
-    implementation(libs.bundles.decompose)
-    implementation(libs.bundles.replica)
-    api(libs.moko.resources)
-    implementation(libs.moko.resourcesCompose)
-
-    implementation(libs.form.validation)
-
-    // Debugging
-    debugImplementation(libs.chucker)
-    debugImplementation(libs.bundles.hyperion)
-    debugImplementation(libs.replica.devtools)
+    androidRuntimeClasspath(libs.compose.uiTooling)
 }

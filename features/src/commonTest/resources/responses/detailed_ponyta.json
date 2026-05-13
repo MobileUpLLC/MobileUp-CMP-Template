@@ -1,0 +1,15 @@
+{
+  "height": 10,
+  "id": "77",
+  "name": "ponyta",
+  "types": [
+    {
+      "slot": 1,
+      "type": {
+        "name": "fire",
+        "url": "https://pokeapi.co/api/v2/pokemon/77/"
+      }
+    }
+  ],
+  "weight": 300
+}

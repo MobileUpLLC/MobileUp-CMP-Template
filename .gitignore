@@ -17,3 +17,14 @@ captures/
 
 # Kotlin
 .kotlin/
+
+# iOS
+*.generated.swift
+**/xcuserdata/
+DerivedData/
+/.derivedData/
+*.xcuserstate
+*.xcbkptlist
+**/.swiftpm/
+**/SourcePackages/
+*Info.plist

@@ -2,85 +2,161 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 NEW_ID="$1"
+GRADLE_FILE="$PROJECT_ROOT/androidApp/build.gradle.kts"
+
+escape_sed_pattern() {
+  printf '%s' "$1" | sed -e 's/[][\\/.*^$|?+(){}]/\\&/g'
+}
+
+escape_sed_replacement() {
+  printf '%s' "$1" | sed -e 's/[&|\\]/\\&/g'
+}
+
+validate_application_id() {
+  local app_id="$1"
+
+  if [[ ! "$app_id" =~ ^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$ ]]; then
+    echo "❌ Error: Invalid application ID '$app_id'."
+    echo "Expected format: segment.segment..., for example: com.example.app"
+    exit 1
+  fi
+}
+
+replace_in_file() {
+  local file="$1"
+  local temp_file
+
+  temp_file="$(mktemp)"
+  sed \
+    -e "s|$OLD_ID_PATTERN|$NEW_ID_REPLACEMENT|g" \
+    -e "s|$OLD_DIR_PATTERN|$NEW_DIR_REPLACEMENT|g" \
+    "$file" > "$temp_file"
+
+  if ! cmp -s "$file" "$temp_file"; then
+    mv "$temp_file" "$file"
+    UPDATED_FILES=$((UPDATED_FILES + 1))
+    echo "↪ Updated ${file#$PROJECT_ROOT/}"
+  else
+    rm -f "$temp_file"
+  fi
+}
+
+collect_project_files() {
+  if git -C "$PROJECT_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git -C "$PROJECT_ROOT" ls-files -z
+  else
+    find "$PROJECT_ROOT" \
+      \( \
+        -path "$PROJECT_ROOT/.git" -o \
+        -path "$PROJECT_ROOT/.gradle" -o \
+        -path "$PROJECT_ROOT/.idea" -o \
+        -path "$PROJECT_ROOT/.derivedData" -o \
+        -path "*/build" \
+      \) -prune \
+      -o -type f -print0
+  fi
+}
 
 if [[ -z "$NEW_ID" ]]; then
   echo "Usage: $0 new.application.id"
   exit 1
 fi
 
-echo "Changing application ID..."
-echo "Reading old applicationId from app/build.gradle..."
-
-# Determine which Gradle file to use
-GRADLE_FILE="app/build.gradle"
-[[ ! -f "$GRADLE_FILE" ]] && GRADLE_FILE="app/build.gradle.kts"
+validate_application_id "$NEW_ID"
 
 if [[ ! -f "$GRADLE_FILE" ]]; then
-  echo "❌ Error: Neither app/build.gradle nor app/build.gradle.kts found."
+  echo "❌ Error: androidApp/build.gradle.kts not found."
   exit 1
 fi
 
-# Extract old applicationId
-OLD_ID=$(grep -m 1 'applicationId' "$GRADLE_FILE" | sed -E 's/.*applicationId[[:space:]]*=?[[:space:]]*"([^"]+)".*/\1/')
+cd "$PROJECT_ROOT"
+
+echo "Changing application ID..."
+echo "Reading old applicationId from androidApp/build.gradle.kts..."
+
+OLD_ID="$(sed -nE 's/.*applicationId[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' "$GRADLE_FILE" | head -n 1)"
 
 if [[ -z "$OLD_ID" ]]; then
   echo "❌ Error: Could not extract applicationId from $GRADLE_FILE"
   exit 1
 fi
 
+if [[ "$OLD_ID" == "$NEW_ID" ]]; then
+  echo "ℹ️ Application ID is already set to <$NEW_ID>."
+  exit 0
+fi
+
 echo "Renaming package from $OLD_ID to $NEW_ID..."
 
 OLD_DIR=${OLD_ID//./\/}
 NEW_DIR=${NEW_ID//./\/}
+OLD_ID_PATTERN="$(escape_sed_pattern "$OLD_ID")"
+NEW_ID_REPLACEMENT="$(escape_sed_replacement "$NEW_ID")"
+OLD_DIR_PATTERN="$(escape_sed_pattern "$OLD_DIR")"
+NEW_DIR_REPLACEMENT="$(escape_sed_replacement "$NEW_DIR")"
+UPDATED_FILES=0
+MOVED_DIRECTORIES=0
+SOURCE_DIRECTORIES=(
+  "$PROJECT_ROOT/androidApp"
+  "$PROJECT_ROOT/core"
+  "$PROJECT_ROOT/shared"
+  "$PROJECT_ROOT/features"
+)
+TEXT_EXTENSIONS=(
+  "kt"
+  "java"
+  "kts"
+  "gradle"
+  "xml"
+  "xcconfig"
+  "pbxproj"
+  "plist"
+  "swift"
+)
 
-replace_safe() {
-  local pattern="$1"
-  local file="$2"
-
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "$pattern" "$file"
-  else
-    sed -i "$pattern" "$file"
-  fi
-}
-
-# Replace in all relevant files
 echo "Replacing occurrences in source files and build scripts..."
-grep -rl "$OLD_ID" . \
-  --include="*.kt" \
-  --include="*.java" \
-  --include="*.xml" \
-  --include="*.gradle" \
-  --include="*.gradle.kts" | while read -r file; do
+while IFS= read -r -d '' file; do
+  should_process=false
 
-  grep -q 'project\.file(".*'"$OLD_DIR"'.*")' "$file" && {
-    echo "↪ Updating path in $file"
-    replace_safe "s|$OLD_DIR|$NEW_DIR|g" "$file"
-  }
+  for extension in "${TEXT_EXTENSIONS[@]}"; do
+    if [[ "$file" == *."$extension" ]]; then
+      should_process=true
+      break
+    fi
+  done
 
-  replace_safe "s/$OLD_ID/$NEW_ID/g" "$file"
-done
+  if [[ "$should_process" == true ]] && grep -F -q -e "$OLD_ID" -e "$OLD_DIR" "$file"; then
+    replace_in_file "$file"
+  fi
+done < <(
+  collect_project_files
+)
 
-# Move Java directories
-echo "Moving Java source directories..."
-find . -type d -path "*/src/*/java/$OLD_DIR" | while read -r dir; do
-  new_path=$(echo "$dir" | sed "s|$OLD_DIR|$NEW_DIR|g")
+echo "Moving source package directories..."
+while IFS= read -r -d '' dir; do
+  new_path="${dir%/$OLD_DIR}/$NEW_DIR"
   mkdir -p "$(dirname "$new_path")"
   mv "$dir" "$new_path"
-done
+  MOVED_DIRECTORIES=$((MOVED_DIRECTORIES + 1))
+  echo "↪ Moved ${dir#$PROJECT_ROOT/} -> ${new_path#$PROJECT_ROOT/}"
+done < <(
+  find "${SOURCE_DIRECTORIES[@]}" -type d \
+    \( -path "*/src/*/kotlin/$OLD_DIR" -o -path "*/src/*/java/$OLD_DIR" \) \
+    -print0
+)
 
-# Move Kotlin directories
-echo "Moving Kotlin source directories..."
-find . -type d -path "*/src/*/kotlin/$OLD_DIR" | while read -r dir; do
-  new_path=$(echo "$dir" | sed "s|$OLD_DIR|$NEW_DIR|g")
-  mkdir -p "$(dirname "$new_path")"
-  mv "$dir" "$new_path"
-done
-
-# Clean up empty folders
 echo "Removing empty source directories..."
-find . -path "*/src/*" -type d -empty -delete
+find "${SOURCE_DIRECTORIES[@]}" -depth -type d \
+  \( -path "*/src/*/kotlin/*" -o -path "*/src/*/java/*" \) \
+  -empty -delete
 
-echo "✅ Package name successfully changed from <$OLD_ID> to <$NEW_ID>."
+echo "✅ Package name successfully changed."
+echo "Old ID: $OLD_ID"
+echo "New ID: $NEW_ID"
+echo "Updated files: $UPDATED_FILES"
+echo "Moved directories: $MOVED_DIRECTORIES"
 echo "👉 Please sync with Gradle and rebuild the project."
