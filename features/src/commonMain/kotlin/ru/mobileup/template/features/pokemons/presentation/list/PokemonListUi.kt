@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.mobileup.template.core.theme.AppTheme
-import ru.mobileup.template.core.widget.AppToolbar
+import ru.mobileup.template.core.widget.toolbar.AppToolbar
 import ru.mobileup.template.core.utils.plus
 import ru.mobileup.template.core.widget.EmptyPlaceholder
 import ru.mobileup.template.core.widget.PullRefreshLceWidget

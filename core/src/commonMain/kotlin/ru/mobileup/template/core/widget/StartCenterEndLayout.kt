@@ -7,6 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import kotlin.math.max
 
+/**
+ * Places start and end content at the layout edges while keeping center content visually centered
+ * whenever there is enough horizontal space. If side content grows too wide, the center content is
+ * placed within the remaining space and shifted just enough to avoid overlap.
+ */
 @Composable
 internal fun StartCenterEndLayout(
     modifier: Modifier = Modifier,
@@ -22,6 +27,8 @@ internal fun StartCenterEndLayout(
             Box { end?.invoke(this) }
         },
         measurePolicy = { measurables, constraints ->
+            // Keep each side from consuming more than half the width so the center slot always gets
+            // a meaningful measurement pass.
             val sideConstraints = constraints.copy(
                 minWidth = 0,
                 maxWidth = constraints.maxWidth / 2
@@ -48,6 +55,7 @@ internal fun StartCenterEndLayout(
             val centeredX = layoutWidth / 2 - centerPlaceable.width / 2
             val minCenterX = startPlaceable.width
             val maxCenterX = layoutWidth - endPlaceable.width - centerPlaceable.width
+            // Prefer true center alignment, but clamp it into the free space between side slots.
             val centerX = when {
                 maxCenterX < minCenterX -> minCenterX
                 else -> centeredX.coerceIn(minCenterX, maxCenterX)

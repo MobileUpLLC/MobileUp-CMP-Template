@@ -30,8 +30,8 @@ import org.jetbrains.compose.resources.stringResource
 import ru.mobileup.template.core.generated.resources.common_retry
 import ru.mobileup.template.core.theme.AppTheme
 import ru.mobileup.template.core.theme.custom.CustomTheme
-import ru.mobileup.template.core.widget.AppToolbar
-import ru.mobileup.template.core.widget.AppToolbarTitleAlignment
+import ru.mobileup.template.core.widget.toolbar.AppToolbar
+import ru.mobileup.template.core.widget.toolbar.AppToolbarTitleAlignment
 import ru.mobileup.template.core.widget.PullRefreshLceWidget
 import ru.mobileup.template.features.generated.resources.Res
 import ru.mobileup.template.features.generated.resources.pokemons_height
