@@ -8,7 +8,7 @@ Hi! This is a template for initializing a Compose Multiplatform project in [Mobi
 After cloning the template:
 
 1. Run the setup script to configure your application ID and JIRA key:  
-   `./scripts/setup-project <new.application.id> <JIRA_PROJECT_KEY>`
+   `./scripts/setup-project <new.application.id> <JIRA_PROJECT_KEY>` [for Windows see](#calling-scripts-for-windows)
 2. Update `AGENTS.md` for your concrete product context.
 3. Replace application name and icon with project-specific assets.
 4. Remove the demo `pokemons` feature and related wiring.
@@ -60,8 +60,16 @@ Xcode project, SwiftUI entry point, assets, iOS-specific integrations, and launc
 
 ### Git hooks
 To install the Git hooks for commit checks and automatic issue prefixes, simply run:
+`./scripts/setup-git-hooks` [for Windows see](#calling-scripts-for-windows)
 
-`./scripts/setup-git-hooks`
+### Calling scripts for Windows
+1. Install [Git Bash](https://gitforwindows.org/)
+2. Go to your project folder and open Git Bash here (right click)
+3. If your pre-commit failed by OUTPUT_MODULE_GRAPH_GENERATE.
+   Download and install [Graphviz](https://graphviz.org/download/) for Windows. 
+   During installation, select "Add Graphviz to the system PATH for all users." and Reboot.
+4. It is important to ensure that the java in the project (Project structure) 
+   matches the java in JAVA_HOME (environment variables)
 
 ### Compose detekt rules docs
 https://mrmans0n.github.io/compose-rules/
