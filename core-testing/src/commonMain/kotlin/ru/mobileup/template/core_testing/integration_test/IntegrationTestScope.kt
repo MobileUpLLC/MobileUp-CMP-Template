@@ -1,11 +1,13 @@
-package ru.mobileup.template.core_testing.scope
+package ru.mobileup.template.core_testing.integration_test
 
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import io.kotest.core.test.TestScope
 import ru.mobileup.template.core.ComponentFactory
-import ru.mobileup.template.core_testing.message.data.TestMessageService
 import ru.mobileup.template.core_testing.network.MockServer
-import ru.mobileup.template.core_testing.utils.TestComponentContext
+import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
+import ru.mobileup.template.core_testing.test_services.TestExternalAppService
+import ru.mobileup.template.core_testing.test_services.TestMessageService
+import ru.mobileup.template.core_testing.test_services.TestPermissionService
 import kotlin.time.Duration
 
 /**
@@ -15,7 +17,10 @@ import kotlin.time.Duration
  */
 interface IntegrationTestScope : TestScope {
     val mockServer: MockServer
-    val testMessageService: TestMessageService
+    val messageService: TestMessageService
+    val permissionService: TestPermissionService
+    val externalAppService: TestExternalAppService
+    val networkConnectivityProvider: TestNetworkConnectivityProvider
 
     /**
      * Advances virtual time until no pending tasks remain.

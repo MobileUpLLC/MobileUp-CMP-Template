@@ -14,17 +14,16 @@ class MockServer {
     private val mutex = Mutex()
     private val rules = mutableListOf<MockRule>()
     private val recordedRequests = mutableListOf<HttpRequest>()
+    private val unmatchedRequests = mutableListOf<HttpRequest>()
 
     /**
-     * Enqueues one-time responses for requests matching [matcher].
+     * Enqueues one-time response for requests matching [matcher].
      *
      * Each response is consumed by exactly one matching request.
      */
-    suspend fun enqueue(matcher: RequestMatcher, vararg responses: HttpResponse) {
+    suspend fun enqueue(matcher: RequestMatcher, response: HttpResponse) {
         mutex.withLock {
-            responses.forEach { response ->
-                rules.add(MockRule(matcher, response))
-            }
+            rules.add(MockRule(matcher, response))
         }
     }
 
@@ -41,13 +40,24 @@ class MockServer {
         }
     }
 
+    /**
+     * Fails if a test left unused responses or triggered requests without a matching response.
+     */
+    suspend fun verify() {
+        val errorMessage = mutex.withLock {
+            buildVerificationErrorMessage()
+        }
+        check(errorMessage == null) { errorMessage.orEmpty() }
+    }
+
     internal suspend fun handleRequest(request: HttpRequest): HttpResponse {
         val response = mutex.withLock {
             recordedRequests.add(request)
 
             val ruleIndex = rules.indexOfFirst { it.matcher.matches(request) }
-            check(ruleIndex >= 0) {
-                "No mock response enqueued for request: ${request.method.value} ${request.fullUrl}"
+            if (ruleIndex < 0) {
+                unmatchedRequests.add(request)
+                error("No mock response enqueued for request: ${request.toDebugString()}")
             }
 
             rules.removeAt(ruleIndex).response
@@ -59,6 +69,32 @@ class MockServer {
         }
 
         return response
+    }
+
+    private fun buildVerificationErrorMessage(): String? {
+        if (unmatchedRequests.isEmpty() && rules.isEmpty()) return null
+
+        return buildString {
+            appendLine("MockServer verification failed.")
+
+            if (unmatchedRequests.isNotEmpty()) {
+                appendLine("Unmatched requests:")
+                unmatchedRequests.forEach { request ->
+                    appendLine("- ${request.toDebugString()}")
+                }
+            }
+
+            if (rules.isNotEmpty()) {
+                appendLine("Unused mock responses:")
+                rules.forEach { rule ->
+                    appendLine("- ${rule.matcher}")
+                }
+            }
+        }.trimEnd()
+    }
+
+    private fun HttpRequest.toDebugString(): String {
+        return "${method.value} $fullUrl"
     }
 
     private data class MockRule(

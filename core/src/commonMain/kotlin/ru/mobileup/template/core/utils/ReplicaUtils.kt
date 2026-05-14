@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import me.aartikov.replica.common.ReplicaObserverHost
 import me.aartikov.replica.decompose.replicaObserverHost
 import me.aartikov.replica.single.Loadable
 import me.aartikov.replica.single.Replica
@@ -40,7 +41,7 @@ fun <T : Any> Replica<T>.observe(
     componentContext: ComponentContext,
     errorHandler: ErrorHandler
 ): StateFlow<LoadableState<T>> {
-    val observer = observe(componentContext.lifecycle.replicaObserverHost())
+    val observer = observe(componentContext.replicaObserverHostWithProvidedDispatcher())
 
     observer
         .loadingErrorFlow
@@ -63,6 +64,10 @@ fun <T : Any> Replica<T>.observe(
         .launchIn(componentContext.componentScope)
 
     return stateFlow
+}
+
+fun ComponentContext.replicaObserverHostWithProvidedDispatcher(): ReplicaObserverHost {
+    return lifecycle.replicaObserverHost(componentCoroutineDispatcher)
 }
 
 private fun <T : Any> Loadable<T>.toLoadableState(showDebugInfo: Boolean): LoadableState<T> {

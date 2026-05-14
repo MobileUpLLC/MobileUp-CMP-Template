@@ -1,135 +1,156 @@
 package ru.mobileup.template.features.pokemons.list
 
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import io.ktor.http.HttpStatusCode
-import ru.mobileup.template.core_testing.network.HttpResponse
-import ru.mobileup.template.core_testing.network.RequestMatcher
-import ru.mobileup.template.core_testing.network.containsPath
 import ru.mobileup.template.core_testing.utils.OutputCapturer
 import ru.mobileup.template.features.pokemons.TestPokemons
 import ru.mobileup.template.features.pokemons.createPokemonListComponent
 import ru.mobileup.template.features.pokemons.domain.PokemonType
+import ru.mobileup.template.features.pokemons.enqueuePokemonList
 import ru.mobileup.template.features.pokemons.presentation.list.PokemonListComponent
 import ru.mobileup.template.features.utils.integrationTest
 import kotlin.time.Duration.Companion.seconds
 
-private val FIRE_TYPE_ID = TestPokemons.fireTypeId.value
-private val WATER_TYPE_ID = TestPokemons.waterTypeId.value
-
 class PokemonListComponentTest : FunSpec({
 
-    context("Pokemon list screen") {
+    integrationTest("loads pokemon list successfully") {
+        // 🛠️ Prepare a successful pokemon list response
+        mockServer.enqueuePokemonList(TestPokemons.Lists.fire)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
 
-        integrationTest("loads the default type pokemon list") {
-            // Prepare the default type response
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/$FIRE_TYPE_ID"),
-                HttpResponse(TestPokemons.firePokemonsJson())
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-            // Wait for the initial loading to complete
-            advanceUntilIdle()
+        // ✅ Verify loaded pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe TestPokemons.Lists.fire.expected
+    }
 
-            // Verify the default type list is loaded
-            component.pokemonsState.value.loading shouldBe false
-            component.pokemonsState.value.data shouldBe TestPokemons.firePokemons
-            component.pokemonsState.value.error shouldBe null
-        }
+    integrationTest("emits pokemon details output when a pokemon is clicked") {
+        // 🛠️ Prepare a successful pokemon list response
+        mockServer.enqueuePokemonList(TestPokemons.Lists.fire)
+        val capturer = OutputCapturer<PokemonListComponent.Output>()
+        val component = setupComponent { createPokemonListComponent(it, capturer) }
 
-        integrationTest("emits pokemon details output when a pokemon is clicked") {
-            // Prepare the loaded pokemon list
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/$FIRE_TYPE_ID"),
-                HttpResponse(TestPokemons.firePokemonsJson())
-            )
-            val capturer = OutputCapturer<PokemonListComponent.Output>()
-            val component = setupComponent { createPokemonListComponent(it, capturer) }
-            advanceUntilIdle()
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-            // Click a pokemon item in the list
-            val pokemonId = TestPokemons.detailedPonyta.id
-            component.onPokemonClick(pokemonId)
+        // ▶️ Click a pokemon item in the list
+        val pokemonId = TestPokemons.Details.ponyta.pokemonId
+        component.onPokemonClick(pokemonId)
 
-            // Verify the pokemon details output is emitted
-            capturer.last shouldBe PokemonListComponent.Output.PokemonDetailsRequested(pokemonId)
-        }
+        // ✅ Verify the pokemon details output is emitted
+        capturer.last shouldBe PokemonListComponent.Output.PokemonDetailsRequested(pokemonId)
+    }
 
-        integrationTest("shows loading during refresh") {
-            // Prepare initial data and a delayed refresh response
-            val firePokemonsJson = TestPokemons.firePokemonsJson()
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/$FIRE_TYPE_ID"),
-                HttpResponse(firePokemonsJson),
-                HttpResponse(
-                    firePokemonsJson,
-                    delay = 1.seconds
-                )
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
-            advanceUntilIdle()
+    integrationTest("shows error when pokemon list loading fails") {
+        // 🛠️ Prepare a failed pokemon list response
+        mockServer.enqueuePokemonList(TestPokemons.Lists.fire, isError = true)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
 
-            // Refresh the current list
-            component.onRefresh()
-            runCurrent()
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-            // Verify loading is shown during refresh
-            component.pokemonsState.value.loading shouldBe true
+        // ✅ Verify failed pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.data shouldBe null
+        component.pokemonsState.value.error.shouldNotBeNull()
+    }
 
-            // Wait for refresh to complete
-            advanceUntilIdle()
+    integrationTest("shows loading during refresh and updates pokemon list") {
+        // 🛠️ Prepare initial data and a delayed refresh response
+        mockServer.enqueuePokemonList(TestPokemons.Lists.fire)
+        mockServer.enqueuePokemonList(TestPokemons.Lists.fireUpdated, delay = 1.seconds)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
 
-            // Verify loading is hidden after refresh
-            component.pokemonsState.value.loading shouldBe false
-        }
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-        integrationTest("loads selected type pokemon list when type is clicked") {
-            // Prepare responses for default and selected types
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/$FIRE_TYPE_ID"),
-                HttpResponse(TestPokemons.firePokemonsJson())
-            )
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/$WATER_TYPE_ID"),
-                HttpResponse(TestPokemons.waterPokemonsJson())
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
-            advanceUntilIdle()
+        // ✅ Verify loaded pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe TestPokemons.Lists.fire.expected
 
-            // Select another type and wait for loading
-            component.onTypeClick(PokemonType.Water.id)
-            advanceUntilIdle()
+        // ▶️ Refresh pokemon list
+        component.onRefresh()
+        runCurrent()
 
-            // Verify selected type and list are updated
-            component.selectedTypeId.value shouldBe PokemonType.Water.id
-            component.pokemonsState.value.data shouldBe TestPokemons.waterPokemons
-        }
+        // ✅ Verify loading is shown during refresh
+        component.pokemonsState.value.loading shouldBe true
 
-        integrationTest("reloads pokemon list when refresh is requested after error") {
-            // Prepare a failed initial response and a successful retry response
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/$FIRE_TYPE_ID"),
-                HttpResponse(status = HttpStatusCode.NotFound),
-                HttpResponse(TestPokemons.firePokemonsJson(), delay = 1.seconds)
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
-            advanceUntilIdle()
+        // ▶️ Wait for refresh to complete
+        advanceUntilIdle()
 
-            // Refresh loading the current list
-            component.onRefresh()
-            runCurrent()
+        // ✅ Verify updated pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe TestPokemons.Lists.fireUpdated.expected
+    }
 
-            // Verify loading starts again
-            component.pokemonsState.value.loading shouldBe true
+    integrationTest("loads selected type pokemon list while keeping previous data") {
+        // 🛠️ Prepare successful default and delayed selected pokemon list responses
+        mockServer.enqueuePokemonList(TestPokemons.Lists.fire)
+        mockServer.enqueuePokemonList(TestPokemons.Lists.water, delay = 1.seconds)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
 
-            // Wait for retry loading to complete
-            advanceUntilIdle()
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-            // Verify the list is loaded after retry
-            component.pokemonsState.value.loading shouldBe false
-            component.pokemonsState.value.error shouldBe null
-            component.pokemonsState.value.data shouldBe TestPokemons.firePokemons
-        }
+        // ✅ Verify loaded default pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe TestPokemons.Lists.fire.expected
+
+        // ▶️ Select another pokemon type
+        component.onTypeClick(PokemonType.Water.id)
+        runCurrent()
+
+        // ✅ Verify selected pokemon type is changed
+        component.selectedTypeId.value shouldBe PokemonType.Water.id
+
+        // ✅ Verify previous pokemon list is kept while selected type is loading
+        component.pokemonsState.value.loading shouldBe true
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe TestPokemons.Lists.fire.expected
+
+        // ▶️ Wait for selected type loading to complete
+        advanceUntilIdle()
+
+        // ✅ Verify loaded selected pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe TestPokemons.Lists.water.expected
+    }
+
+    integrationTest("reloads pokemon list after error") {
+        // 🛠️ Prepare a failed initial response and a successful retry response
+        mockServer.enqueuePokemonList(TestPokemons.Lists.fire, isError = true)
+        mockServer.enqueuePokemonList(TestPokemons.Lists.fire, delay = 1.seconds)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
+
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
+
+        // ✅ Verify failed pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.data shouldBe null
+        component.pokemonsState.value.error.shouldNotBeNull()
+
+        // ▶️ Refresh pokemon list
+        component.onRefresh()
+        runCurrent()
+
+        // ✅ Verify loading starts again
+        component.pokemonsState.value.loading shouldBe true
+
+        // ▶️ Wait for retry loading to complete
+        advanceUntilIdle()
+
+        // ✅ Verify loaded pokemon list state after retry
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe TestPokemons.Lists.fire.expected
     }
 })

@@ -1,54 +1,116 @@
 package ru.mobileup.template.features.pokemons
 
+import io.ktor.http.HttpStatusCode
+import ru.mobileup.template.core_testing.network.HttpResponse
+import ru.mobileup.template.core_testing.network.MockServer
+import ru.mobileup.template.core_testing.network.RequestMatcher
+import ru.mobileup.template.core_testing.network.containsPath
+import ru.mobileup.template.core_testing.utils.readTestResource
 import ru.mobileup.template.features.pokemons.domain.DetailedPokemon
 import ru.mobileup.template.features.pokemons.domain.Pokemon
 import ru.mobileup.template.features.pokemons.domain.PokemonId
 import ru.mobileup.template.features.pokemons.domain.PokemonType
 import ru.mobileup.template.features.pokemons.domain.PokemonTypeId
-import ru.mobileup.template.features.utils.readTestResource
+import kotlin.time.Duration
 
 object TestPokemons {
-    val charmanderId = PokemonId("4")
-    val ponytaId = PokemonId("77")
-    val ponytaTypeId = PokemonTypeId("77")
-    val fireTypeId = PokemonType.Fire.id
-    val waterTypeId = PokemonType.Water.id
-    val squirtleId = PokemonId("7")
-    val psyduckId = PokemonId("54")
 
-    suspend fun firePokemonsJson(): String = readTestResource("responses/fire_pokemons.json")
-
-    val firePokemons = listOf(
-        Pokemon(id = charmanderId, name = "Charmander"),
-        Pokemon(id = ponytaId, name = "Ponyta")
+    data class PokemonListFixture(
+        val typeId: PokemonTypeId,
+        val resourcePath: String,
+        val expected: List<Pokemon>
     )
 
-    suspend fun waterPokemonsJson(): String = readTestResource("responses/water_pokemons.json")
-
-    val waterPokemons = listOf(
-        Pokemon(id = squirtleId, name = "Squirtle"),
-        Pokemon(id = psyduckId, name = "Psyduck")
+    data class PokemonDetailsFixture(
+        val pokemonId: PokemonId,
+        val resourcePath: String,
+        val expected: DetailedPokemon
     )
 
-    suspend fun detailedPonytaJson(): String = readTestResource("responses/detailed_ponyta.json")
-    suspend fun detailedPonytaUpdatedJson(): String =
-        readTestResource("responses/detailed_ponyta_updated.json")
+    object Lists {
+        val fire = PokemonListFixture(
+            typeId = PokemonType.Fire.id,
+            resourcePath = "responses/fire_pokemons.json",
+            expected = listOf(
+                Pokemon(id = PokemonId("4"), name = "Charmander"),
+                Pokemon(id = PokemonId("77"), name = "Ponyta")
+            )
+        )
 
-    val detailedPonyta = DetailedPokemon(
-        id = ponytaId,
-        name = "Ponyta",
-        height = 1f,
-        weight = 30f,
-        imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${ponytaId.value}.png",
-        types = listOf(PokemonType(ponytaTypeId, "Fire"))
+        val fireUpdated = PokemonListFixture(
+            typeId = PokemonType.Fire.id,
+            resourcePath = "responses/fire_pokemons_updated.json",
+            expected = listOf(
+                Pokemon(id = PokemonId("4"), name = "Charmander"),
+                Pokemon(id = PokemonId("77"), name = "Ponyta updated")
+            )
+        )
+
+        val water = PokemonListFixture(
+            typeId = PokemonType.Water.id,
+            resourcePath = "responses/water_pokemons.json",
+            expected = listOf(
+                Pokemon(id = PokemonId("7"), name = "Squirtle"),
+                Pokemon(id = PokemonId("54"), name = "Psyduck")
+            )
+        )
+    }
+
+    object Details {
+        val ponyta = PokemonDetailsFixture(
+            pokemonId = PokemonId("77"),
+            resourcePath = "responses/detailed_ponyta.json",
+            expected = DetailedPokemon(
+                id = PokemonId("77"),
+                name = "Ponyta",
+                height = 1f,
+                weight = 30f,
+                imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/77.png",
+                types = listOf(PokemonType(PokemonTypeId("77"), "Fire"))
+            )
+        )
+
+        val ponytaUpdated = PokemonDetailsFixture(
+            pokemonId = PokemonId("77"),
+            resourcePath = "responses/detailed_ponyta_updated.json",
+            expected = DetailedPokemon(
+                id = PokemonId("77"),
+                name = "Ponyta updated",
+                height = 1.1f,
+                weight = 31f,
+                imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/77.png",
+                types = listOf(PokemonType(PokemonTypeId("77"), "Fire"))
+            )
+        )
+    }
+}
+
+suspend fun MockServer.enqueuePokemonList(
+    fixture: TestPokemons.PokemonListFixture,
+    delay: Duration = Duration.ZERO,
+    isError: Boolean = false
+) {
+    enqueue(
+        matcher = RequestMatcher.containsPath("type/${fixture.typeId.value}"),
+        response = if (isError) {
+            HttpResponse(status = HttpStatusCode.NotFound, delay = delay)
+        } else {
+            HttpResponse(readTestResource(fixture.resourcePath), delay = delay)
+        }
     )
+}
 
-    val detailedPonytaUpdated = DetailedPokemon(
-        id = ponytaId,
-        name = "Ponyta updated",
-        height = 1.1f,
-        weight = 31f,
-        imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${ponytaId.value}.png",
-        types = listOf(PokemonType(ponytaTypeId, "Fire"))
+suspend fun MockServer.enqueuePokemonDetails(
+    fixture: TestPokemons.PokemonDetailsFixture,
+    delay: Duration = Duration.ZERO,
+    isError: Boolean = false
+) {
+    enqueue(
+        matcher = RequestMatcher.containsPath("pokemon/${fixture.pokemonId.value}"),
+        response = if (isError) {
+            HttpResponse(status = HttpStatusCode.NotFound, delay = delay)
+        } else {
+            HttpResponse(readTestResource(fixture.resourcePath), delay = delay)
+        }
     )
 }

@@ -11,11 +11,12 @@ import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.statekeeper.StateKeeperOwner
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.KSerializer
-import me.aartikov.replica.decompose.replicaObserverHost
 
 /**
  * Creates a [ChildStack] with a single active component. Should be used to create a stack for Jetpack Compose preview.
@@ -69,21 +70,16 @@ fun <T : Any> Value<T>.toStateFlow(lifecycle: Lifecycle): StateFlow<T> {
  * Creates a coroutine scope tied to Decompose lifecycle. A scope is canceled when a component is destroyed.
  */
 val ComponentContext.componentScope: CoroutineScope
-    get() = (instanceKeeper.get(ComponentScopeKey) as? CoroutineScopeWrapper)?.scope
-        ?: lifecycle
-            .replicaObserverHost()
+    get() = (instanceKeeper.get(ComponentScopeKey) as? CoroutineScopeHolder)?.scope
+        ?: replicaObserverHostWithProvidedDispatcher()
             .observerCoroutineScope
             .also { newScope ->
-                instanceKeeper.put(ComponentScopeKey, CoroutineScopeWrapper(newScope))
+                instanceKeeper.put(ComponentScopeKey, CoroutineScopeHolder(newScope))
             }
 
 private object ComponentScopeKey
 
-private class CoroutineScopeWrapper(val scope: CoroutineScope) : InstanceKeeper.Instance {
-    override fun onDestroy() {
-        // nothing
-    }
-}
+private class CoroutineScopeHolder(val scope: CoroutineScope) : InstanceKeeper.Instance
 
 /**
  * A helper function to save and restore component state.
@@ -116,8 +112,59 @@ fun <C : Any> StackNavigator<C>.safePush(configuration: C, onComplete: () -> Uni
 }
 
 /**
- * Retrieves the first child of type [C] from the child stack.
+ * Returns the currently active child instance from the child stack.
+ */
+val ChildStack<*, *>.activeChild: Any
+    get() = active.instance
+
+/**
+ * Returns the currently active child instance from the current child stack value.
+ */
+val StateFlow<ChildStack<*, *>>.activeChild: Any
+    get() = value.activeChild
+
+/**
+ * Returns all child instances of type [C] from the child stack.
+ */
+inline fun <reified C : Any> ChildStack<*, *>.getChildren(): List<C> =
+    items.map { it.instance }.filterIsInstance<C>()
+
+/**
+ * Returns all child instances of type [C] from the current child stack value.
+ */
+inline fun <reified C : Any> StateFlow<ChildStack<*, *>>.getChildren(): List<C> =
+    value.getChildren<C>()
+
+/**
+ * Retrieves the last child of type [C] from the child stack.
  * It will return `null` if no matching child is found.
  */
 inline fun <reified C : Any> ChildStack<*, *>.getChild(): C? =
-    items.map { it.instance }.filterIsInstance<C>().lastOrNull()
+    getChildren<C>().lastOrNull()
+
+/**
+ * Retrieves the last child of type [C] from the child stack.
+ * It will return `null` if no matching child is found.
+ */
+inline fun <reified C : Any> StateFlow<ChildStack<*, *>>.getChild(): C? =
+    value.getChild<C>()
+
+/**
+ * Set [CoroutineDispatcher] for testing
+ */
+fun ComponentContext.setComponentCoroutineDispatcher(dispatcher: CoroutineDispatcher) {
+    instanceKeeper.put(
+        key = ComponentCoroutineDispatcherKey,
+        instance = ComponentCoroutineDispatcherHolder(dispatcher)
+    )
+}
+
+val ComponentContext.componentCoroutineDispatcher get() =
+    (instanceKeeper.get(ComponentCoroutineDispatcherKey) as? ComponentCoroutineDispatcherHolder)?.dispatcher
+        ?: Dispatchers.Main.immediate
+
+private object ComponentCoroutineDispatcherKey
+
+private class ComponentCoroutineDispatcherHolder(
+    val dispatcher: CoroutineDispatcher
+) : InstanceKeeper.Instance

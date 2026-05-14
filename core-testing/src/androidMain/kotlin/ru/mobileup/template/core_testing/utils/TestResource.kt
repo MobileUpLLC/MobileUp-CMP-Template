@@ -1,4 +1,4 @@
-package ru.mobileup.template.features.utils
+package ru.mobileup.template.core_testing.utils
 
 actual suspend fun readTestResource(path: String): String {
     val classLoader = Thread.currentThread().contextClassLoader

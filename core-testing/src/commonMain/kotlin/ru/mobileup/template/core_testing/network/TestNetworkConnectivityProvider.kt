@@ -1,7 +1,7 @@
 package ru.mobileup.template.core_testing.network
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import me.aartikov.replica.network.NetworkConnectivityProvider
 
 /**
@@ -12,7 +12,8 @@ import me.aartikov.replica.network.NetworkConnectivityProvider
 class TestNetworkConnectivityProvider : NetworkConnectivityProvider {
 
     private val _connectedFlow = MutableStateFlow(true)
-    override val connectedFlow: StateFlow<Boolean> = _connectedFlow
+
+    override val connectedFlow = _connectedFlow.asStateFlow()
 
     /**
      * Convenient mutable flag used by tests to change connectivity state.

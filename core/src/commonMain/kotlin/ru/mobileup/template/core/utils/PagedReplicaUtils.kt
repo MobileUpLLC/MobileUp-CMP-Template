@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import me.aartikov.replica.decompose.replicaObserverHost
 import me.aartikov.replica.paged.Paged
 import me.aartikov.replica.paged.PagedLoadingStatus
 import me.aartikov.replica.paged.PagedReplica
@@ -33,7 +32,7 @@ fun <T : Any> PagedReplica<T>.observe(
     componentContext: ComponentContext,
     errorHandler: ErrorHandler
 ): StateFlow<PagedState<T>> {
-    val observer = observe(componentContext.lifecycle.replicaObserverHost())
+    val observer = observe(componentContext.replicaObserverHostWithProvidedDispatcher())
 
     observer
         .loadingErrorFlow

@@ -13,26 +13,50 @@ fun interface RequestMatcher {
      */
     companion object : RequestMatcher {
         override fun matches(request: HttpRequest): Boolean = true
+
+        override fun toString(): String = "any request"
     }
 }
 
 /**
  * Extends this matcher with a path contains check.
  */
-fun RequestMatcher.containsPath(value: String) = RequestMatcher { request ->
-    this.matches(request) && request.path.contains(value)
+fun RequestMatcher.containsPath(value: String): RequestMatcher {
+    val baseMatcher = this
+    return requestMatcher("$baseMatcher with path containing \"$value\"") { request ->
+        baseMatcher.matches(request) && request.path.contains(value)
+    }
 }
 
 /**
  * Extends this matcher with an exact path check.
  */
-fun RequestMatcher.exactPath(value: String) = RequestMatcher { request ->
-    this.matches(request) && request.path == value
+fun RequestMatcher.exactPath(value: String): RequestMatcher {
+    val baseMatcher = this
+    return requestMatcher("$baseMatcher with path \"$value\"") { request ->
+        baseMatcher.matches(request) && request.path == value
+    }
 }
 
 /**
  * Extends this matcher with an HTTP method check.
  */
-fun RequestMatcher.method(value: HttpMethod) = RequestMatcher { request ->
-    this.matches(request) && request.method == value
+fun RequestMatcher.method(value: HttpMethod): RequestMatcher {
+    val baseMatcher = this
+    return requestMatcher("$baseMatcher with method ${value.value}") { request ->
+        baseMatcher.matches(request) && request.method == value
+    }
+}
+
+private fun requestMatcher(
+    description: String,
+    matches: (HttpRequest) -> Boolean
+): RequestMatcher {
+    return object : RequestMatcher {
+        override fun matches(request: HttpRequest): Boolean {
+            return matches(request)
+        }
+
+        override fun toString(): String = description
+    }
 }

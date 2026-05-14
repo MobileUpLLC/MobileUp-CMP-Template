@@ -1,4 +1,4 @@
-package ru.mobileup.template.core_testing
+package ru.mobileup.template.core_testing.integration_test
 
 import io.ktor.client.engine.HttpClientEngine
 import kotlinx.coroutines.CoroutineScope
@@ -6,23 +6,31 @@ import kotlinx.coroutines.test.TestDispatcher
 import me.aartikov.replica.client.ReplicaClient
 import me.aartikov.replica.network.NetworkConnectivityProvider
 import org.koin.core.Koin
+import org.koin.core.module.Module
 import org.koin.dsl.module
+import ru.mobileup.template.core.ComponentFactory
 import ru.mobileup.template.core.error_handling.ErrorHandler
 import ru.mobileup.template.core.external_app.ExternalAppService
 import ru.mobileup.template.core.message.data.MessageService
 import ru.mobileup.template.core.network.BackendUrl
 import ru.mobileup.template.core.network.NetworkApiFactory
 import ru.mobileup.template.core.permissions.PermissionService
-import ru.mobileup.template.core_testing.external_app.TestExternalAppService
-import ru.mobileup.template.core_testing.message.data.TestMessageService
 import ru.mobileup.template.core_testing.network.MockServer
 import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
 import ru.mobileup.template.core_testing.network.createMockHttpEngine
-import ru.mobileup.template.core_testing.permissions.TestPermissionService
+import ru.mobileup.template.core_testing.test_services.TestExternalAppService
+import ru.mobileup.template.core_testing.test_services.TestMessageService
+import ru.mobileup.template.core_testing.test_services.TestPermissionService
 
-fun coreTestModule(testDispatcher: TestDispatcher) = module {
-    single<TestDispatcher> { testDispatcher }
+internal fun createKoin(testDispatcher: TestDispatcher, featureModules: List<Module>): Koin {
+    return Koin().apply {
+        loadModules(coreTestModule(testDispatcher) + featureModules)
+        declare(ComponentFactory(this))
+        createEagerInstances()
+    }
+}
 
+private fun coreTestModule(testDispatcher: TestDispatcher) = module {
     single { ErrorHandler(get(), showDebugInfo = false) }
     single<MessageService> { TestMessageService() }
     single<PermissionService> { TestPermissionService() }
@@ -47,6 +55,3 @@ fun coreTestModule(testDispatcher: TestDispatcher) = module {
         )
     }
 }
-
-val Koin.testMessageService: TestMessageService
-    get() = get<MessageService>() as TestMessageService
