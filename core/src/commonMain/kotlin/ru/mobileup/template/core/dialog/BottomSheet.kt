@@ -102,6 +102,8 @@ fun <T : Any> BottomSheet(
             scrimColor = Color.Black.copy(alpha = 0.4f),
             dragHandle = null,
         ) {
+            RegisterBottomSheetWindowToken()
+
             Box(
                 modifier = Modifier.imePadding()
             ) {
@@ -110,3 +112,7 @@ fun <T : Any> BottomSheet(
         }
     }
 }
+
+@Composable
+internal expect fun RegisterBottomSheetWindowToken()
+

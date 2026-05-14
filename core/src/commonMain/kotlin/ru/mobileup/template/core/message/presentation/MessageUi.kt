@@ -72,10 +72,7 @@ private fun MessagePopup(
     Popup(
         offset = IntOffset(0, -bottomPaddingPx),
         alignment = Alignment.BottomCenter,
-        properties = PopupProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false
-        )
+        properties = messagePopupProperties()
     ) {
         Card(
             shape = RoundedCornerShape(8.dp),
@@ -128,6 +125,9 @@ private fun MessageButton(
         color = CustomTheme.colors.button.primary
     )
 }
+
+@Composable
+internal expect fun messagePopupProperties(): PopupProperties
 
 @Preview
 @Composable
