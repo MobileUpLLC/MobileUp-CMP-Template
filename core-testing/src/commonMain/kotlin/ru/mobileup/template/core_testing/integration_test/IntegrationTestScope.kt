@@ -33,11 +33,6 @@ interface IntegrationTestScope : TestScope {
     fun advanceTimeBy(delayTime: Duration)
 
     /**
-     * Executes tasks scheduled for the current virtual time moment.
-     */
-    fun runCurrent()
-
-    /**
      * Creates a component and moves lifecycle to [targetState].
      */
     fun <T> setupComponent(

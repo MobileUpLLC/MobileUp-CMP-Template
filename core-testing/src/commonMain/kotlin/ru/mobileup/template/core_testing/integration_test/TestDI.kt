@@ -1,7 +1,7 @@
 package ru.mobileup.template.core_testing.integration_test
 
 import io.ktor.client.engine.HttpClientEngine
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestDispatcher
 import me.aartikov.replica.client.ReplicaClient
 import me.aartikov.replica.network.NetworkConnectivityProvider
@@ -21,16 +21,26 @@ import ru.mobileup.template.core_testing.network.createMockHttpEngine
 import ru.mobileup.template.core_testing.test_services.TestExternalAppService
 import ru.mobileup.template.core_testing.test_services.TestMessageService
 import ru.mobileup.template.core_testing.test_services.TestPermissionService
+import ru.mobileup.template.core_testing.time.TestTimeProvider
 
-internal fun createKoin(testDispatcher: TestDispatcher, featureModules: List<Module>): Koin {
+internal fun createKoin(
+    testScheduler: TestCoroutineScheduler,
+    testDispatcher: TestDispatcher,
+    replicaBehaviourDispatcher: TestDispatcher,
+    featureModules: List<Module>
+): Koin {
     return Koin().apply {
-        loadModules(coreTestModule(testDispatcher) + featureModules)
+        loadModules(coreTestModule(testScheduler, testDispatcher, replicaBehaviourDispatcher) + featureModules)
         declare(ComponentFactory(this))
         createEagerInstances()
     }
 }
 
-private fun coreTestModule(testDispatcher: TestDispatcher) = module {
+private fun coreTestModule(
+    testScheduler: TestCoroutineScheduler,
+    testDispatcher: TestDispatcher,
+    replicaBehaviourDispatcher: TestDispatcher
+) = module {
     single { ErrorHandler(get(), showDebugInfo = false) }
     single<MessageService> { TestMessageService() }
     single<PermissionService> { TestPermissionService() }
@@ -51,7 +61,9 @@ private fun coreTestModule(testDispatcher: TestDispatcher) = module {
     single {
         ReplicaClient(
             networkConnectivityProvider = get(),
-            coroutineScope = CoroutineScope(testDispatcher),
+            timeProvider = TestTimeProvider(testScheduler),
+            mainDispatcher = testDispatcher,
+            behaviourDispatcher = replicaBehaviourDispatcher
         )
     }
 }

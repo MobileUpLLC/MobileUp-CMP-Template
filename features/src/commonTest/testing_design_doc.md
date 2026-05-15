@@ -52,7 +52,7 @@
 
 Иконки стадий:
 
-- `🛠️` — подготовка данных, моков и тестируемого объекта;
+- `🛠️` — подготовка данных, исходных состояний и тестируемого объекта;
 - `▶️` — действие или продвижение сценария во времени;
 - `✅` — проверка наблюдаемого результата.
 
@@ -62,7 +62,7 @@
 class MyComponentTest : FunSpec({
     context("My screen") {
         integrationTest("loads data successfully") {
-            // 🛠️ Prepare data response
+            // 🛠️ Prepare data for initial loading
             <...настройка моков...>
             <...создание компонента...>
 
@@ -110,7 +110,7 @@ test("calculates pokemon power score") {
 
 ```kotlin
 integrationTest("shows loading during refresh and loads new data") {
-    // 🛠️ Prepare existing data and a delayed refresh response
+    // 🛠️ Prepare initial and refreshed data
     <...начальный сетап...>
 
     // ▶️ Wait for the initial loading to complete
@@ -184,7 +184,6 @@ interface IntegrationTestScope : TestScope {
 
     fun advanceUntilIdle()
     fun advanceTimeBy(delayTime: Duration)
-    fun runCurrent()
 
     // setupComponent helpers
 }
@@ -194,7 +193,7 @@ interface IntegrationTestScope : TestScope {
 
 1. `mockServer` — доступ к тестовому серверу для мокирования сетевых ответов;
 2. `testMessageService` — тестовую реализацию сервиса сообщений;
-3. методы управления виртуальным временем: `advanceUntilIdle()`, `advanceTimeBy()`, `runCurrent()`;
+3. методы управления виртуальным временем: `advanceUntilIdle()`, `advanceTimeBy()`;
 4. хелперы создания компонентов - о них позже.
 
 ---
@@ -222,7 +221,7 @@ interface IntegrationTestScope : TestScope {
 
 Вместо этого мы:
 
-- создаем `StandardTestDispatcher(testScheduler)`;
+- создаем `UnconfinedTestDispatcher(testScheduler)`;
 - передаем его явно через DI во все зависимости, которым нужен диспетчер.
 
 ### Пример реализации
@@ -234,7 +233,6 @@ interface IntegrationTestScope : TestScope {
     
     fun advanceUntilIdle()
     fun advanceTimeBy(delayTime: Duration)
-    fun runCurrent()
 
     // setupComponent helpers
 }
@@ -253,7 +251,6 @@ class IntegrationTestScopeImpl(
 
     override fun advanceUntilIdle() = testScheduler.advanceUntilIdle()
     override fun advanceTimeBy(delayTime: Duration) = testScheduler.advanceTimeBy(delayTime)
-    override fun runCurrent() = testScheduler.runCurrent()
 
     // setupComponent helpers
 }
@@ -264,7 +261,7 @@ suspend fun FunSpecContainerScope.integrationTest(
     block: suspend IntegrationTestScope.() -> Unit
 ) {
     test(name).config(coroutineTestScope = true) {
-        val testDispatcher = StandardTestDispatcher(testCoroutineScheduler)
+        val testDispatcher = UnconfinedTestDispatcher(testCoroutineScheduler)
         val koin = createKoin(testDispatcher, featureModules)
 
         val integrationScope = IntegrationTestScopeImpl(
@@ -406,10 +403,12 @@ integrationTest("stops loading when the screen moves to background") {
 ### Модели и интерфейс
 
 ```kotlin
+val DEFAULT_HTTP_RESPONSE_DELAY: Duration = 500.milliseconds
+
 data class HttpResponse(
     val body: String = "",
     val status: HttpStatusCode = HttpStatusCode.OK,
-    val delay: Duration = Duration.ZERO,
+    val delay: Duration = DEFAULT_HTTP_RESPONSE_DELAY,
     val headers: Map<String, String> = mapOf("Content-Type" to "application/json")
 )
 
@@ -457,6 +456,8 @@ class MockServer {
 - Реализации `RequestMatcher` - приватные. Публично используем только DSL.
 - Каждый `enqueue` должен быть использован ровно один раз. Незамоканные запросы и неиспользованные
   ответы считаются ошибкой теста.
+- Каждый `HttpResponse` по умолчанию задерживается на `DEFAULT_HTTP_RESPONSE_DELAY` виртуального
+  времени, чтобы в тестах можно было проверять промежуточные loading-state без ручной настройки задержки.
 - Обычно `verify()` вручную не вызываем: `integrationTest` делает это автоматически в `finally`
   после финального `advanceUntilIdle()`.
 
@@ -471,12 +472,12 @@ mockServer.enqueue(
 )
 ```
 
-**Мок с задержкой**
+**Мок без задержки**
 
 ```kotlin
 mockServer.enqueue(
     RequestMatcher.containsPath("pokemon/77"),
-    HttpResponse(TestPokemons.detailedPonytaJson(), delay = 1.seconds)
+    HttpResponse(TestPokemons.detailedPonytaJson(), delay = Duration.ZERO)
 )
 ```
 
@@ -522,17 +523,14 @@ integrationTest("sends pokemon data when the form is submitted") {
 
 ## 7. Виртуальное время
 
-Все интеграционные тесты выполняются внутри с использованием `StandardTestDispatcher`.
-
-Особенность этого диспетчера в том, что он не запускает корутины немедленно. Вместо этого задачи
-ставятся в очередь, а тест сам управляет моментом их выполнения. Это дает полный контроль над
-асинхронным кодом.
+Все интеграционные тесты выполняются внутри с использованием `UnconfinedTestDispatcher`, чтобы
+имитировать поведение `Main.immediate`. Корутинный код стартует сразу и выполняется до первой
+приостановки, а задержки и отложенные задачи остаются под контролем виртуального времени.
 
 ### Инструменты
 
 | Инструмент                 | Когда использовать                                                 |
 |----------------------------|--------------------------------------------------------------------|
-| `runCurrent()`             | Выполнить все задачи, запланированные на текущее виртуальное время |
 | `advanceUntilIdle()`       | Довести очередь до полного завершения всех запланированных задач   |
 | `advanceTimeBy(delayTime)` | Сдвинуть виртуальные часы на точное значение                       |
 
@@ -541,7 +539,7 @@ integrationTest("sends pokemon data when the form is submitted") {
 | Сценарий                                                        | Инструмент           |
 |-----------------------------------------------------------------|----------------------|
 | Проверка финального состояния после загрузки                    | `advanceUntilIdle()` |
-| Проверка синхронного промежуточного состояния, например лоадера | `runCurrent()`       |
+| Проверка синхронного промежуточного состояния, например лоадера | Проверка сразу после action |
 | Debounce, таймауты, прогресс-бары, точные задержки              | `advanceTimeBy(...)` |
 
 ### Сценарий 1. Проверка финального результата
@@ -550,7 +548,7 @@ integrationTest("sends pokemon data when the form is submitted") {
 
 ```kotlin
 integrationTest("loads the default type pokemon list") {
-    // 🛠️ Prepare the default type response
+    // 🛠️ Prepare default type pokemon list data
     mockServer.enqueue(
         RequestMatcher.containsPath("type/10"),
         HttpResponse(TestPokemons.firePokemonsJson())
@@ -568,19 +566,17 @@ integrationTest("loads the default type pokemon list") {
 
 ### Сценарий 2. Проверка промежуточного loading-state
 
-Если нужно проверить показ лоадера, задаем задержку ответа и используем `runCurrent()`.
+Если нужно проверить показ лоадера, используем дефолтную задержку ответа и проверяем состояние
+сразу после action, который запускает загрузку.
 
 ```kotlin
 integrationTest("shows loading while fetching the pokemon list") {
-    // 🛠️ Prepare a delayed pokemon list response
+    // 🛠️ Prepare pokemon list data
     mockServer.enqueue(
         RequestMatcher.containsPath("type/10"),
-        HttpResponse(TestPokemons.firePokemonsJson(), delay = 1.seconds)
+        HttpResponse(TestPokemons.firePokemonsJson())
     )
     val component = setupComponent { createPokemonListComponent(it, {}) }
-
-    // ▶️ Wait for loading to start
-    runCurrent()
 
     // ✅ Verify loading is shown
     component.pokemonsState.value.loading shouldBe true
@@ -603,11 +599,12 @@ integrationTest("shows loading while fetching the pokemon list") {
 - прогресс-бары;
 - таймеры и countdown-механики.
 
-Для обычной проверки loading-state связки `runCurrent()` и `advanceUntilIdle()` достаточно.
+Для обычной проверки loading-state обычно достаточно проверки сразу после action и финального
+`advanceUntilIdle()`.
 
 ### Антипаттерны при проверке `StateFlow`
 
-Ниже правила относятся именно к **интеграционным тестам на `StandardTestDispatcher`**.
+Ниже правила относятся именно к **интеграционным тестам с виртуальным временем**.
 
 **Не используем блокирующие ожидания вроде:**
 
@@ -615,8 +612,7 @@ integrationTest("shows loading while fetching the pokemon list") {
 state.first { !it.loading }
 ```
 
-Такие конструкции в сочетании с `StandardTestDispatcher` могут заблокировать тестовый поток и
-привести к дедлоку.
+Такие конструкции могут заблокировать тестовый поток и привести к дедлоку.
 
 **Не используем Turbine для `StateFlow` в этом типе тестов.**
 
@@ -646,7 +642,7 @@ class OutputCapturer<T> : (T) -> Unit {
 
 ```kotlin
 integrationTest("emits pokemon details output when a pokemon is clicked") {
-    // 🛠️ Prepare the loaded pokemon list
+    // 🛠️ Prepare loaded pokemon list data
     mockServer.enqueue(
         RequestMatcher.containsPath("type/10"),
         HttpResponse(TestPokemons.firePokemonsJson())
@@ -701,8 +697,8 @@ HttpResponse(TestPokemons.firePokemonsJson())
 
 ## 10. Минимальный набор сценариев для компонента
 
-Для большинства экранных компонентов ожидается, что набор интеграционных тестов покрывает как
-минимум:
+Для большинства обычных экранных компонентов ожидается, что набор интеграционных тестов покрывает
+как минимум:
 
 - initial load success;
 - initial load error;
@@ -736,14 +732,13 @@ import ru.mobileup.template.features.pokemons.createPokemonListComponent
 import ru.mobileup.template.features.pokemons.domain.PokemonType
 import ru.mobileup.template.features.pokemons.presentation.list.PokemonListComponent.Output
 import ru.mobileup.template.features.utils.integrationTest
-import kotlin.time.Duration.Companion.seconds
 
 class PokemonListComponentTest : FunSpec({
 
     context("Pokemon list screen") {
 
         integrationTest("loads the default type pokemon list") {
-            // 🛠️ Prepare the default type response
+            // 🛠️ Prepare default type pokemon list data
             mockServer.enqueue(
                 RequestMatcher.containsPath("type/10"),
                 HttpResponse(TestPokemons.firePokemonsJson())
@@ -760,7 +755,7 @@ class PokemonListComponentTest : FunSpec({
         }
 
         integrationTest("emits pokemon details output when a pokemon is clicked") {
-            // 🛠️ Prepare the loaded pokemon list
+            // 🛠️ Prepare loaded pokemon list data
             mockServer.enqueue(
                 RequestMatcher.containsPath("type/10"),
                 HttpResponse(TestPokemons.firePokemonsJson())
@@ -777,7 +772,7 @@ class PokemonListComponentTest : FunSpec({
         }
 
         integrationTest("shows an error when initial loading fails") {
-            // 🛠️ Prepare a failed initial response
+            // 🛠️ Prepare failed initial loading
             mockServer.enqueue(
                 RequestMatcher.containsPath("type/10"),
                 HttpResponse(status = HttpStatusCode.NotFound)
@@ -794,18 +789,17 @@ class PokemonListComponentTest : FunSpec({
         }
 
         integrationTest("reloads pokemon list when refresh is requested after error") {
-            // 🛠️ Prepare a failed initial response and a successful retry response
+            // 🛠️ Prepare failed initial loading and successful retry
             mockServer.enqueue(
                 RequestMatcher.containsPath("type/10"),
                 HttpResponse(status = HttpStatusCode.NotFound),
-                HttpResponse(TestPokemons.firePokemonsJson(), delay = 1.seconds)
+                HttpResponse(TestPokemons.firePokemonsJson())
             )
             val component = setupComponent { createPokemonListComponent(it, {}) }
             advanceUntilIdle()
 
             // ▶️ Refresh loading the current list
             component.onRefresh()
-            runCurrent()
 
             // ✅ Verify loading starts again
             component.pokemonsState.value.loading shouldBe true
@@ -820,7 +814,7 @@ class PokemonListComponentTest : FunSpec({
         }
 
         integrationTest("loads pokemon list for the selected type") {
-            // 🛠️ Prepare responses for the default and selected types
+            // 🛠️ Prepare default and selected pokemon list data
             mockServer.enqueue(
                 RequestMatcher.containsPath("type/10"),
                 HttpResponse(TestPokemons.firePokemonsJson())
@@ -842,18 +836,17 @@ class PokemonListComponentTest : FunSpec({
         }
 
         integrationTest("shows loading during refresh and keeps current data") {
-            // 🛠️ Prepare initial data and a delayed refresh response
+            // 🛠️ Prepare initial and refreshed pokemon list data
             mockServer.enqueue(
                 RequestMatcher.containsPath("type/10"),
                 HttpResponse(TestPokemons.firePokemonsJson()),
-                HttpResponse(TestPokemons.firePokemonsJson(), delay = 1.seconds)
+                HttpResponse(TestPokemons.firePokemonsJson())
             )
             val component = setupComponent { createPokemonListComponent(it, {}) }
             advanceUntilIdle()
 
             // ▶️ Refresh the current list
             component.onRefresh()
-            runCurrent()
 
             // ✅ Verify loading is shown while keeping current data
             component.pokemonsState.value.loading shouldBe true

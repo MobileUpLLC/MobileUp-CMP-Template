@@ -1,21 +1,23 @@
-package ru.mobileup.template.features.pokemons.details
+package ru.mobileup.template.features.pokemons.presentation.details
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import ru.mobileup.template.features.pokemons.TestPokemons
+import ru.mobileup.template.features.pokemons.fixtures.PokemonDetailsFixture
 import ru.mobileup.template.features.pokemons.createPokemonDetailsComponent
-import ru.mobileup.template.features.pokemons.enqueuePokemonDetails
+import ru.mobileup.template.features.pokemons.fixtures.enqueuePokemonDetails
 import ru.mobileup.template.features.utils.integrationTest
-import kotlin.time.Duration.Companion.seconds
 
 class PokemonDetailsComponentTest : FunSpec({
 
     integrationTest("loads pokemon details successfully") {
-        // 🛠️ Prepare a successful pokemon details response
-        val pokemonId = TestPokemons.Details.ponyta.pokemonId
-        mockServer.enqueuePokemonDetails(TestPokemons.Details.ponyta)
-        val component = setupComponent { createPokemonDetailsComponent(it, pokemonId) }
+        // 🛠️ Prepare pokemon details data for initial loading
+        val pokemon = PokemonDetailsFixture.ponyta
+        mockServer.enqueuePokemonDetails(pokemon)
+        val component = setupComponent { createPokemonDetailsComponent(it, pokemon.id) }
+
+        // ✅ Verify initial loading is shown
+        component.pokemonState.value.loading shouldBe true
 
         // ▶️ Wait for the initial loading to complete
         advanceUntilIdle()
@@ -23,14 +25,14 @@ class PokemonDetailsComponentTest : FunSpec({
         // ✅ Verify loaded pokemon details state
         component.pokemonState.value.loading shouldBe false
         component.pokemonState.value.error shouldBe null
-        component.pokemonState.value.data shouldBe TestPokemons.Details.ponyta.expected
+        component.pokemonState.value.data shouldBe pokemon.domain
     }
 
     integrationTest("shows error when pokemon details loading fails") {
-        // 🛠️ Prepare a failed pokemon details response
-        val pokemonId = TestPokemons.Details.ponyta.pokemonId
-        mockServer.enqueuePokemonDetails(TestPokemons.Details.ponyta, isError = true)
-        val component = setupComponent { createPokemonDetailsComponent(it, pokemonId) }
+        // 🛠️ Prepare failed pokemon details loading
+        val pokemon = PokemonDetailsFixture.ponyta
+        mockServer.enqueuePokemonDetails(pokemon, isError = true)
+        val component = setupComponent { createPokemonDetailsComponent(it, pokemon.id) }
 
         // ▶️ Wait for the initial loading to complete
         advanceUntilIdle()
@@ -42,11 +44,11 @@ class PokemonDetailsComponentTest : FunSpec({
     }
 
     integrationTest("reloads pokemon details after error") {
-        // 🛠️ Prepare a failed initial response and a successful retry response
-        val pokemonId = TestPokemons.Details.ponyta.pokemonId
-        mockServer.enqueuePokemonDetails(TestPokemons.Details.ponyta, isError = true)
-        mockServer.enqueuePokemonDetails(TestPokemons.Details.ponyta, delay = 1.seconds)
-        val component = setupComponent { createPokemonDetailsComponent(it, pokemonId) }
+        // 🛠️ Prepare failed initial loading and successful retry
+        val pokemon = PokemonDetailsFixture.ponyta
+        mockServer.enqueuePokemonDetails(pokemon, isError = true)
+        mockServer.enqueuePokemonDetails(pokemon)
+        val component = setupComponent { createPokemonDetailsComponent(it, pokemon.id) }
 
         // ▶️ Wait for the initial loading to complete
         advanceUntilIdle()
@@ -58,7 +60,6 @@ class PokemonDetailsComponentTest : FunSpec({
 
         // ▶️ Refresh pokemon details
         component.onRefresh()
-        runCurrent()
 
         // ✅ Verify loading starts again
         component.pokemonState.value.loading shouldBe true
@@ -69,15 +70,16 @@ class PokemonDetailsComponentTest : FunSpec({
         // ✅ Verify loaded pokemon details state after retry
         component.pokemonState.value.loading shouldBe false
         component.pokemonState.value.error shouldBe null
-        component.pokemonState.value.data shouldBe TestPokemons.Details.ponyta.expected
+        component.pokemonState.value.data shouldBe pokemon.domain
     }
 
     integrationTest("shows loading during refresh and updates pokemon details") {
-        // 🛠️ Prepare initial data and a delayed refresh response
-        val pokemonId = TestPokemons.Details.ponyta.pokemonId
-        mockServer.enqueuePokemonDetails(TestPokemons.Details.ponyta)
-        mockServer.enqueuePokemonDetails(TestPokemons.Details.ponytaUpdated, delay = 1.seconds)
-        val component = setupComponent { createPokemonDetailsComponent(it, pokemonId) }
+        // 🛠️ Prepare initial and refreshed pokemon details data
+        val initialPokemon = PokemonDetailsFixture.ponyta
+        val updatedPokemon = PokemonDetailsFixture.ponytaUpdated
+        mockServer.enqueuePokemonDetails(initialPokemon)
+        mockServer.enqueuePokemonDetails(updatedPokemon)
+        val component = setupComponent { createPokemonDetailsComponent(it, initialPokemon.id) }
 
         // ▶️ Wait for the initial loading to complete
         advanceUntilIdle()
@@ -85,11 +87,10 @@ class PokemonDetailsComponentTest : FunSpec({
         // ✅ Verify loaded pokemon details state
         component.pokemonState.value.loading shouldBe false
         component.pokemonState.value.error shouldBe null
-        component.pokemonState.value.data shouldBe TestPokemons.Details.ponyta.expected
+        component.pokemonState.value.data shouldBe initialPokemon.domain
 
         // ▶️ Refresh pokemon details
         component.onRefresh()
-        runCurrent()
 
         // ✅ Verify loading is shown during refresh
         component.pokemonState.value.loading shouldBe true
@@ -100,6 +101,6 @@ class PokemonDetailsComponentTest : FunSpec({
         // ✅ Verify updated pokemon details state
         component.pokemonState.value.loading shouldBe false
         component.pokemonState.value.error shouldBe null
-        component.pokemonState.value.data shouldBe TestPokemons.Details.ponytaUpdated.expected
+        component.pokemonState.value.data shouldBe updatedPokemon.domain
     }
 })

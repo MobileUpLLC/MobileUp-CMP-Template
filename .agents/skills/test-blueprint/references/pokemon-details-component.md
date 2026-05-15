@@ -7,17 +7,18 @@ error/retry, and can refresh existing data.
 PokemonDetailsComponentTest (integration)
 
 - loads pokemon details successfully
-  🛠️ Prepare a successful pokemon details response
+  🛠️ Prepare pokemon details data for initial loading
+  ✅ Verify initial loading is shown
   ▶️ Wait for the initial loading to complete
   ✅ Verify loaded pokemon details state
 
 - shows error when pokemon details loading fails
-  🛠️ Prepare a failed pokemon details response
+  🛠️ Prepare failed pokemon details loading
   ▶️ Wait for the initial loading to complete
   ✅ Verify failed pokemon details state
 
 - reloads pokemon details after error
-  🛠️ Prepare a failed initial response and a successful retry response
+  🛠️ Prepare failed initial loading and successful retry
   ▶️ Wait for the initial loading to complete
   ✅ Verify failed pokemon details state
   ▶️ Refresh pokemon details
@@ -26,7 +27,7 @@ PokemonDetailsComponentTest (integration)
   ✅ Verify loaded pokemon details state after retry
 
 - shows loading during refresh and updates pokemon details
-  🛠️ Prepare initial data and a delayed refresh response
+  🛠️ Prepare initial and refreshed pokemon details data
   ▶️ Wait for the initial loading to complete
   ✅ Verify loaded pokemon details state
   ▶️ Refresh pokemon details

@@ -1,8 +1,5 @@
-package ru.mobileup.template.features.pokemons.domain.power
+package ru.mobileup.template.features.pokemons.domain
 
-import ru.mobileup.template.features.pokemons.domain.PokemonBaseStats
-import ru.mobileup.template.features.pokemons.domain.PokemonPowerScore
-import ru.mobileup.template.features.pokemons.domain.PowerTier
 import kotlin.math.roundToInt
 
 object PokemonPowerCalculator {

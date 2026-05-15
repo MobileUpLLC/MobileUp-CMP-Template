@@ -2,6 +2,7 @@ package ru.mobileup.template.core_testing.integration_test
 
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import io.kotest.core.test.TestScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestDispatcher
 import me.aartikov.replica.network.NetworkConnectivityProvider
@@ -22,10 +23,12 @@ import kotlin.time.Duration
  *
  * Bridges Kotest test scope, Koin graph, and coroutine test scheduler.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class IntegrationTestScopeImpl(
     koin: Koin,
     private val kotestScope: TestScope,
     private val testScheduler: TestCoroutineScheduler,
+    private val replicaBehaviourScheduler: TestCoroutineScheduler,
     private val testDispatcher: TestDispatcher
 ) : IntegrationTestScope, TestScope by kotestScope {
 
@@ -45,11 +48,17 @@ internal class IntegrationTestScopeImpl(
 
     private val componentFactory: ComponentFactory = koin.get()
 
-    override fun advanceUntilIdle() = testScheduler.advanceUntilIdle()
+    override fun advanceUntilIdle() {
+        val startTime = testScheduler.currentTime
+        testScheduler.advanceUntilIdle()
+        val endTime = testScheduler.currentTime
+        replicaBehaviourScheduler.advanceTimeBy(endTime - startTime)
+    }
 
-    override fun advanceTimeBy(delayTime: Duration) = testScheduler.advanceTimeBy(delayTime)
-
-    override fun runCurrent() = testScheduler.runCurrent()
+    override fun advanceTimeBy(delayTime: Duration) {
+        testScheduler.advanceTimeBy(delayTime)
+        replicaBehaviourScheduler.advanceTimeBy(delayTime)
+    }
 
     override fun <T> setupComponent(
         targetState: Lifecycle.State,

@@ -8,23 +8,24 @@ intermediate state.
 PokemonListComponentTest (integration)
 
 - loads pokemon list successfully
-  🛠️ Prepare a successful pokemon list response
+  🛠️ Prepare pokemon list data for initial loading
+  ✅ Verify initial loading is shown
   ▶️ Wait for the initial loading to complete
   ✅ Verify loaded pokemon list state
 
 - emits pokemon details output when a pokemon is clicked
-  🛠️ Prepare a successful pokemon list response
+  🛠️ Prepare pokemon list data for initial loading
   ▶️ Wait for the initial loading to complete
   ▶️ Click a pokemon item in the list
   ✅ Verify the pokemon details output is emitted
 
 - shows error when pokemon list loading fails
-  🛠️ Prepare a failed pokemon list response
+  🛠️ Prepare failed pokemon list loading
   ▶️ Wait for the initial loading to complete
   ✅ Verify failed pokemon list state
 
 - shows loading during refresh and updates pokemon list
-  🛠️ Prepare initial data and a delayed refresh response
+  🛠️ Prepare initial and refreshed pokemon list data
   ▶️ Wait for the initial loading to complete
   ✅ Verify loaded pokemon list state
   ▶️ Refresh pokemon list
@@ -33,7 +34,7 @@ PokemonListComponentTest (integration)
   ✅ Verify updated pokemon list state
 
 - loads selected type pokemon list while keeping previous data
-  🛠️ Prepare successful default and delayed selected pokemon list responses
+  🛠️ Prepare default and selected type pokemon list data
   ▶️ Wait for the initial loading to complete
   ✅ Verify loaded default pokemon list state
   ▶️ Select another pokemon type
@@ -43,7 +44,7 @@ PokemonListComponentTest (integration)
   ✅ Verify loaded selected pokemon list state
 
 - reloads pokemon list after error
-  🛠️ Prepare a failed initial response and a successful retry response
+  🛠️ Prepare failed initial loading and successful retry
   ▶️ Wait for the initial loading to complete
   ✅ Verify failed pokemon list state
   ▶️ Refresh pokemon list

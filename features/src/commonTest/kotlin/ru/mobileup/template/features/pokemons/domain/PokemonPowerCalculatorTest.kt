@@ -1,12 +1,9 @@
-package ru.mobileup.template.features.pokemons.domain.power
+package ru.mobileup.template.features.pokemons.domain
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.datatest.withTests
 import io.kotest.matchers.shouldBe
-import ru.mobileup.template.features.pokemons.domain.PokemonBaseStats
-import ru.mobileup.template.features.pokemons.domain.PokemonPowerScore
-import ru.mobileup.template.features.pokemons.domain.PowerTier
 
 class PokemonPowerCalculatorTest : FunSpec({
 
