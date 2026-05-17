@@ -81,8 +81,9 @@ Larger features may organize distinct domains or contexts as subfeature packages
 
 ### Dependency Injection (Koin)
 
-Each feature has `DI.kt` with a Koin module and `ComponentFactory` extension functions.
-Components are always created via `componentFactory.createXxxComponent(...)`, never directly.
+Each feature has `DI.kt` with a Koin module and `ComponentFactory.createXxxComponent(...)`
+extension functions. Components must not use `ComponentFactory` directly. If a component creates
+child components, introduce an `XxxChildComponentFactory` and use it from the component.
 
 ### String Resources
 
@@ -119,6 +120,8 @@ Prefer existing widgets from `core.widget` over raw Material controls.
 ### 5. Component Creation
 - Real components are created only through `ComponentFactory` extension functions.
 - Do not instantiate `RealXxxComponent` directly from parent components or UI.
+- Do not pass `ComponentFactory` into `RealXxxComponent`.
+- Use `XxxChildComponentFactory` when a component needs to create embedded, dialog, or navigation children.
 
 ---
 
@@ -138,10 +141,10 @@ Prefer existing widgets from `core.widget` over raw Material controls.
 
 ## Testing Rules
 
-- Component-level tests live under `features/src/commonTest`.
+- Tests live under `features/src/commonTest`.
 - Use Kotest `FunSpec` as the default test style.
-- Use the existing `integrationTest` DSL for scenarios that cover: 
-  `Component -> Repository -> Network -> State / Output`.
+- Use the existing `componentTest` DSL for Decompose component tests, including screen tests that cover
+  `Component -> Repository -> Network -> State / Output` and router/root tests with test child factories.
 - Name tests in English by observable behavior, not implementation details.
 
 ---

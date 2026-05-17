@@ -13,22 +13,45 @@ component. The child shape stays the same; only the parent creation pattern chan
 
 ```kotlin
 interface ItemListComponent {
-    
+
     val currentCityComponent: CurrentCityComponent
 
     val itemsState: StateFlow<LoadableState<List<Item>>>
 }
 
+interface ItemListChildComponentFactory {
+    fun createCurrentCityComponent(
+        componentContext: ComponentContext
+    ): CurrentCityComponent
+}
+
+class RealItemListChildComponentFactory(
+    private val componentFactory: ComponentFactory
+) : ItemListChildComponentFactory {
+    override fun createCurrentCityComponent(
+        componentContext: ComponentContext
+    ) = componentFactory.createCurrentCityComponent(componentContext)
+}
+
 class RealItemListComponent(
     componentContext: ComponentContext,
-    componentFactory: ComponentFactory
+    childComponentFactory: ItemListChildComponentFactory
 ) : ComponentContext by componentContext, ItemListComponent {
 
-    override val currentCityComponent = componentFactory.createCurrentCityComponent(
+    override val currentCityComponent = childComponentFactory.createCurrentCityComponent(
         childContext(key = "currentCity")
     )
 
     override val itemsState = ...
+}
+
+fun ComponentFactory.createItemListComponent(
+    componentContext: ComponentContext
+): ItemListComponent {
+    return RealItemListComponent(
+        componentContext = componentContext,
+        childComponentFactory = RealItemListChildComponentFactory(this)
+    )
 }
 ```
 
@@ -51,3 +74,6 @@ fun ItemListUi(component: ItemListComponent) {
 
 Use `childContext(key = "...")` for permanent embedded children. Do not pass the same parent
 `ComponentContext` directly to multiple children.
+
+If a component creates embedded children, depend on an `XxxChildComponentFactory` from the
+component. Do not pass `ComponentFactory` into `RealXxxComponent`.

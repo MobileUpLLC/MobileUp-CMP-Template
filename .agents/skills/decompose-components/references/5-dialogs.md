@@ -121,15 +121,37 @@ interface ProfileComponent {
     fun onHowToClick()
 }
 
+interface ProfileChildComponentFactory {
+    fun createHowToComponent(
+        componentContext: ComponentContext,
+        config: HowToComponent.Config,
+        onOutput: (HowToComponent.Output) -> Unit
+    ): HowToComponent
+}
+
+class RealProfileChildComponentFactory(
+    private val componentFactory: ComponentFactory
+) : ProfileChildComponentFactory {
+    override fun createHowToComponent(
+        componentContext: ComponentContext,
+        config: HowToComponent.Config,
+        onOutput: (HowToComponent.Output) -> Unit
+    ) = componentFactory.createHowToComponent(
+        componentContext = componentContext,
+        config = config,
+        onOutput = onOutput
+    )
+}
+
 class RealProfileComponent(
     componentContext: ComponentContext,
-    private val componentFactory: ComponentFactory
+    private val childComponentFactory: ProfileChildComponentFactory
 ) : ComponentContext by componentContext, ProfileComponent {
 
     override val howToDialogControl = dialogControl<HowToComponent.Config, HowToComponent>(
         key = "howToDialog",
         dialogComponentFactory = { config, context, _ ->
-            componentFactory.createHowToComponent(
+            childComponentFactory.createHowToComponent(
                 componentContext = context,
                 config = config,
                 onOutput = ::onHowToOutput
@@ -145,6 +167,15 @@ class RealProfileComponent(
     private fun onHowToOutput(output: HowToComponent.Output) {
         // Handle output
     }
+}
+
+fun ComponentFactory.createProfileComponent(
+    componentContext: ComponentContext
+): ProfileComponent {
+    return RealProfileComponent(
+        componentContext = componentContext,
+        childComponentFactory = RealProfileChildComponentFactory(this)
+    )
 }
 
 class FakeProfileComponent : ProfileComponent {

@@ -4,7 +4,7 @@ Use when designing a component blueprint for a details screen that loads one ent
 error/retry, and can refresh existing data.
 
 ```text
-PokemonDetailsComponentTest (integration)
+PokemonDetailsComponentTest (component)
 
 - loads pokemon details successfully
   🛠️ Prepare pokemon details data for initial loading

@@ -16,16 +16,18 @@ class SharedApp(configuration: Configuration) {
     internal val platformType: PlatformType = configuration.platform.type
 
     private val koin: Koin
+    private val componentFactory: ComponentFactory
 
     init {
         if (configuration.buildType == BuildType.Release) {
             Logger.setMinSeverity(Severity.Assert)
         }
         koin = createKoin(configuration)
+        componentFactory = ComponentFactory(koin)
     }
 
     fun createRootComponent(componentContext: ComponentContext): RootComponent {
-        return koin.get<ComponentFactory>().createRootComponent(componentContext)
+        return componentFactory.createRootComponent(componentContext)
     }
 
     internal inline fun <reified T : Any> get(): T = koin.get<T>()

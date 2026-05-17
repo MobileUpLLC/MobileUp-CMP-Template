@@ -1,4 +1,4 @@
-package ru.mobileup.template.core_testing.integration_test
+package ru.mobileup.template.core_testing.component_test
 
 import io.kotest.core.spec.style.scopes.FunSpecRootScope
 import io.kotest.core.test.testCoroutineScheduler
@@ -8,10 +8,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.koin.core.module.Module
 
 @OptIn(ExperimentalStdlibApi::class, ExperimentalCoroutinesApi::class)
-fun FunSpecRootScope.integrationTestImpl(
+fun FunSpecRootScope.componentTestImpl(
     name: String,
     featureModules: List<Module>,
-    block: suspend IntegrationTestScope.() -> Unit,
+    block: suspend ComponentTestScope.() -> Unit,
 ) {
     test(name).config(coroutineTestScope = true) {
         // Use UnconfinedTestDispatcher to approximate Dispatchers.Main.immediate:
@@ -30,7 +30,7 @@ fun FunSpecRootScope.integrationTestImpl(
             featureModules = featureModules
         )
 
-        val integrationScope = IntegrationTestScopeImpl(
+        val componentScope = ComponentTestScopeImpl(
             koin = koin,
             kotestScope = this,
             testScheduler = testCoroutineScheduler,
@@ -40,13 +40,13 @@ fun FunSpecRootScope.integrationTestImpl(
 
         var primaryFailure: Throwable? = null
         try {
-            integrationScope.block()
+            componentScope.block()
         } catch (throwable: Throwable) {
             primaryFailure = throwable
             throw throwable
         } finally {
             try {
-                integrationScope.finishTest(primaryFailure)
+                componentScope.finishTest(primaryFailure)
             } finally {
                 koin.close()
             }
@@ -54,7 +54,7 @@ fun FunSpecRootScope.integrationTestImpl(
     }
 }
 
-private suspend fun IntegrationTestScope.finishTest(primaryFailure: Throwable?) {
+private suspend fun ComponentTestScope.finishTest(primaryFailure: Throwable?) {
     try {
         advanceUntilIdle()
         mockServer.verify()

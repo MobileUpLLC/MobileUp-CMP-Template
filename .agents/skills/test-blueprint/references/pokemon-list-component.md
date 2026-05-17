@@ -5,7 +5,7 @@ handles errors/retry, refreshes, and changes selected type/filter while preservi
 intermediate state.
 
 ```text
-PokemonListComponentTest (integration)
+PokemonListComponentTest (component)
 
 - loads pokemon list successfully
   🛠️ Prepare pokemon list data for initial loading

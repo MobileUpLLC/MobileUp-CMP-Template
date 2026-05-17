@@ -10,7 +10,9 @@ import ru.mobileup.template.features.pokemons.data.PokemonRepository
 import ru.mobileup.template.features.pokemons.data.PokemonRepositoryImpl
 import ru.mobileup.template.features.pokemons.data.createPokemonApi
 import ru.mobileup.template.features.pokemons.domain.PokemonId
+import ru.mobileup.template.features.pokemons.presentation.PokemonsChildComponentFactory
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
+import ru.mobileup.template.features.pokemons.presentation.RealPokemonsChildComponentFactory
 import ru.mobileup.template.features.pokemons.presentation.RealPokemonsComponent
 import ru.mobileup.template.features.pokemons.presentation.details.PokemonDetailsComponent
 import ru.mobileup.template.features.pokemons.presentation.details.RealPokemonDetailsComponent
@@ -23,9 +25,10 @@ val pokemonsModule = module {
 }
 
 fun ComponentFactory.createPokemonsComponent(
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
+    childComponentFactory: PokemonsChildComponentFactory = RealPokemonsChildComponentFactory(this)
 ): PokemonsComponent {
-    return RealPokemonsComponent(componentContext, get())
+    return RealPokemonsComponent(componentContext, childComponentFactory)
 }
 
 fun ComponentFactory.createPokemonListComponent(

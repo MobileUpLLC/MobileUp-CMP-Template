@@ -1,7 +1,6 @@
 package ru.mobileup.template.shared
 
 import org.koin.core.Koin
-import ru.mobileup.template.core.ComponentFactory
 import ru.mobileup.template.core.configuration.Configuration
 import ru.mobileup.template.core.coreModule
 import ru.mobileup.template.core.platformCoreModule
@@ -15,7 +14,6 @@ internal fun createKoin(configuration: Configuration): Koin {
                 platformCoreModule(configuration),
             ) + featureModules
         )
-        declare(ComponentFactory(this))
         createEagerInstances()
     }
 }

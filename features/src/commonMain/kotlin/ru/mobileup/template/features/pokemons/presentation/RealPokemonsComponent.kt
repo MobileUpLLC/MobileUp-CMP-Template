@@ -5,17 +5,14 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import kotlinx.serialization.Serializable
-import ru.mobileup.template.core.ComponentFactory
 import ru.mobileup.template.core.utils.safePush
 import ru.mobileup.template.core.utils.toStateFlow
-import ru.mobileup.template.features.pokemons.createPokemonDetailsComponent
-import ru.mobileup.template.features.pokemons.createPokemonListComponent
 import ru.mobileup.template.features.pokemons.domain.PokemonId
 import ru.mobileup.template.features.pokemons.presentation.list.PokemonListComponent
 
 class RealPokemonsComponent(
     componentContext: ComponentContext,
-    private val componentFactory: ComponentFactory
+    private val childComponentFactory: PokemonsChildComponentFactory
 ) : ComponentContext by componentContext, PokemonsComponent {
 
     private val navigation = StackNavigation<ChildConfig>()
@@ -34,7 +31,7 @@ class RealPokemonsComponent(
     ): PokemonsComponent.Child = when (config) {
         is ChildConfig.List -> {
             PokemonsComponent.Child.List(
-                componentFactory.createPokemonListComponent(
+                childComponentFactory.createPokemonListComponent(
                     componentContext,
                     ::onPokemonListOutput
                 )
@@ -43,7 +40,7 @@ class RealPokemonsComponent(
 
         is ChildConfig.Details -> {
             PokemonsComponent.Child.Details(
-                componentFactory.createPokemonDetailsComponent(
+                childComponentFactory.createPokemonDetailsComponent(
                     componentContext,
                     config.pokemonId
                 )

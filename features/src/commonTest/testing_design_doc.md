@@ -10,8 +10,10 @@
 
 - **Не используем базовые классы.** Отказываемся от наследования вроде `BaseSpec`. Вся тестовая
   инфраструктура должна предоставляться через DSL и композицию.
-- **Используем блок `context`.** Внутри `FunSpec` объявляется блок `context` (как правило, один на
-  спецификацию), который задает имя тестируемой сущности или экрана на английском языке.
+- **Используем `context` только когда он помогает группировке.** В простых спеках `componentTest`,
+  `test` и `withTests` можно объявлять прямо внутри `FunSpec`. Если в одной спецификации нужно
+  сгруппировать несколько наборов сценариев, используем `context` с именем сущности или экрана на
+  английском языке.
 - **Один тест — одно наблюдаемое поведение.** Каждый тест должен проверять один внешний сценарий, а
   не набор несвязанных проверок.
 
@@ -60,21 +62,19 @@
 
 ```kotlin
 class MyComponentTest : FunSpec({
-    context("My screen") {
-        integrationTest("loads data successfully") {
-            // 🛠️ Prepare data for initial loading
-            <...настройка моков...>
-            <...создание компонента...>
+    componentTest("loads data successfully") {
+        // 🛠️ Prepare data for initial loading
+        <...настройка моков...>
+        <...создание компонента...>
 
-            // ▶️ Wait for the initial loading to complete
-            <...прокрутка виртуального времени...>
+        // ▶️ Wait for the initial loading to complete
+        <...прокрутка виртуального времени...>
 
-            // ✅ Verify the loaded data is shown
-            <...проверки состояния...>
-        }
-
-        <...остальные тесты этого экрана...>
+        // ✅ Verify the loaded data is shown
+        <...проверки состояния...>
     }
+
+    <...остальные тесты этого экрана...>
 })
 ```
 
@@ -94,9 +94,13 @@ test("calculates pokemon power score") {
 }
 ```
 
+Если одна и та же unit-логика проверяется на нескольких входных наборах, используем table-style
+тесты через Kotest `withTests`. Имя каждого кейса также должно описывать наблюдаемое поведение на
+английском языке.
+
 ### Многоблочные сценарии
 
-Для component-level и интеграционных тестов нормально использовать больше трех логических блоков.
+Для component-level и компонентных тестов нормально использовать больше трех логических блоков.
 Такие тесты часто описывают сценарий во времени: начальная загрузка, проверка исходного состояния,
 действие пользователя, промежуточное состояние и финальный результат.
 
@@ -109,7 +113,7 @@ test("calculates pokemon power score") {
 несвязанных поведений.
 
 ```kotlin
-integrationTest("shows loading during refresh and loads new data") {
+componentTest("shows loading during refresh and loads new data") {
     // 🛠️ Prepare initial and refreshed data
     <...начальный сетап...>
 
@@ -135,66 +139,84 @@ integrationTest("shows loading during refresh and loads new data") {
 
 ---
 
-## 2. Что считать интеграционным тестом
+## 2. Что считать компонентным тестом
 
-В рамках этого проекта **интеграционный тест** — это **component-level test** с DI-графом, реальным
-репозиторием и парсингом данных, но моковым сервером.
-Обычно такой тест проверяет работу цепочки:
-`Component -> Repository -> Network (mock server) -> Parsing -> State / Output`
+В рамках этого проекта **компонентный тест** — это test для Decompose-компонента через общий
+DSL `componentTest`.
+
+Есть два основных стиля:
+
+1. Экранный компонент с production dependency graph: DI-граф, реальный репозиторий, Replica,
+   парсинг данных и моковый сервер. Обычно такой тест проверяет цепочку
+   `Component -> Repository -> Network (mock server) -> Parsing -> State / Output`.
+2. Router/root компонент с подмененной `childComponentFactory`: тест проверяет `ChildStack`,
+   обработку child output, передачу параметров, conditional navigation и кастомный back/close без
+   реальной загрузки дочерних экранов.
 ---
 
-## 3. Обвязка для интеграционных тестов
+## 3. Обвязка для компонентных тестов
 
 Поскольку ручное создание всех зависимостей для component-level сценариев трудоемко, для таких
-тестов используется отдельный DSL-метод `integrationTest`.
+тестов используется отдельный DSL-метод `componentTest`.
 
 Синтаксически он работает так же, как стандартный `test` из Kotest, но дает доступ к тестовой
 инфраструктуре: mock server, виртуальному времени и хелперам создания компонентов.
 
 ### Ограничение
 
-Метод `integrationTest` доступен только внутри блока `context` через `FunSpecContainerScope`. Это
-позволяет гарантировать единый формат спецификаций.
+Метод `componentTest` доступен внутри `FunSpec` и синтаксически похож на обычный `test`.
 
 ### Сигнатура
 
 ```kotlin
-suspend fun FunSpecContainerScope.integrationTest(
+fun FunSpecRootScope.componentTest(
     name: String,
-    block: suspend IntegrationTestScope.() -> Unit
+    block: suspend ComponentTestScope.() -> Unit
 )
 ```
 
 ### Пример использования
 
 ```kotlin
-context("My screen") {
-    integrationTest("loads screen data successfully") {
-        // this: IntegrationTestScope
-    }
+componentTest("loads screen data successfully") {
+    // this: ComponentTestScope
 }
 ```
 
-### Возможности `IntegrationTestScope`
+### Возможности `ComponentTestScope`
 
 ```kotlin
-interface IntegrationTestScope : TestScope {
+interface ComponentTestScope : TestScope {
     val mockServer: MockServer
-    val testMessageService: TestMessageService
+    val messageService: TestMessageService
+    val permissionService: TestPermissionService
+    val externalAppService: TestExternalAppService
+    val networkConnectivityProvider: TestNetworkConnectivityProvider
 
     fun advanceUntilIdle()
     fun advanceTimeBy(delayTime: Duration)
 
-    // setupComponent helpers
+    fun <T> setupComponent(
+        targetState: Lifecycle.State = Lifecycle.State.RESUMED,
+        create: ComponentFactory.(TestComponentContext) -> T
+    ): T
+
+    fun <T> setupComponentWithContext(
+        targetState: Lifecycle.State = Lifecycle.State.RESUMED,
+        create: ComponentFactory.(TestComponentContext) -> T
+    ): Pair<T, TestComponentContext>
 }
 ```
 
-`IntegrationTestScope` предоставляет:
+`ComponentTestScope` предоставляет:
 
 1. `mockServer` — доступ к тестовому серверу для мокирования сетевых ответов;
-2. `testMessageService` — тестовую реализацию сервиса сообщений;
-3. методы управления виртуальным временем: `advanceUntilIdle()`, `advanceTimeBy()`;
-4. хелперы создания компонентов - о них позже.
+2. `messageService` — тестовую реализацию сервиса сообщений;
+3. `permissionService` — тестовую реализацию сервиса разрешений;
+4. `externalAppService` — тестовую реализацию сервиса внешних приложений;
+5. `networkConnectivityProvider` — управляемую тестовую реализацию сетевой доступности;
+6. методы управления виртуальным временем: `advanceUntilIdle()`, `advanceTimeBy()`;
+7. хелперы создания компонентов - о них позже.
 
 ---
 
@@ -202,7 +224,7 @@ interface IntegrationTestScope : TestScope {
 
 ### Виртуальное время
 
-Реализация `integrationTest` строится на `kotlinx-coroutines-test`, который дает механизм
+Реализация `componentTest` строится на `kotlinx-coroutines-test`, который дает механизм
 виртуального времени. Благодаря этому тесты выполняются быстро и детерминированно, без реальных
 ожиданий.
 
@@ -214,7 +236,7 @@ interface IntegrationTestScope : TestScope {
 
 ### Не используем подмену диспетчера
 
-Не используем `Dispatchers.setMain(...)` в интеграционных тестах.
+Не используем `Dispatchers.setMain(...)` в компонентных тестах.
 
 Причина - этот вызов мутирует глобальное состояние, что делает тесты зависимыми друг от друга и
 создает проблемы при параллельном запуске.
@@ -227,9 +249,12 @@ interface IntegrationTestScope : TestScope {
 ### Пример реализации
 
 ```kotlin
-interface IntegrationTestScope : TestScope {
+interface ComponentTestScope : TestScope {
     val mockServer: MockServer
-    val testMessageService: TestMessageService
+    val messageService: TestMessageService
+    val permissionService: TestPermissionService
+    val externalAppService: TestExternalAppService
+    val networkConnectivityProvider: TestNetworkConnectivityProvider
     
     fun advanceUntilIdle()
     fun advanceTimeBy(delayTime: Duration)
@@ -237,49 +262,78 @@ interface IntegrationTestScope : TestScope {
     // setupComponent helpers
 }
 
-class IntegrationTestScopeImpl(
+class ComponentTestScopeImpl(
     koin: Koin,
     private val kotestScope: TestScope,
     private val testScheduler: TestCoroutineScheduler,
+    private val replicaBehaviourScheduler: TestCoroutineScheduler,
     private val testDispatcher: TestDispatcher
-) : IntegrationTestScope, TestScope by kotestScope {
+) : ComponentTestScope, TestScope by kotestScope {
 
     override val mockServer: MockServer = koin.get()
-    override val testMessageService: TestMessageService =
-        koin.get<MessageService>() as TestMessageService
-    private val componentFactory: ComponentFactory = koin.get()
 
-    override fun advanceUntilIdle() = testScheduler.advanceUntilIdle()
-    override fun advanceTimeBy(delayTime: Duration) = testScheduler.advanceTimeBy(delayTime)
+    override val messageService: TestMessageService =
+        koin.get<MessageService>() as TestMessageService
+
+    override val permissionService: TestPermissionService =
+        koin.get<PermissionService>() as TestPermissionService
+
+    override val externalAppService: TestExternalAppService =
+        koin.get<ExternalAppService>() as TestExternalAppService
+
+    override val networkConnectivityProvider: TestNetworkConnectivityProvider =
+        koin.get<NetworkConnectivityProvider>() as TestNetworkConnectivityProvider
+
+    private val componentFactory = ComponentFactory(koin)
+
+    override fun advanceUntilIdle() {
+        val startTime = testScheduler.currentTime
+        testScheduler.advanceUntilIdle()
+        val endTime = testScheduler.currentTime
+        replicaBehaviourScheduler.advanceTimeBy(endTime - startTime)
+    }
+
+    override fun advanceTimeBy(delayTime: Duration) {
+        testScheduler.advanceTimeBy(delayTime)
+        replicaBehaviourScheduler.advanceTimeBy(delayTime)
+    }
 
     // setupComponent helpers
 }
 
-suspend fun FunSpecContainerScope.integrationTest(
+fun FunSpecRootScope.componentTestImpl(
     name: String,
     featureModules: List<Module>,
-    block: suspend IntegrationTestScope.() -> Unit
+    block: suspend ComponentTestScope.() -> Unit
 ) {
     test(name).config(coroutineTestScope = true) {
         val testDispatcher = UnconfinedTestDispatcher(testCoroutineScheduler)
-        val koin = createKoin(testDispatcher, featureModules)
+        val replicaBehaviourScheduler = TestCoroutineScheduler()
+        val replicaBehaviourDispatcher = UnconfinedTestDispatcher(replicaBehaviourScheduler)
+        val koin = createKoin(
+            testScheduler = testCoroutineScheduler,
+            testDispatcher = testDispatcher,
+            replicaBehaviourDispatcher = replicaBehaviourDispatcher,
+            featureModules = featureModules
+        )
 
-        val integrationScope = IntegrationTestScopeImpl(
+        val componentScope = ComponentTestScopeImpl(
             koin = koin,
             kotestScope = this,
             testScheduler = testCoroutineScheduler,
+            replicaBehaviourScheduler = replicaBehaviourScheduler,
             testDispatcher = testDispatcher
         )
 
         var primaryFailure: Throwable? = null
         try {
-            integrationScope.block()
+            componentScope.block()
         } catch (throwable: Throwable) {
             primaryFailure = throwable
             throw throwable
         } finally {
             try {
-                integrationScope.finishTest(primaryFailure)
+                componentScope.finishTest(primaryFailure)
             } finally {
                 koin.close()
             }
@@ -287,7 +341,7 @@ suspend fun FunSpecContainerScope.integrationTest(
     }
 }
 
-private suspend fun IntegrationTestScope.finishTest(primaryFailure: Throwable?) {
+private suspend fun ComponentTestScope.finishTest(primaryFailure: Throwable?) {
     try {
         advanceUntilIdle()
         mockServer.verify()
@@ -300,18 +354,33 @@ private suspend fun IntegrationTestScope.finishTest(primaryFailure: Throwable?) 
     }
 }
 
-private fun createKoin(testDispatcher: TestDispatcher, featureModules: List<Module>): Koin {
+private fun createKoin(
+    testScheduler: TestCoroutineScheduler,
+    testDispatcher: TestDispatcher,
+    replicaBehaviourDispatcher: TestDispatcher,
+    featureModules: List<Module>
+): Koin {
     return Koin().apply {
-        loadModules(coreTestModule(testDispatcher) + featureModules)
-        declare(ComponentFactory(this))
+        loadModules(coreTestModule(testScheduler, testDispatcher, replicaBehaviourDispatcher) + featureModules)
         createEagerInstances()
     }
 }
 
-private fun coreTestModule(testDispatcher: TestDispatcher) = module {
+private fun coreTestModule(
+    testScheduler: TestCoroutineScheduler,
+    testDispatcher: TestDispatcher,
+    replicaBehaviourDispatcher: TestDispatcher
+) = module {
     single { MockServer() }
     // ...
-    single { SomeLibraryConfig(dispatcher = testDispatcher) }
+    single {
+        ReplicaClient(
+            networkConnectivityProvider = get(),
+            timeProvider = TestReplicaTimeProvider(testScheduler),
+            mainDispatcher = testDispatcher,
+            behaviourDispatcher = replicaBehaviourDispatcher
+        )
+    }
 }
 
 ```
@@ -319,7 +388,14 @@ private fun coreTestModule(testDispatcher: TestDispatcher) = module {
 В модуле `features` используется тонкая обертка над общей реализацией из `core-testing`: она
 автоматически передает `featureModules`, поэтому в тестах не нужно указывать их вручную.
 
-`integrationTest` всегда выполняет финальный `advanceUntilIdle()` и `mockServer.verify()` перед
+```kotlin
+fun FunSpecRootScope.componentTest(
+    name: String,
+    block: suspend ComponentTestScope.() -> Unit
+) = componentTestImpl(name, featureModules, block)
+```
+
+`componentTest` всегда выполняет финальный `advanceUntilIdle()` и `mockServer.verify()` перед
 закрытием `Koin`. Если основной блок теста уже упал, ошибка финальной проверки добавляется как
 suppressed и не затирает исходную причину падения.
 
@@ -331,13 +407,13 @@ suppressed и не затирает исходную причину падени
 
 `создание контекста -> создание компонента -> перевод жизненного цикла в нужное состояние`
 
-Чтобы убрать бойлерплейт и исключить ошибки в сетапе, в `IntegrationTestScope` добавлены специальные
+Чтобы убрать бойлерплейт и исключить ошибки в сетапе, в `ComponentTestScope` добавлены специальные
 хелперы.
 
 ### Интерфейсы
 
 ```kotlin
-interface IntegrationTestScope : TestScope {
+interface ComponentTestScope : TestScope {
 
     fun <T> setupComponent(
         targetState: Lifecycle.State = Lifecycle.State.RESUMED,
@@ -363,16 +439,45 @@ interface IntegrationTestScope : TestScope {
 **1. Стандартный сценарий**
 
 ```kotlin
-integrationTest("loads screen data successfully") {
+componentTest("loads screen data successfully") {
     val component = setupComponent { createPokemonListComponent(it, {}) }
     ...
 }
 ```
 
-**2. Lifecycle-сценарий**
+**2. Router/root сценарий с подменой child component factory**
+
+Test child component factory для router/root тестов возвращает фейковые component interfaces.
+Router/root компонент сам оборачивает их в `XxxComponent.Child.*` для элементов `ChildStack`.
 
 ```kotlin
-integrationTest("stops loading when the screen moves to background") {
+componentTest("opens pokemon details when pokemon is requested from list") {
+    // 🛠️ Prepare pokemons flow
+    val childComponentFactory = TestPokemonsChildComponentFactory()
+    val component = setupComponent {
+        createPokemonsComponent(it, childComponentFactory)
+    }
+
+    // ✅ Verify pokemon list screen is shown
+    component.childStack.activeChild.shouldBeInstanceOf<PokemonsComponent.Child.List>()
+
+    // ▶️ Request pokemon details from the list screen
+    val pokemonId = PokemonId("77")
+    childComponentFactory.listOutput.emit(
+        PokemonListComponent.Output.PokemonDetailsRequested(pokemonId)
+    )
+
+    // ✅ Verify pokemon details screen is shown for requested pokemon
+    val detailsChild =
+        component.childStack.activeChild.shouldBeInstanceOf<PokemonsComponent.Child.Details>()
+    detailsChild.component.pokemonId shouldBe pokemonId
+}
+```
+
+**3. Lifecycle-сценарий**
+
+```kotlin
+componentTest("stops loading when the screen moves to background") {
     val (component, context) = setupComponentWithContext {
         createPokemonListComponent(it, {})
     }
@@ -386,7 +491,10 @@ integrationTest("stops loading when the screen moves to background") {
 ### Ограничение доступа к `ComponentFactory`
 
 `ComponentFactory` намеренно скрыта внутри приватной реализации скоупа. Это исключает создание
-компонента в обход хелперов.
+компонента в обход хелперов. Она не регистрируется в Koin, а создается внутри test infrastructure
+как `ComponentFactory(koin)`. Даже router/root тесты создают SUT через
+`ComponentFactory.createXxxComponent(..., childComponentFactory = testChildComponentFactory)`, а не
+через прямой вызов `RealXxxComponent(...)`.
 
 ---
 
@@ -437,7 +545,7 @@ fun RequestMatcher.method(value: HttpMethod): RequestMatcher
 class MockServer {
     suspend fun enqueue(
         matcher: RequestMatcher,
-        vararg responses: HttpResponse
+        response: HttpResponse
     )
 
     suspend fun getRecordedRequests(
@@ -454,11 +562,12 @@ class MockServer {
   Compose.
 - Чейнинг означает логическое `AND`: каждый следующий matcher только сужает условие.
 - Реализации `RequestMatcher` - приватные. Публично используем только DSL.
-- Каждый `enqueue` должен быть использован ровно один раз. Незамоканные запросы и неиспользованные
+- Каждый `enqueue` добавляет один одноразовый ответ и должен быть использован ровно один раз.
+  Незамоканные запросы и неиспользованные
   ответы считаются ошибкой теста.
 - Каждый `HttpResponse` по умолчанию задерживается на `DEFAULT_HTTP_RESPONSE_DELAY` виртуального
   времени, чтобы в тестах можно было проверять промежуточные loading-state без ручной настройки задержки.
-- Обычно `verify()` вручную не вызываем: `integrationTest` делает это автоматически в `finally`
+- Обычно `verify()` вручную не вызываем: `componentTest` делает это автоматически в `finally`
   после финального `advanceUntilIdle()`.
 
 ### Примеры
@@ -468,7 +577,7 @@ class MockServer {
 ```kotlin
 mockServer.enqueue(
     RequestMatcher.containsPath("pokemon/77"),
-    HttpResponse(TestPokemons.detailedPonytaJson())
+    HttpResponse(readTestResource("pokemons/ponyta_details.json"))
 )
 ```
 
@@ -477,7 +586,10 @@ mockServer.enqueue(
 ```kotlin
 mockServer.enqueue(
     RequestMatcher.containsPath("pokemon/77"),
-    HttpResponse(TestPokemons.detailedPonytaJson(), delay = Duration.ZERO)
+    HttpResponse(
+        body = readTestResource("pokemons/ponyta_details.json"),
+        delay = Duration.ZERO
+    )
 )
 ```
 
@@ -486,15 +598,18 @@ mockServer.enqueue(
 ```kotlin
 mockServer.enqueue(
     RequestMatcher.containsPath("pokemon/77"),
-    HttpResponse(status = HttpStatusCode.NotFound),
-    HttpResponse(TestPokemons.detailedPonytaJson())
+    HttpResponse(status = HttpStatusCode.NotFound)
+)
+mockServer.enqueue(
+    RequestMatcher.containsPath("pokemon/77"),
+    HttpResponse(readTestResource("pokemons/ponyta_details.json"))
 )
 ```
 
 **Проверка исходящего запроса**
 
 ```kotlin
-integrationTest("sends pokemon data when the form is submitted") {
+componentTest("sends pokemon data when the form is submitted") {
     // 🛠️ Prepare an empty pokemon form
     mockServer.enqueue(
         RequestMatcher.containsPath("pokemons").method(HttpMethod.Post),
@@ -523,9 +638,17 @@ integrationTest("sends pokemon data when the form is submitted") {
 
 ## 7. Виртуальное время
 
-Все интеграционные тесты выполняются внутри с использованием `UnconfinedTestDispatcher`, чтобы
+Все компонентные тесты выполняются внутри с использованием `UnconfinedTestDispatcher`, чтобы
 имитировать поведение `Main.immediate`. Корутинный код стартует сразу и выполняется до первой
 приостановки, а задержки и отложенные задачи остаются под контролем виртуального времени.
+
+Внутри test infrastructure используются два scheduler'а:
+
+- основной `testCoroutineScheduler` для корутин теста, компонентов и `MockServer`;
+- отдельный `replicaBehaviourScheduler` для behaviour timers Replica.
+
+`advanceUntilIdle()` и `advanceTimeBy(...)` продвигают оба scheduler'а согласованно, поэтому в
+тестах обычно не нужно знать об этом разделении.
 
 ### Инструменты
 
@@ -544,15 +667,13 @@ integrationTest("sends pokemon data when the form is submitted") {
 
 ### Сценарий 1. Проверка финального результата
 
-Если промежуточные состояния не важны, используем мгновенный мок и `advanceUntilIdle()`.
+Если промежуточные состояния не важны, используем обычный мок и `advanceUntilIdle()`.
 
 ```kotlin
-integrationTest("loads the default type pokemon list") {
+componentTest("loads the default type pokemon list") {
     // 🛠️ Prepare default type pokemon list data
-    mockServer.enqueue(
-        RequestMatcher.containsPath("type/10"),
-        HttpResponse(TestPokemons.firePokemonsJson())
-    )
+    val pokemons = PokemonListFixture.fire
+    mockServer.enqueuePokemonList(pokemons)
     val component = setupComponent { createPokemonListComponent(it, {}) }
 
     // ▶️ Wait for the initial loading to complete
@@ -560,7 +681,7 @@ integrationTest("loads the default type pokemon list") {
 
     // ✅ Verify the default type list is loaded
     component.pokemonsState.value.loading shouldBe false
-    component.pokemonsState.value.data shouldBe TestPokemons.firePokemons
+    component.pokemonsState.value.data shouldBe pokemons.domain
 }
 ```
 
@@ -570,12 +691,10 @@ integrationTest("loads the default type pokemon list") {
 сразу после action, который запускает загрузку.
 
 ```kotlin
-integrationTest("shows loading while fetching the pokemon list") {
+componentTest("shows loading while fetching the pokemon list") {
     // 🛠️ Prepare pokemon list data
-    mockServer.enqueue(
-        RequestMatcher.containsPath("type/10"),
-        HttpResponse(TestPokemons.firePokemonsJson())
-    )
+    val pokemons = PokemonListFixture.fire
+    mockServer.enqueuePokemonList(pokemons)
     val component = setupComponent { createPokemonListComponent(it, {}) }
 
     // ✅ Verify loading is shown
@@ -586,7 +705,7 @@ integrationTest("shows loading while fetching the pokemon list") {
     
     // ✅ Verify the pokemon list is loaded
     component.pokemonsState.value.loading shouldBe false
-    component.pokemonsState.value.data shouldBe TestPokemons.firePokemons
+    component.pokemonsState.value.data shouldBe pokemons.domain
 }
 ```
 
@@ -604,7 +723,7 @@ integrationTest("shows loading while fetching the pokemon list") {
 
 ### Антипаттерны при проверке `StateFlow`
 
-Ниже правила относятся именно к **интеграционным тестам с виртуальным временем**.
+Ниже правила относятся именно к **компонентным тестам с виртуальным временем**.
 
 **Не используем блокирующие ожидания вроде:**
 
@@ -616,7 +735,7 @@ state.first { !it.loading }
 
 **Не используем Turbine для `StateFlow` в этом типе тестов.**
 
-Не используем Turbine в интеграционных тестах, так как проверки через
+Не используем Turbine в компонентных тестах, так как проверки через
 `state.value` вместе с управлением виртуальным временем проще, понятнее и лучше отражают пользовательский сценарий.
 ---
 
@@ -641,21 +760,20 @@ class OutputCapturer<T> : (T) -> Unit {
 ### Пример использования
 
 ```kotlin
-integrationTest("emits pokemon details output when a pokemon is clicked") {
+componentTest("emits pokemon details output when a pokemon is clicked") {
     // 🛠️ Prepare loaded pokemon list data
-    mockServer.enqueue(
-        RequestMatcher.containsPath("type/10"),
-        HttpResponse(TestPokemons.firePokemonsJson())
-    )
+    val pokemons = PokemonListFixture.fire
+    val pokemon = PokemonDetailsFixture.ponyta
+    mockServer.enqueuePokemonList(pokemons)
     val capturer = OutputCapturer<PokemonListComponent.Output>()
     val component = setupComponent { createPokemonListComponent(it, capturer) }
     advanceUntilIdle()
 
     // ▶️ Click a pokemon item in the list
-    component.onPokemonClick(TestPokemons.detailedPonyta.id)
+    component.onPokemonClick(pokemon.id)
 
     // ✅ Verify the pokemon details output is emitted
-    capturer.last shouldBe PokemonListComponent.Output.PokemonDetailsRequested(TestPokemons.detailedPonyta.id)
+    capturer.last shouldBe PokemonListComponent.Output.PokemonDetailsRequested(pokemon.id)
 }
 ```
 
@@ -669,35 +787,56 @@ capturer.isEmpty shouldBe true
 
 ## 9. Работа с тестовыми данными
 
-Большие JSON-строки не хардкодим в Kotlin-коде. Моковые ответы должны храниться в
-`features/src/commonTest/resources/responses/`.
+Большие JSON-строки не хардкодим в Kotlin-коде. Моковые ответы храним в
+`features/src/commonTest/resources/`, группируя их по предметной области. Сейчас pokemon-ответы
+лежат в `features/src/commonTest/resources/pokemons/`.
 Так тесты остаются читаемыми и ответы удобнее переиспользовать между сценариями.
-Для загрузки используем централизованные helper-объекты и `readTestResource(...)` из
-`core-testing`.
+Для загрузки используем fixtures и `readTestResource(...)` из `core-testing`.
 
 ### Пример
 
 ```kotlin
-object TestPokemons {
-    suspend fun firePokemonsJson(): String = readTestResource("responses/fire_pokemons.json")
-
-    val firePokemons = listOf(
-        Pokemon(id = PokemonId("4"), name = "Charmander")
-    )
+data class PokemonListFixture(
+    val typeId: PokemonTypeId,
+    val resourcePath: String,
+    val domain: List<Pokemon>
+) {
+    companion object {
+        val fire = PokemonListFixture(
+            typeId = PokemonType.Fire.id,
+            resourcePath = "pokemons/fire_pokemons.json",
+            domain = listOf(
+                Pokemon(id = PokemonId("4"), name = "Charmander"),
+                Pokemon(id = PokemonId("77"), name = "Ponyta")
+            )
+        )
+    }
 }
 ```
 
 ### Использование
 
 ```kotlin
-HttpResponse(TestPokemons.firePokemonsJson())
+suspend fun MockServer.enqueuePokemonList(
+    fixture: PokemonListFixture,
+    isError: Boolean = false
+) {
+    enqueue(
+        matcher = RequestMatcher.containsPath("type/${fixture.typeId.value}"),
+        response = if (isError) {
+            HttpResponse(status = HttpStatusCode.NotFound)
+        } else {
+            HttpResponse(readTestResource(fixture.resourcePath))
+        }
+    )
+}
 ```
 
 ---
 
 ## 10. Минимальный набор сценариев для компонента
 
-Для большинства обычных экранных компонентов ожидается, что набор интеграционных тестов покрывает
+Для большинства обычных экранных компонентов ожидается, что набор компонентных тестов покрывает
 как минимум:
 
 - initial load success;
@@ -714,160 +853,139 @@ HttpResponse(TestPokemons.firePokemonsJson())
 
 ---
 
-## 11. Полный пример интеграционных тестов
+## 11. Полный пример компонентных тестов
 
 ```kotlin
-package ru.mobileup.template.features.pokemons.list
+package ru.mobileup.template.features.pokemons.presentation.list
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import io.ktor.http.HttpStatusCode
-import ru.mobileup.template.core_testing.network.HttpResponse
-import ru.mobileup.template.core_testing.network.RequestMatcher
-import ru.mobileup.template.core_testing.network.containsPath
 import ru.mobileup.template.core_testing.utils.OutputCapturer
-import ru.mobileup.template.features.pokemons.TestPokemons
 import ru.mobileup.template.features.pokemons.createPokemonListComponent
-import ru.mobileup.template.features.pokemons.domain.PokemonType
-import ru.mobileup.template.features.pokemons.presentation.list.PokemonListComponent.Output
-import ru.mobileup.template.features.utils.integrationTest
+import ru.mobileup.template.features.pokemons.fixtures.PokemonDetailsFixture
+import ru.mobileup.template.features.pokemons.fixtures.PokemonListFixture
+import ru.mobileup.template.features.pokemons.fixtures.enqueuePokemonList
+import ru.mobileup.template.features.utils.componentTest
 
 class PokemonListComponentTest : FunSpec({
 
-    context("Pokemon list screen") {
+    componentTest("loads pokemon list successfully") {
+        // 🛠️ Prepare pokemon list data for initial loading
+        val pokemons = PokemonListFixture.fire
+        mockServer.enqueuePokemonList(pokemons)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
 
-        integrationTest("loads the default type pokemon list") {
-            // 🛠️ Prepare default type pokemon list data
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/10"),
-                HttpResponse(TestPokemons.firePokemonsJson())
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
+        // ✅ Verify initial loading is shown
+        component.pokemonsState.value.loading shouldBe true
 
-            // ▶️ Wait for the initial loading to complete
-            advanceUntilIdle()
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-            // ✅ Verify the default type list is loaded
-            component.pokemonsState.value.loading shouldBe false
-            component.pokemonsState.value.data shouldBe TestPokemons.firePokemons
-            component.pokemonsState.value.error shouldBe null
-        }
+        // ✅ Verify loaded pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe pokemons.domain
+    }
 
-        integrationTest("emits pokemon details output when a pokemon is clicked") {
-            // 🛠️ Prepare loaded pokemon list data
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/10"),
-                HttpResponse(TestPokemons.firePokemonsJson())
-            )
-            val capturer = OutputCapturer<Output>()
-            val component = setupComponent { createPokemonListComponent(it, capturer) }
-            advanceUntilIdle()
+    componentTest("emits pokemon details output when a pokemon is clicked") {
+        // 🛠️ Prepare pokemon list data for initial loading
+        val pokemons = PokemonListFixture.fire
+        val pokemon = PokemonDetailsFixture.ponyta
+        mockServer.enqueuePokemonList(pokemons)
+        val capturer = OutputCapturer<PokemonListComponent.Output>()
+        val component = setupComponent { createPokemonListComponent(it, capturer) }
 
-            // ▶️ Click a pokemon item in the list
-            component.onPokemonClick(TestPokemons.detailedPonyta.id)
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-            // ✅ Verify the pokemon details output is emitted
-            capturer.last shouldBe Output.PokemonDetailsRequested(TestPokemons.detailedPonyta.id)
-        }
+        // ▶️ Click a pokemon item in the list
+        component.onPokemonClick(pokemon.id)
 
-        integrationTest("shows an error when initial loading fails") {
-            // 🛠️ Prepare failed initial loading
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/10"),
-                HttpResponse(status = HttpStatusCode.NotFound)
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
+        // ✅ Verify the pokemon details output is emitted
+        capturer.last shouldBe PokemonListComponent.Output.PokemonDetailsRequested(pokemon.id)
+    }
 
-            // ▶️ Wait for the failed loading to complete
-            advanceUntilIdle()
+    componentTest("shows error when pokemon list loading fails") {
+        // 🛠️ Prepare failed pokemon list loading
+        val pokemons = PokemonListFixture.fire
+        mockServer.enqueuePokemonList(pokemons, isError = true)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
 
-            // ✅ Verify the error state is shown
-            component.pokemonsState.value.loading shouldBe false
-            component.pokemonsState.value.error.shouldNotBeNull()
-            component.pokemonsState.value.data shouldBe null
-        }
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-        integrationTest("reloads pokemon list when refresh is requested after error") {
-            // 🛠️ Prepare failed initial loading and successful retry
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/10"),
-                HttpResponse(status = HttpStatusCode.NotFound),
-                HttpResponse(TestPokemons.firePokemonsJson())
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
-            advanceUntilIdle()
+        // ✅ Verify failed pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.data shouldBe null
+        component.pokemonsState.value.error.shouldNotBeNull()
+    }
 
-            // ▶️ Refresh loading the current list
-            component.onRefresh()
+    componentTest("reloads pokemon list after error") {
+        // 🛠️ Prepare failed initial loading and successful retry
+        val pokemons = PokemonListFixture.fire
+        mockServer.enqueuePokemonList(pokemons, isError = true)
+        mockServer.enqueuePokemonList(pokemons)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
 
-            // ✅ Verify loading starts again
-            component.pokemonsState.value.loading shouldBe true
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-            // ▶️ Wait for the retry loading to complete
-            advanceUntilIdle()
+        // ✅ Verify failed pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.data shouldBe null
+        component.pokemonsState.value.error.shouldNotBeNull()
 
-            // ✅ Verify the list is loaded after retry
-            component.pokemonsState.value.loading shouldBe false
-            component.pokemonsState.value.error shouldBe null
-            component.pokemonsState.value.data shouldBe TestPokemons.firePokemons
-        }
+        // ▶️ Refresh pokemon list
+        component.onRefresh()
 
-        integrationTest("loads pokemon list for the selected type") {
-            // 🛠️ Prepare default and selected pokemon list data
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/10"),
-                HttpResponse(TestPokemons.firePokemonsJson())
-            )
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/11"),
-                HttpResponse(TestPokemons.waterPokemonsJson())
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
-            advanceUntilIdle()
+        // ✅ Verify loading starts again
+        component.pokemonsState.value.loading shouldBe true
 
-            // ▶️ Select another type and wait for its list to load
-            component.onTypeClick(PokemonType.Water.id)
-            advanceUntilIdle()
+        // ▶️ Wait for retry loading to complete
+        advanceUntilIdle()
 
-            // ✅ Verify the selected type and list are updated
-            component.selectedTypeId.value shouldBe PokemonType.Water.id
-            component.pokemonsState.value.data shouldBe TestPokemons.waterPokemons
-        }
+        // ✅ Verify loaded pokemon list state after retry
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe pokemons.domain
+    }
 
-        integrationTest("shows loading during refresh and keeps current data") {
-            // 🛠️ Prepare initial and refreshed pokemon list data
-            mockServer.enqueue(
-                RequestMatcher.containsPath("type/10"),
-                HttpResponse(TestPokemons.firePokemonsJson()),
-                HttpResponse(TestPokemons.firePokemonsJson())
-            )
-            val component = setupComponent { createPokemonListComponent(it, {}) }
-            advanceUntilIdle()
+    componentTest("loads selected type pokemon list while keeping previous data") {
+        // 🛠️ Prepare default and selected type pokemon list data
+        val initialPokemons = PokemonListFixture.fire
+        val selectedTypePokemons = PokemonListFixture.water
+        mockServer.enqueuePokemonList(initialPokemons)
+        mockServer.enqueuePokemonList(selectedTypePokemons)
+        val component = setupComponent { createPokemonListComponent(it, {}) }
 
-            // ▶️ Refresh the current list
-            component.onRefresh()
+        // ▶️ Wait for the initial loading to complete
+        advanceUntilIdle()
 
-            // ✅ Verify loading is shown while keeping current data
-            component.pokemonsState.value.loading shouldBe true
-            component.pokemonsState.value.data shouldBe TestPokemons.firePokemons
+        // ▶️ Select another pokemon type
+        component.onTypeClick(selectedTypePokemons.typeId)
 
-            // ▶️ Wait for the refresh to complete
-            advanceUntilIdle()
+        // ✅ Verify previous pokemon list is kept while selected type is loading
+        component.selectedTypeId.value shouldBe selectedTypePokemons.typeId
+        component.pokemonsState.value.loading shouldBe true
+        component.pokemonsState.value.data shouldBe initialPokemons.domain
 
-            // ✅ Verify loading is hidden and the current list is preserved
-            component.pokemonsState.value.loading shouldBe false
-            component.pokemonsState.value.data shouldBe TestPokemons.firePokemons
-        }
+        // ▶️ Wait for selected type loading to complete
+        advanceUntilIdle()
+
+        // ✅ Verify loaded selected pokemon list state
+        component.pokemonsState.value.loading shouldBe false
+        component.pokemonsState.value.error shouldBe null
+        component.pokemonsState.value.data shouldBe selectedTypePokemons.domain
     }
 })
 ```
 
 ---
 
-## 12. Границы применимости интеграционных тестов
+## 12. Границы применимости компонентных тестов
 
-Несмотря на удобство `integrationTest`, не стоит использовать его для всех сценариев. Поднятие
+Несмотря на удобство `componentTest`, не стоит использовать его для всех сценариев. Поднятие
 Koin-графа и MockServer — тяжелая инфраструктура. Сложную логику с множеством ветвлений — мапперы,
 валидацию, расчеты, краевые случаи — нужно покрывать быстрыми юнит-тестами через обычный `test`,
 прямое создание объекта и fake-зависимости. 

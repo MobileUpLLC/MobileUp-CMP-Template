@@ -44,8 +44,21 @@ of business logic.
 ### Factories
 
 - Create real components through `ComponentFactory.createXxxComponent(...)` extension functions.
-- Parents call factory methods; do not instantiate `RealXxxComponent` directly.
+- Parents and tests call factory methods; do not instantiate `RealXxxComponent` directly.
 - Keep dependency wiring in DI/factory code, not in parent components.
+- `RealXxxComponent` must not depend on `ComponentFactory` directly.
+- If a component creates embedded, dialog, or navigation child components, introduce an
+  `XxxChildComponentFactory` and inject that factory into the component.
+- Router/root `createXxxComponent(...)` functions accept a `childComponentFactory` parameter with
+  a production default `RealXxxChildComponentFactory(this)`.
+- Router/root implementations depend on `XxxChildComponentFactory`, not on the general
+  `ComponentFactory`.
+- `XxxChildComponentFactory` methods are named like regular component factory methods:
+  `createYyyComponent(...)`.
+- `XxxChildComponentFactory` methods return component interfaces directly, never
+  `XxxComponent.Child.*`.
+- Router/root `createChild(...)` implementations wrap child components into
+  `XxxComponent.Child.*`.
 
 ### Navigation
 

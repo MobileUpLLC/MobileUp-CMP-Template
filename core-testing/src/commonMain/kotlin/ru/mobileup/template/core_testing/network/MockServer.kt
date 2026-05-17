@@ -6,7 +6,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration
 
 /**
- * In-memory mock server used by integration tests.
+ * In-memory mock server used by component tests.
  *
  * Responses are queued as one-time rules and consumed in request order.
  */

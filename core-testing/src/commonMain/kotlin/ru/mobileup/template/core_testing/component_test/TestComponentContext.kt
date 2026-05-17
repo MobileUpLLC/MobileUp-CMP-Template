@@ -1,4 +1,4 @@
-package ru.mobileup.template.core_testing.integration_test
+package ru.mobileup.template.core_testing.component_test
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ComponentContextFactory

@@ -6,11 +6,11 @@ import io.kotest.matchers.shouldBe
 import ru.mobileup.template.features.pokemons.fixtures.PokemonDetailsFixture
 import ru.mobileup.template.features.pokemons.createPokemonDetailsComponent
 import ru.mobileup.template.features.pokemons.fixtures.enqueuePokemonDetails
-import ru.mobileup.template.features.utils.integrationTest
+import ru.mobileup.template.features.utils.componentTest
 
 class PokemonDetailsComponentTest : FunSpec({
 
-    integrationTest("loads pokemon details successfully") {
+    componentTest("loads pokemon details successfully") {
         // 🛠️ Prepare pokemon details data for initial loading
         val pokemon = PokemonDetailsFixture.ponyta
         mockServer.enqueuePokemonDetails(pokemon)
@@ -28,7 +28,7 @@ class PokemonDetailsComponentTest : FunSpec({
         component.pokemonState.value.data shouldBe pokemon.domain
     }
 
-    integrationTest("shows error when pokemon details loading fails") {
+    componentTest("shows error when pokemon details loading fails") {
         // 🛠️ Prepare failed pokemon details loading
         val pokemon = PokemonDetailsFixture.ponyta
         mockServer.enqueuePokemonDetails(pokemon, isError = true)
@@ -43,7 +43,7 @@ class PokemonDetailsComponentTest : FunSpec({
         component.pokemonState.value.error.shouldNotBeNull()
     }
 
-    integrationTest("reloads pokemon details after error") {
+    componentTest("reloads pokemon details after error") {
         // 🛠️ Prepare failed initial loading and successful retry
         val pokemon = PokemonDetailsFixture.ponyta
         mockServer.enqueuePokemonDetails(pokemon, isError = true)
@@ -73,7 +73,7 @@ class PokemonDetailsComponentTest : FunSpec({
         component.pokemonState.value.data shouldBe pokemon.domain
     }
 
-    integrationTest("shows loading during refresh and updates pokemon details") {
+    componentTest("shows loading during refresh and updates pokemon details") {
         // 🛠️ Prepare initial and refreshed pokemon details data
         val initialPokemon = PokemonDetailsFixture.ponyta
         val updatedPokemon = PokemonDetailsFixture.ponytaUpdated

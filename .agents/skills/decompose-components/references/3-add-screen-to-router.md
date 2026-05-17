@@ -36,11 +36,11 @@ data class Filter(val currentFilter: ItemFilter) : ChildConfig
 data class Filter(val component: ItemFilterComponent) : Child
 ```
 
-5. Handle the new config in `createChild(...)`:
+5. Add the new screen to `XxxChildComponentFactory` / `RealXxxChildComponentFactory`, then handle the new config in `createChild(...)`:
 
 ```kotlin
 is ChildConfig.Filter -> ItemsComponent.Child.Filter(
-    componentFactory.createItemFilterComponent(
+    childComponentFactory.createItemFilterComponent(
         componentContext = componentContext,
         currentFilter = childConfig.currentFilter,
         onOutput = ::onItemFilterOutput
@@ -83,6 +83,7 @@ is ItemsComponent.Child.Filter -> ItemFilterUi(instance.component)
 
 - [ ] The new screen has all 4 files.
 - [ ] `ComponentFactory` can create the screen.
+- [ ] `XxxChildComponentFactory` and `RealXxxChildComponentFactory` can create the component.
 - [ ] `ChildConfig` and `Child` both include the new screen.
 - [ ] `createChild(...)` handles the new config.
 - [ ] Router output handling is updated if the screen emits `Output`.

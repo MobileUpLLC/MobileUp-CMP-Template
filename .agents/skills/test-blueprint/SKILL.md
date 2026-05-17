@@ -18,13 +18,13 @@ code, or run validation as part of this skill.
 ## Workflow
 
 1. Inspect the SUT and nearby tests before drafting.
-2. Choose the test type: integration or unit.
+2. Choose the test type: component or unit.
 3. Produce the canonical blueprint format.
 
 ## Choosing Test Type
 
-Use **integration** for component-level behavior through DI, repository, mock network, parsing,
-state, outputs, or navigation.
+Use **component** for Decompose component behavior: screen state, outputs, data loading through DI
+and mock network, router navigation, root navigation, parameter passing, messages, and dialogs.
 
 Use **unit** for non-trivial domain logic: algorithms, calculations, validation rules, state
 reducers, branching/combinatorics.
@@ -34,7 +34,7 @@ reducers, branching/combinatorics.
 Use this shape:
 
 ```text
-<SUT>Test (integration)
+<SUT>Test (component)
 
 - observable behavior name
   🛠️ Prepare scenario data or test subject
@@ -44,7 +44,7 @@ Use this shape:
 
 Rules:
 
-- Header is `<SUT>Test (integration)` or `<SUT>Test (unit)`.
+- Header is `<SUT>Test (component)` or `<SUT>Test (unit)`.
 - Test names are bullet items.
 - Test names describe observable behavior in short present-simple English.
 - Do not use `should` in test names.
@@ -63,11 +63,9 @@ Rules:
 - `✅` means verification: observable state, output events, navigation stack, error state/message,
   final calculated result, preserved previous data, or observable external calls.
 - Waiting must be explicit as a `▶️` step, for example: `▶️ Wait for the initial loading to complete`.
-- Integration blueprints must describe required prepared data or loading outcomes in `🛠️` steps.
-  Name scenario conditions, not exact fixture names, JSON files, matcher details, or mock server
-  mechanics.
-- Mock servers fail on unmocked requests, so router tests may need child-screen data even
-  when the blueprint only verifies navigation.
+- Component blueprints must describe required prepared data, loading outcomes, or flow setup
+  in `🛠️` steps. Name scenario conditions, not exact fixture names, JSON files, matcher details,
+  mock server mechanics, or child factory implementation details.
 - Verify external calls only when the call is the behavior under test, for example 
   submitting a form to the backend or logging an analytics event.
 
@@ -76,7 +74,7 @@ Rules:
 ### Coverage Principles
 
 - Keep one test focused on one behavior.
-- Multi-step temporal flows are allowed for integration tests when they describe one behavior over time.
+- Multi-step temporal flows are allowed for component tests when they describe one behavior over time.
 - Avoid exhaustive permutations and low-value tests that do not increase confidence.
 - Each tested Decompose component gets its own <ComponentName>Test blueprint.
 
@@ -89,25 +87,16 @@ Rules:
 
 ### Router Decompose Component Coverage
 
-For feature routers:
+For routers:
 
-- Always cover the initial child screen as the router smoke test.
+- Always cover the initial child as the component smoke test.
 - Add other router tests only for routing decisions owned by project code: child output to
   screen/config mapping, parameter passing, conditional navigation, and custom back or close
   behavior.
 - Do not test standard Decompose mechanics in every router: `handleBackButton`, simple `pop`,
-  or duplicate safety from project navigation helpers.
-- Keep router tests focused on navigation. If real child components trigger loading, prepare the
-  required child data, but do not assert loaded child state unless data loading is part of the
-  router behavior being proved.
-
-Do not cover `RootComponent` with tests in the current strategy, even when the app has multiple
-top-level features. The feature-router approach does not scale to root tests: root creates
-top-level flows, those flows create nested routers/screens and trigger their data loading, and a
-root test quickly becomes a broad traversal through feature internals with setup data the root does
-not own. AI agents must not propose or design root testing infrastructure on their own. Do not add root
-tests, root factories, start-destination hooks, fake top-level flows, or similar seams unless root
-testing strategy is explicitly initiated by the lead developer.
+  or duplicate safety.
+- Keep router tests focused on navigation. Prefer test child factories with fake children over
+  real child components.
 
 ### Unit Test Coverage
 
@@ -115,7 +104,7 @@ testing strategy is explicitly initiated by the lead developer.
   combinatorial cases, or business rules that can be checked without DI, components, or network.
 - Use table tests only for unit tests where the same rule is checked against multiple input
   variants.
-- Do not hide non-trivial algorithms or combinatorics inside component/integration tests. If logic
+- Do not hide non-trivial algorithms or combinatorics inside component tests. If logic
   has many branches or cases, design a separate unit blueprint for that logic.
 
 ### When Not to Add a Separate Test
@@ -124,7 +113,7 @@ testing strategy is explicitly initiated by the lead developer.
 - Do not test private implementation details or internal calls.
 - Do not add unit tests for trivial DTO/entity mappers, one-to-one field copies, enum/name
   conversions, thin formatters, or pass-through wrappers.
-- Do not add a unit test when the behavior is already covered by an integration/component test
+- Do not add a unit test when the behavior is already covered by a component test
   through observable state or output and the unit test would not add confidence.
 - Do not split steps of one coherent user scenario into separate tests unless each step is
   independently meaningful.

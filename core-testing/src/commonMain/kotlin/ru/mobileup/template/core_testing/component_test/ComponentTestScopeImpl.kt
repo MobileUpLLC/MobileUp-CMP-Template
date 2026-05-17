@@ -1,4 +1,4 @@
-package ru.mobileup.template.core_testing.integration_test
+package ru.mobileup.template.core_testing.component_test
 
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import io.kotest.core.test.TestScope
@@ -19,18 +19,18 @@ import ru.mobileup.template.core_testing.test_services.TestPermissionService
 import kotlin.time.Duration
 
 /**
- * Default implementation of [IntegrationTestScope].
+ * Default implementation of [ComponentTestScope].
  *
  * Bridges Kotest test scope, Koin graph, and coroutine test scheduler.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class IntegrationTestScopeImpl(
+internal class ComponentTestScopeImpl(
     koin: Koin,
     private val kotestScope: TestScope,
     private val testScheduler: TestCoroutineScheduler,
     private val replicaBehaviourScheduler: TestCoroutineScheduler,
     private val testDispatcher: TestDispatcher
-) : IntegrationTestScope, TestScope by kotestScope {
+) : ComponentTestScope, TestScope by kotestScope {
 
     override val mockServer: MockServer = koin.get()
 
@@ -46,7 +46,7 @@ internal class IntegrationTestScopeImpl(
     override val networkConnectivityProvider: TestNetworkConnectivityProvider =
         koin.get<NetworkConnectivityProvider>() as TestNetworkConnectivityProvider
 
-    private val componentFactory: ComponentFactory = koin.get()
+    private val componentFactory = ComponentFactory(koin)
 
     override fun advanceUntilIdle() {
         val startTime = testScheduler.currentTime

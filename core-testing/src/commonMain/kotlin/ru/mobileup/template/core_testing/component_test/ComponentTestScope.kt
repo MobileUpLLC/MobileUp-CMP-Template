@@ -1,4 +1,4 @@
-package ru.mobileup.template.core_testing.integration_test
+package ru.mobileup.template.core_testing.component_test
 
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import io.kotest.core.test.TestScope
@@ -11,11 +11,11 @@ import ru.mobileup.template.core_testing.test_services.TestPermissionService
 import kotlin.time.Duration
 
 /**
- * Test DSL context used inside integration tests.
+ * Test DSL context used inside component tests.
  *
  * Provides access to mock infrastructure, virtual time controls, and component setup helpers.
  */
-interface IntegrationTestScope : TestScope {
+interface ComponentTestScope : TestScope {
     val mockServer: MockServer
     val messageService: TestMessageService
     val permissionService: TestPermissionService

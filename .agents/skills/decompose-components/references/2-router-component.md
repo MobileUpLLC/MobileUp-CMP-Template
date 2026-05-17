@@ -40,9 +40,51 @@ interface ItemFilterComponent {
 ## Real
 
 ```kotlin
+interface ItemsChildComponentFactory {
+    fun createItemListComponent(
+        componentContext: ComponentContext,
+        onOutput: (ItemListComponent.Output) -> Unit
+    ): ItemListComponent
+
+    fun createItemDetailsComponent(
+        componentContext: ComponentContext,
+        itemId: ItemId
+    ): ItemDetailsComponent
+
+    fun createItemFilterComponent(
+        componentContext: ComponentContext,
+        currentFilter: ItemFilter,
+        onOutput: (ItemFilterComponent.Output) -> Unit
+    ): ItemFilterComponent
+}
+```
+
+```kotlin
+class RealItemsChildComponentFactory(
+    private val componentFactory: ComponentFactory
+) : ItemsChildComponentFactory {
+    override fun createItemListComponent(
+        componentContext: ComponentContext,
+        onOutput: (ItemListComponent.Output) -> Unit
+    ) = componentFactory.createItemListComponent(componentContext, onOutput)
+
+    override fun createItemDetailsComponent(
+        componentContext: ComponentContext,
+        itemId: ItemId
+    ) = componentFactory.createItemDetailsComponent(componentContext, itemId)
+
+    override fun createItemFilterComponent(
+        componentContext: ComponentContext,
+        currentFilter: ItemFilter,
+        onOutput: (ItemFilterComponent.Output) -> Unit
+    ) = componentFactory.createItemFilterComponent(componentContext, currentFilter, onOutput)
+}
+```
+
+```kotlin
 class RealItemsComponent(
     componentContext: ComponentContext,
-    private val componentFactory: ComponentFactory
+    private val childComponentFactory: ItemsChildComponentFactory
 ) : ComponentContext by componentContext, ItemsComponent {
 
     private val navigation = StackNavigation<ChildConfig>()
@@ -62,19 +104,19 @@ class RealItemsComponent(
         componentContext: ComponentContext
     ): ItemsComponent.Child = when (childConfig) {
         ChildConfig.List -> ItemsComponent.Child.List(
-            componentFactory.createItemListComponent(
+            childComponentFactory.createItemListComponent(
                 componentContext = componentContext,
                 onOutput = ::onItemListOutput
             )
         )
         is ChildConfig.Details -> ItemsComponent.Child.Details(
-            componentFactory.createItemDetailsComponent(
+            childComponentFactory.createItemDetailsComponent(
                 componentContext = componentContext,
                 itemId = childConfig.itemId
             )
         )
         is ChildConfig.Filter -> ItemsComponent.Child.Filter(
-            componentFactory.createItemFilterComponent(
+            childComponentFactory.createItemFilterComponent(
                 componentContext = componentContext,
                 currentFilter = childConfig.currentFilter,
                 onOutput = ::onItemFilterOutput
@@ -121,6 +163,17 @@ class RealItemsComponent(
 ```
 
 `ItemDetailsComponent` has no `Output` here. Back navigation is handled by childStack automatically.
+
+## Factory
+
+```kotlin
+fun ComponentFactory.createItemsComponent(
+    componentContext: ComponentContext,
+    childComponentFactory: ItemsChildComponentFactory = RealItemsChildComponentFactory(this)
+): ItemsComponent {
+    return RealItemsComponent(componentContext, childComponentFactory)
+}
+```
 
 ## Fake
 

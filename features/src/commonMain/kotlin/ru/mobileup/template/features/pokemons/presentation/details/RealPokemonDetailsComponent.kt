@@ -9,7 +9,7 @@ import ru.mobileup.template.features.pokemons.domain.PokemonId
 
 class RealPokemonDetailsComponent(
     componentContext: ComponentContext,
-    pokemonId: PokemonId,
+    override val pokemonId: PokemonId,
     pokemonRepository: PokemonRepository,
     errorHandler: ErrorHandler
 ) : ComponentContext by componentContext, PokemonDetailsComponent {
