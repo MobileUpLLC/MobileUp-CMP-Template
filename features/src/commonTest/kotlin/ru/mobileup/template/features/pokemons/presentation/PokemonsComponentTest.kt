@@ -6,6 +6,7 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import ru.mobileup.template.core.utils.activeChild
 import ru.mobileup.template.features.pokemons.createPokemonsComponent
 import ru.mobileup.template.features.pokemons.domain.PokemonId
+import ru.mobileup.template.features.pokemons.presentation.list.FakePokemonListComponent
 import ru.mobileup.template.features.pokemons.presentation.list.PokemonListComponent
 import ru.mobileup.template.features.utils.componentTest
 
@@ -30,11 +31,13 @@ class PokemonsComponentTest : FunSpec({
         }
 
         // ✅ Verify pokemon list screen is shown
-        component.childStack.activeChild.shouldBeInstanceOf<PokemonsComponent.Child.List>()
+        val listChild =
+            component.childStack.activeChild.shouldBeInstanceOf<PokemonsComponent.Child.List>()
 
         // ▶️ Request pokemon details from the list screen
         val pokemonId = PokemonId("77")
-        childComponentFactory.listOutput.emit(
+        val listComponent = listChild.component.shouldBeInstanceOf<FakePokemonListComponent>()
+        listComponent.emitOutput(
             PokemonListComponent.Output.PokemonDetailsRequested(pokemonId)
         )
 

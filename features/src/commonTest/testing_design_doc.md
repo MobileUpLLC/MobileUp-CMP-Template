@@ -448,6 +448,8 @@ componentTest("loads screen data successfully") {
 **2. Router/root сценарий с подменой child component factory**
 
 Test child component factory для router/root тестов возвращает фейковые component interfaces.
+Если child component сообщает события родителю через `Output`, fake принимает callback создания и
+дает тесту ручку `emitOutput(...)`.
 Router/root компонент сам оборачивает их в `XxxComponent.Child.*` для элементов `ChildStack`.
 
 ```kotlin
@@ -459,11 +461,13 @@ componentTest("opens pokemon details when pokemon is requested from list") {
     }
 
     // ✅ Verify pokemon list screen is shown
-    component.childStack.activeChild.shouldBeInstanceOf<PokemonsComponent.Child.List>()
+    val listChild =
+        component.childStack.activeChild.shouldBeInstanceOf<PokemonsComponent.Child.List>()
 
     // ▶️ Request pokemon details from the list screen
     val pokemonId = PokemonId("77")
-    childComponentFactory.listOutput.emit(
+    val listComponent = listChild.component.shouldBeInstanceOf<FakePokemonListComponent>()
+    listComponent.emitOutput(
         PokemonListComponent.Output.PokemonDetailsRequested(pokemonId)
     )
 

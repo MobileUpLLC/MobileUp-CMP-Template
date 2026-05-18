@@ -7,7 +7,9 @@ import ru.mobileup.template.features.pokemons.domain.PokemonId
 import ru.mobileup.template.features.pokemons.domain.PokemonType
 import ru.mobileup.template.features.pokemons.domain.PokemonTypeId
 
-class FakePokemonListComponent : PokemonListComponent {
+class FakePokemonListComponent(
+    private val onOutput: (PokemonListComponent.Output) -> Unit = {}
+) : PokemonListComponent {
 
     override val types = listOf(
         PokemonType.Fire,
@@ -20,6 +22,10 @@ class FakePokemonListComponent : PokemonListComponent {
     override val selectedTypeId = MutableStateFlow(types[0].id)
 
     override val pokemonsState = MutableStateFlow(LoadableState(data = Pokemon.MOCK_LIST))
+
+    fun emitOutput(output: PokemonListComponent.Output) {
+        onOutput(output)
+    }
 
     override fun onTypeClick(typeId: PokemonTypeId) = Unit
 

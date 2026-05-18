@@ -46,8 +46,14 @@ class RealItemListComponent(
 ## Fake
 
 ```kotlin
-class FakeItemListComponent : ItemListComponent {
+class FakeItemListComponent(
+    private val onOutput: (ItemListComponent.Output) -> Unit = {}
+) : ItemListComponent {
     override val itemsState = MutableStateFlow(LoadableState(data = Item.MOCK_LIST))
+
+    fun emitOutput(output: ItemListComponent.Output) {
+        onOutput(output)
+    }
 
     override fun onRefresh() = Unit
 
@@ -100,3 +106,5 @@ private fun ItemListUiPreview() {
   then `Output`.
 - Name component methods as user events with `onSomething`, not commands like `doSomething`.
 - Make `Output` events meaningful to the parent instead of exposing internal implementation details.
+- Fake components with `Output` accept an output callback with a no-op default and expose
+  `emitOutput(output)` for tests.

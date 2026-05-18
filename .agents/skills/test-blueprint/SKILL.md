@@ -96,7 +96,7 @@ For routers:
 - Do not test standard Decompose mechanics in every router: `handleBackButton`, simple `pop`,
   or duplicate safety.
 - Keep router tests focused on navigation. Prefer test child factories with fake children over
-  real child components.
+  real child components. Initiate child outputs through the active fake child from the router stack.
 
 ### Unit Test Coverage
 

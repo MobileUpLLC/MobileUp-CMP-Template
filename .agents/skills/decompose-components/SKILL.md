@@ -40,6 +40,8 @@ of business logic.
 - For output names prefer completed domain events that let the parent choose the reaction: `ItemSaved`, `LoggedOut`.
 - Use `<Something>Requested` only when the child action has one clear meaning and a completed event would feel
   artificial: `ItemDetailsRequested`, `FilterRequested`.
+- A fake component with `Output` has to accept an output callback with a no-op default and expose
+  `emitOutput(output)` for tests.
 
 ### Factories
 
