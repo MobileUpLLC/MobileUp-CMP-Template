@@ -109,7 +109,7 @@ Text(
 
 - Always implement previews for screens and custom widgets.
 - Wrap with `AppTheme`.
-- Use fake components or entity `MOCK` data.
+- Use fake components or entity `FAKE` data.
 - Add multiple previews only for widgets to display meaningful visual states.
 
 ```kotlin

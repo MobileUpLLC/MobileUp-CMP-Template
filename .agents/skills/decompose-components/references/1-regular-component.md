@@ -49,7 +49,7 @@ class RealItemListComponent(
 class FakeItemListComponent(
     private val onOutput: (ItemListComponent.Output) -> Unit = {}
 ) : ItemListComponent {
-    override val itemsState = MutableStateFlow(LoadableState(data = Item.MOCK_LIST))
+    override val itemsState = MutableStateFlow(LoadableState(data = Item.FAKE_LIST))
 
     fun emitOutput(output: ItemListComponent.Output) {
         onOutput(output)

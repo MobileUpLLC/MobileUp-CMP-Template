@@ -17,6 +17,6 @@ fun ComponentContext.standardDialogControl(
     )
 }
 
-fun fakeStandardDialogControl(data: StandardDialogData = StandardDialogData.MOCK): StandardDialogControl {
+fun fakeStandardDialogControl(data: StandardDialogData = StandardDialogData.FAKE): StandardDialogControl {
     return fakeSimpleDialogControl(data)
 }

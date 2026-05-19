@@ -12,7 +12,7 @@ data class StandardDialogData(
 ) {
 
     companion object {
-        val MOCK = StandardDialogData(
+        val FAKE = StandardDialogData(
             title = "Title".desc(),
             message = "Message".desc(),
             confirmButton = DialogButton(text = "Next".desc()),

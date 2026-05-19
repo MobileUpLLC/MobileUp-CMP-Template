@@ -9,7 +9,7 @@ data class DetailedPokemon(
     val types: List<PokemonType>
 ) {
     companion object {
-        val MOCK = DetailedPokemon(
+        val FAKE = DetailedPokemon(
             id = PokemonId("1"),
             name = "Bulbasaur",
             imageUrl = "",

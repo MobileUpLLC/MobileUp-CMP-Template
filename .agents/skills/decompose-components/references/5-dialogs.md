@@ -69,7 +69,7 @@ data class InfoDialogData(
     val message: StringDesc
 ) {
     companion object {
-        val MOCK = InfoDialogData(
+        val FAKE = InfoDialogData(
             title = "Why we need this permission".desc(),
             message = "We use it to prefill your profile data.".desc()
         )
@@ -83,12 +83,12 @@ class RealProfileComponent(
     override val infoDialog = simpleDialogControl(key = "infoDialog")
 
     override fun onInfoClick() {
-        infoDialog.show(InfoDialogData.MOCK)
+        infoDialog.show(InfoDialogData.FAKE)
     }
 }
 
 class FakeProfileComponent : ProfileComponent {
-    override val infoDialog = fakeSimpleDialogControl(InfoDialogData.MOCK)
+    override val infoDialog = fakeSimpleDialogControl(InfoDialogData.FAKE)
 
     override fun onInfoClick() = Unit
 }

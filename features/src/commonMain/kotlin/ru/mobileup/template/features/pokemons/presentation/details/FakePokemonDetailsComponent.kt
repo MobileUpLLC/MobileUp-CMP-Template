@@ -6,10 +6,10 @@ import ru.mobileup.template.features.pokemons.domain.DetailedPokemon
 import ru.mobileup.template.features.pokemons.domain.PokemonId
 
 class FakePokemonDetailsComponent(
-    override val pokemonId: PokemonId = DetailedPokemon.MOCK.id
+    override val pokemonId: PokemonId = DetailedPokemon.FAKE.id
 ) : PokemonDetailsComponent {
 
-    override val pokemonState = MutableStateFlow(LoadableState(data = DetailedPokemon.MOCK))
+    override val pokemonState = MutableStateFlow(LoadableState(data = DetailedPokemon.FAKE))
 
     override fun onRefresh() = Unit
 }

@@ -21,7 +21,7 @@ class FakePokemonListComponent(
 
     override val selectedTypeId = MutableStateFlow(types[0].id)
 
-    override val pokemonsState = MutableStateFlow(LoadableState(data = Pokemon.MOCK_LIST))
+    override val pokemonsState = MutableStateFlow(LoadableState(data = Pokemon.FAKE_LIST))
 
     fun emitOutput(output: PokemonListComponent.Output) {
         onOutput(output)

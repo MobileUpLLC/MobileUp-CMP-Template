@@ -12,7 +12,7 @@ data class Pokemon(
     val name: String
 ) {
     companion object {
-        val MOCK_LIST = listOf(
+        val FAKE_LIST = listOf(
             Pokemon(
                 id = PokemonId("1"),
                 name = "Bulbasaur"
