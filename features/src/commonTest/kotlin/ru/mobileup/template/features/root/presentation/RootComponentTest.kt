@@ -10,7 +10,7 @@ class RootComponentTest : FunSpec({
 
     componentTest("shows pokemons flow as initial screen") {
         // 🛠️ Prepare root flow
-        val childComponentFactory = TestRootChildComponentFactory()
+        val childComponentFactory = FakeRootChildComponentFactory()
         val component = setupComponent {
             createRootComponent(it, childComponentFactory)
         }

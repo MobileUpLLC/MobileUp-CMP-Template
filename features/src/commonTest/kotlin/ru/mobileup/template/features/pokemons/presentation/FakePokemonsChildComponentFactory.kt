@@ -7,7 +7,7 @@ import ru.mobileup.template.features.pokemons.presentation.details.PokemonDetail
 import ru.mobileup.template.features.pokemons.presentation.list.FakePokemonListComponent
 import ru.mobileup.template.features.pokemons.presentation.list.PokemonListComponent
 
-class TestPokemonsChildComponentFactory : PokemonsChildComponentFactory {
+class FakePokemonsChildComponentFactory : PokemonsChildComponentFactory {
 
     override fun createPokemonListComponent(
         componentContext: ComponentContext,

@@ -14,7 +14,7 @@ class PokemonsComponentTest : FunSpec({
 
     componentTest("shows pokemon list as initial screen") {
         // 🛠️ Prepare pokemons flow
-        val childComponentFactory = TestPokemonsChildComponentFactory()
+        val childComponentFactory = FakePokemonsChildComponentFactory()
         val component = setupComponent {
             createPokemonsComponent(it, childComponentFactory)
         }
@@ -25,7 +25,7 @@ class PokemonsComponentTest : FunSpec({
 
     componentTest("opens pokemon details when pokemon is requested from list") {
         // 🛠️ Prepare pokemons flow
-        val childComponentFactory = TestPokemonsChildComponentFactory()
+        val childComponentFactory = FakePokemonsChildComponentFactory()
         val component = setupComponent {
             createPokemonsComponent(it, childComponentFactory)
         }

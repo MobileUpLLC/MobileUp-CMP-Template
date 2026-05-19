@@ -6,7 +6,7 @@ import ru.mobileup.template.core.message.presentation.MessageComponent
 import ru.mobileup.template.features.pokemons.presentation.FakePokemonsComponent
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
 
-class TestRootChildComponentFactory : RootChildComponentFactory {
+class FakeRootChildComponentFactory : RootChildComponentFactory {
 
     override fun createPokemonsComponent(componentContext: ComponentContext): PokemonsComponent {
         return FakePokemonsComponent()

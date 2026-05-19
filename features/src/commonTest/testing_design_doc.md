@@ -455,7 +455,7 @@ Router/root компонент сам оборачивает их в `XxxCompone
 ```kotlin
 componentTest("opens pokemon details when pokemon is requested from list") {
     // 🛠️ Prepare pokemons flow
-    val childComponentFactory = TestPokemonsChildComponentFactory()
+    val childComponentFactory = FakePokemonsChildComponentFactory()
     val component = setupComponent {
         createPokemonsComponent(it, childComponentFactory)
     }
