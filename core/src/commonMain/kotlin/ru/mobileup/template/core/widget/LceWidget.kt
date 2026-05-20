@@ -33,13 +33,13 @@ fun <T : Any> LceWidget(
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier,
     refreshOverlay: (@Composable BoxScope.(
-        refreshing: Boolean,
+        visible: Boolean,
         contentPadding: PaddingValues
-    ) -> Unit)? = { refreshing, contentPadding ->
+    ) -> Unit)? = { visible, contentPadding ->
         RefreshingProgress(
             modifier = Modifier
                 .padding(contentPadding),
-            visible = refreshing
+            visible = visible
         )
     },
     loadingContent: @Composable BoxScope.(PaddingValues) -> Unit = { paddings ->
@@ -66,7 +66,9 @@ fun <T : Any> LceWidget(
         when {
             data != null -> {
                 content(data, contentPadding)
-                refreshOverlay?.invoke(this, loading, contentPadding)
+                if(refreshOverlay != null) {
+                    refreshOverlay(loading, contentPadding)
+                }
             }
 
             loading -> loadingContent(contentPadding)

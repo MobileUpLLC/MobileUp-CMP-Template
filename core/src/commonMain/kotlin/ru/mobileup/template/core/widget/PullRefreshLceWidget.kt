@@ -55,14 +55,13 @@ fun <T : Any> PullRefreshLceWidget(
     onRetryClick: () -> Unit = onRefresh,
     modifier: Modifier = Modifier,
     refreshOverlay: (@Composable BoxScope.(
-        refreshing: Boolean,
-        pullToRefreshRefreshing: Boolean,
+        visible: Boolean,
         contentPadding: PaddingValues
-    ) -> Unit)? = { refreshing, pullToRefreshRefreshing, contentPadding ->
+    ) -> Unit)? = { visible, contentPadding ->
         RefreshingProgress(
             modifier = Modifier
                 .padding(contentPadding),
-            visible = refreshing && !pullToRefreshRefreshing
+            visible = visible
         )
     },
     loadingContent: @Composable BoxScope.(PaddingValues) -> Unit = { paddings ->
@@ -81,7 +80,6 @@ fun <T : Any> PullRefreshLceWidget(
     content: @Composable BoxScope.(data: T, contentPadding: PaddingValues) -> Unit,
 ) {
     var pullRefreshTriggered by remember { mutableStateOf(false) }
-    val isPullRefreshRefreshing = pullRefreshTriggered && state.loading && state.data != null
 
     LaunchedEffect(state.loading) {
         if (!state.loading) pullRefreshTriggered = false
@@ -98,14 +96,17 @@ fun <T : Any> PullRefreshLceWidget(
         errorContent = errorContent,
     ) { data, contentPadding ->
         val pullRefreshState = rememberPullToRefreshState()
+        val isPullRefreshRefreshing = state.loading && pullRefreshTriggered
+        val refreshOverlayVisible = state.loading && !pullRefreshTriggered
 
         PullToRefreshBox(
             isRefreshing = isPullRefreshRefreshing,
+            enabled = !refreshOverlayVisible,
+            state = pullRefreshState,
             onRefresh = {
                 pullRefreshTriggered = true
                 onRefresh()
             },
-            state = pullRefreshState,
             indicator = {
                 PullToRefreshIndicator(
                     modifier = Modifier
@@ -127,12 +128,9 @@ fun <T : Any> PullRefreshLceWidget(
             content(data, contentPadding + PaddingValues(top = pullRefreshTopPadding))
         }
 
-        refreshOverlay?.invoke(
-            this,
-            state.loading,
-            isPullRefreshRefreshing,
-            contentPadding
-        )
+        if(refreshOverlay != null) {
+            refreshOverlay(refreshOverlayVisible, contentPadding)
+        }
     }
 }
 
