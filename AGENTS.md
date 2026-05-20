@@ -41,7 +41,7 @@ shared/     — It combines all features and provides the `SharedApp` entry poin
 
 androidApp/ — Android entry points, icon resources, build configurations, Android-specific integrations.
 
-iosApp      — Xcode project, SwiftUI entry point, assets, iOS-specific integrations.
+iosApp/      — Xcode project, SwiftUI entry point, assets, iOS-specific integrations.
 ```
 
 Each feature contains `data`, `domain`, `presentation` layers.
@@ -142,10 +142,11 @@ Prefer existing widgets from `core.widget` over raw Material controls.
 ## Testing Rules
 
 - Tests live under `features/src/commonTest`.
-- Use Kotest `FunSpec` as the default test style.
-- Use the existing `componentTest` DSL for Decompose component tests, including screen tests that cover
-  `Component -> Repository -> Network -> State / Output` and router/root tests with test child factories.
-- Name tests in English by observable behavior, not implementation details.
+- When planning tests, use `test-blueprint` and include the complete blueprint in the proposed plan.
+- When implementing tests, use `test-implementation` and follow the blueprint from the confirmed
+  plan or current context.
+- Use Kotest as the test framework, with `FunSpec` as the default style.
+- For deeper rules and examples, follow the `test-blueprint` and `test-implementation` skills.
 
 ---
 

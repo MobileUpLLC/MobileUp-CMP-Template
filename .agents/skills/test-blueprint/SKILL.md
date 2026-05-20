@@ -7,19 +7,26 @@ description: Create compact, reviewable high-level designs for test suites befor
 
 ## Purpose
 
-A **Test Blueprint** is a compact, human-reviewable design of a test suite. It describes the SUT name, 
-the test suite type, test names, table cases, and scenario steps before writing executable tests.
+A **Test Blueprint** is a compact, human-reviewable part of the implementation plan for a test suite.
+It describes the SUT name, the test suite type, test names, table cases, and scenario steps before
+writing executable tests.
 
 A **Test Implementation** is the executable test code created from the blueprint.
 
 This skill produces blueprint text only. Do not implement tests, edit fixtures, change production
 code, or run validation as part of this skill.
 
+## Plan Mode Output
+
+When the user is planning test work, include the complete blueprint in the final `<proposed_plan>`.
+The blueprint is the test contract that `test-implementation` follows later during execution.
+
 ## Workflow
 
 1. Inspect the SUT and nearby tests before drafting.
 2. Choose the test type: component or unit.
-3. Produce the canonical blueprint format.
+3. Draft the canonical blueprint format.
+4. Embed the full blueprint in the proposed plan when operating in Plan Mode.
 
 ## Choosing Test Type
 
