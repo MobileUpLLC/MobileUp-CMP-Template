@@ -9,6 +9,7 @@ data class CustomColors(
     val text: TextColors,
     val icon: IconColors,
     val button: ButtonColors,
+    val control: ControlColors,
     val border: BorderColors,
     val textField: TextFieldColors,
 )
@@ -42,6 +43,16 @@ data class ButtonColors(
     val primaryDisabled: Color,
     val secondary: Color,
     val secondaryDisabled: Color,
+)
+
+// Switch, CheckBox, RadioButton
+data class ControlColors(
+    val selectedContainer: Color,
+    val selectedContainerDisabled: Color,
+    val unselectedContainer: Color,
+    val unselectedContainerDisabled: Color,
+    val content: Color,
+    val contentDisabled: Color,
 )
 
 data class TextFieldColors(
