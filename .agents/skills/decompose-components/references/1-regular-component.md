@@ -45,6 +45,23 @@ class RealItemListComponent(
 
 ## Fake
 
+Fake data is declared on the corresponding domain model or UI-state class, not inside
+`FakeXxxComponent`:
+
+```kotlin
+data class Item(
+    val id: ItemId,
+    val name: String
+) {
+    companion object {
+        val FAKE_LIST = listOf(
+            Item(id = ItemId("1"), name = "First item"),
+            Item(id = ItemId("2"), name = "Second item")
+        )
+    }
+}
+```
+
 ```kotlin
 class FakeItemListComponent(
     private val onOutput: (ItemListComponent.Output) -> Unit = {}
@@ -60,6 +77,9 @@ class FakeItemListComponent(
     override fun onItemClick(itemId: ItemId) = Unit
 }
 ```
+
+Fake components must not implement user action behavior. Every user action returns `Unit`; only
+`emitOutput(output)` may call the output callback for tests.
 
 ## UI
 
@@ -102,9 +122,10 @@ private fun ItemListUiPreview() {
   field; otherwise keep it as a plain parameter.
 - For local mutable state, expose `StateFlow` in the interface and override it with
   `MutableStateFlow` in the implementation; do not create `_someState`/`someState` pairs.
-- Keep the public interface API ordered as embedded child components, state properties, user events,
-  then `Output`.
+- Keep the public interface API ordered as embedded child components, state properties, user events, then `Output`.
 - Name component methods as user events with `onSomething`, not commands like `doSomething`.
 - Make `Output` events meaningful to the parent instead of exposing internal implementation details.
 - Fake components with `Output` accept an output callback with a no-op default and expose
   `emitOutput(output)` for tests.
+- Put fake data in `companion object` of the corresponding domain or UI-state class, not in
+  `FakeXxxComponent`.

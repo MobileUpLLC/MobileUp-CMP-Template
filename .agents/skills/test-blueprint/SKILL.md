@@ -45,7 +45,7 @@ Use this shape:
 
 - observable behavior name
   🛠️ Prepare scenario data or test subject
-  ▶️ Perform action or wait for progress
+  ▶️ Perform scenario action or wait for progress
   ✅ Verify observable result
 ```
 
@@ -60,19 +60,32 @@ Rules:
 - Table tests are marked with `[table]` after the test name and followed by a compact cases line:
   `cases: Pikachu, Charizard, Mewtwo`.
 - Do not include source code, imports, exact fixtures, exact assertions, or mock setup details.
+- Write steps as a testing scenario, not as implementation instructions. Prefer user/domain language
+  over SUT method names.
 
 ## Step Definitions
 
 - `🛠️` means setup: scenario data, input data, initial state, test subject creation,
   capturers, or fakes.
-- `▶️` means action: user actions, public method calls, navigation requests, lifecycle
-  changes, waiting for async work, or function calls under test.
+- `▶️` means action: user actions, domain events, navigation requests, lifecycle changes,
+  waiting for async work, or function behavior under test.
 - `✅` means verification: observable state, output events, navigation stack, error state/message,
   final calculated result, preserved previous data, or observable external calls.
 - Waiting must be explicit as a `▶️` step, for example: `▶️ Wait for the initial loading to complete`.
 - Component blueprints must describe required prepared data, loading outcomes, or flow setup
   in `🛠️` steps. Name scenario conditions, not exact fixture names, JSON files, matcher details,
   mock server mechanics, or child factory implementation details.
+- Action steps must name what happens in the scenario, not which SUT method is invoked. Use
+  `▶️ Select an item from the list`, not `▶️ Call onItemClick`.
+  Use `▶️ Refresh the list`, not `▶️ Call onRefresh`.
+  Use `▶️ Submit the form`, not `▶️ Call onSubmitClick`.
+- Setup steps should name scenario state instead of mechanical construction when possible. Use
+  `🛠️ Prepare a loaded list`, `🛠️ Prepare a form with valid input`, or
+  `🛠️ Prepare failed initial loading`, not `🛠️ Create RealXxxComponent` or exact helper names.
+- Verification steps should name user-observable or component-contract results, not assertion
+  mechanics. Use `✅ Verify the details screen is requested for the selected item`, not
+  `✅ Assert output is DetailsRequested`. Use `✅ Verify the loaded list is shown`, not
+  `✅ Assert state.value.data equals expectedItems`.
 - Verify external calls only when the call is the behavior under test, for example 
   submitting a form to the backend or logging an analytics event.
 

@@ -10,7 +10,8 @@ Every component uses four files:
 - `XxxComponent` — public contract: state flows, user actions, optional `Output`.
 - `RealXxxComponent` — implementation: `ComponentContext by componentContext`, business logic,
   dependencies.
-- `FakeXxxComponent` — preview/testing stub with static data and no-op actions.
+- `FakeXxxComponent` — preview/testing stub that uses fake data from domain/ui-state companion
+  objects and has no-op user actions.
 - `XxxUi` — pure UI that reads component state and calls component methods.
 
 Keep the public API on the interface. Keep business logic in `RealXxxComponent`. Keep `XxxUi` free

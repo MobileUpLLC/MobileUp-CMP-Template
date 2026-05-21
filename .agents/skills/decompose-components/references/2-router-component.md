@@ -227,5 +227,6 @@ private fun ItemsUiPreview() {
 
 - Declare `childStack` compactly in `RealXxxComponent` and `FakeXxxComponent` implementations, without an explicit type.
 - Keep the router interface API ordered as `childStack`, user events when present, `Child`, then `Output` when present.
-- Keep implementation members ordered as `navigation`, `childStack`, `createChild`, public event methods, child `Output` handlers, then `ChildConfig`.
+- Keep implementation members ordered as `navigation`, `childStack`, `createChild`, public event methods, 
+  child `Output` handlers, private methods, then `ChildConfig`.
 - Keep `ChildConfig` as a private implementation detail.
