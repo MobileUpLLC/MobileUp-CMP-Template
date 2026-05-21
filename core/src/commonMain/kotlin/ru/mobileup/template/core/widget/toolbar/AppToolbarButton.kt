@@ -44,13 +44,13 @@ fun AppToolbarButton(
 
 @Composable
 fun AppToolbarBackButton(
-    onClick: (() -> Unit)?,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AppToolbarButton(
         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
         contentDescription = stringResource(Res.string.common_back),
-        onClick = onClick ?: LocalBackAction.current,
+        onClick = onClick,
         modifier = modifier,
     )
 }

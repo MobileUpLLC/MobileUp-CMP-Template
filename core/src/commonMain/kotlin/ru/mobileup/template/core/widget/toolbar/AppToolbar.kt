@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import ru.mobileup.template.core.configuration.LocalPlatformType
 import ru.mobileup.template.core.configuration.PlatformType
 import ru.mobileup.template.core.theme.AppTheme
+import ru.mobileup.template.core.utils.LocalBackAction
 import ru.mobileup.template.core.widget.StartCenterEndLayout
 
 enum class AppToolbarTitleAlignment {
@@ -41,7 +42,7 @@ fun AppToolbar(
     title: String,
     modifier: Modifier = Modifier,
     showBackButton: Boolean = false,
-    onBackClick: (() -> Unit)? = null,
+    onBackClick: () -> Unit = LocalBackAction.current,
     titleAlignment: AppToolbarTitleAlignment = AppToolbarTitleAlignment.Start,
     backgroundColor: Color = AppToolbarDefaults.backgroundColor,
     contentColor: Color = AppToolbarDefaults.contentColor,
@@ -96,7 +97,7 @@ fun AppToolbar(
 private fun AppToolbarStartContent(
     title: String,
     showBackButton: Boolean,
-    onBackClick: (() -> Unit)?,
+    onBackClick: () -> Unit,
     contentColor: Color,
     titleTextStyle: TextStyle,
     actions: @Composable RowScope.() -> Unit,
@@ -133,7 +134,7 @@ private fun AppToolbarStartContent(
 private fun AppToolbarCenterContent(
     title: String,
     showBackButton: Boolean,
-    onBackClick: (() -> Unit)?,
+    onBackClick: () -> Unit,
     contentColor: Color,
     titleTextStyle: TextStyle,
     actions: @Composable RowScope.() -> Unit,

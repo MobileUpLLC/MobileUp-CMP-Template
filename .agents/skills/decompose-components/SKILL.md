@@ -63,10 +63,12 @@ of business logic.
   `XxxComponent.Child.*`.
 
 ### Navigation
-
 - Prefer `safePush()` over `push()`.
 - Use `pop()`, `replaceCurrent()`, and `replaceAll()` for standard router transitions.
-- Use `getChild()` only to pass data back to an existing requester in the stack.
+- Use `getChild()` to pass data back to an existing requester in the stack.
+- Don't add `Output` for default back navigation: routers use `childStack(handleBackButton = true)`,
+  and UI uses `LocalBackAction.current`.
+- Add a back `Output` only when the child must run custom logic before requesting back.
 
 ### Embedded Children
 
@@ -84,6 +86,13 @@ of business logic.
 ### Dialogs and Messages
 
 - Components may own dialog controls and may call `MessageService`.
+
+### Error Handling
+
+- Wrap component async actions in `componentScope.safeLaunch(errorHandler)`.
+- Use `safeRun(errorHandler)` only for synchronous component code that can throw.
+- Do not catch errors manually just to show a message; let `ErrorHandler` do it.
+- Use `onErrorHandled` only for local cleanup or state rollback after the error was handled.
 
 ## References
 

@@ -1,27 +1,42 @@
 package ru.mobileup.template.core.external_app
 
+import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
 import ru.mobileup.template.core.error_handling.ExternalAppNotFoundException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class IosExternalAppService : ExternalAppService {
 
-    override fun openUrl(url: String) {
+    override suspend fun openUrl(url: String) {
         val link = NSURL(string = url)
-        openLinkIfAvailable(link)
+        openLink(link)
     }
 
-    override fun openAppSettings() {
+    override suspend fun openAppSettings() {
         val link = NSURL(string = UIApplicationOpenSettingsURLString)
-        openLinkIfAvailable(link)
+        openLink(link)
     }
 
-    private fun openLinkIfAvailable(link: NSURL) {
-        if (UIApplication.sharedApplication.canOpenURL(link)) {
-            UIApplication.sharedApplication.openURL(link)
-        } else {
-            throw ExternalAppNotFoundException(null)
+    private suspend fun openLink(link: NSURL) {
+        suspendCancellableCoroutine<Unit> { continuation ->
+            UIApplication.sharedApplication.openURL(
+                link,
+                options = emptyMap<Any?, Any>(),
+                completionHandler = { success ->
+                    if (!continuation.isActive) return@openURL
+
+                    if (success) {
+                        continuation.resume(Unit)
+                    } else {
+                        continuation.resumeWithException(
+                            ExternalAppNotFoundException(null)
+                        )
+                    }
+                }
+            )
         }
     }
 }

@@ -35,19 +35,15 @@ actual fun AppSwitch(
             checkedThumbColor = colors.thumbColor,
             checkedTrackColor = colors.checkedTrackColor,
             checkedBorderColor = Color.Transparent,
-            checkedIconColor = Color.Transparent,
             uncheckedThumbColor = colors.thumbColor,
             uncheckedTrackColor = controlColors.unselectedContainer,
             uncheckedBorderColor = Color.Transparent,
-            uncheckedIconColor = Color.Transparent,
             disabledCheckedThumbColor = controlColors.contentDisabled,
             disabledCheckedTrackColor = controlColors.selectedContainerDisabled,
             disabledCheckedBorderColor = Color.Transparent,
-            disabledCheckedIconColor = Color.Transparent,
             disabledUncheckedThumbColor = controlColors.contentDisabled,
             disabledUncheckedTrackColor = controlColors.unselectedContainerDisabled,
-            disabledUncheckedBorderColor = Color.Transparent,
-            disabledUncheckedIconColor = Color.Transparent,
+            disabledUncheckedBorderColor = Color.Transparent
         )
     )
 }

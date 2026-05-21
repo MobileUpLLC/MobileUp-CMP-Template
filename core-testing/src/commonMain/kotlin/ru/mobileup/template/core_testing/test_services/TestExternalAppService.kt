@@ -16,11 +16,11 @@ class TestExternalAppService : ExternalAppService {
     val first: Interaction? get() = _all.firstOrNull()
     val isEmpty: Boolean get() = _all.isEmpty()
 
-    override fun openUrl(url: String) {
+    override suspend fun openUrl(url: String) {
         _all += Interaction.OpenUrl(url)
     }
 
-    override fun openAppSettings() {
+    override suspend fun openAppSettings() {
         _all += Interaction.OpenAppSettings
     }
 

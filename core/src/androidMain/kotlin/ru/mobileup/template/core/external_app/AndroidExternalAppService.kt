@@ -12,7 +12,7 @@ class AndroidExternalAppService(
     private val context: Context
 ) : ExternalAppService {
 
-    override fun openUrl(url: String) {
+    override suspend fun openUrl(url: String) {
         val intent = if (url.startsWith("intent:")) {
             Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
         } else {
@@ -23,7 +23,7 @@ class AndroidExternalAppService(
         safeStartActivity(intent)
     }
 
-    override fun openAppSettings() {
+    override suspend fun openAppSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", context.packageName, null)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK

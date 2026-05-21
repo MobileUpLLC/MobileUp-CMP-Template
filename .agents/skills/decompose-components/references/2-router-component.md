@@ -162,7 +162,10 @@ class RealItemsComponent(
 }
 ```
 
-`ItemDetailsComponent` has no `Output` here. Back navigation is handled by childStack automatically.
+`ItemDetailsComponent` has no `Output` here. Default back navigation is handled by
+`childStack(handleBackButton = true)`, and UI back buttons use `LocalBackAction.current`
+directly or through widget defaults such as `AppToolbar(showBackButton = true)`. Add a back
+`Output` only if the child must run custom logic before back navigation.
 
 ## Factory
 
