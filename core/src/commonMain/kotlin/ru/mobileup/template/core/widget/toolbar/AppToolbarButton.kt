@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.mobileup.template.core.generated.resources.Res
 import ru.mobileup.template.core.generated.resources.common_back
-import ru.mobileup.template.core.utils.LocalBackAction
 
 @Composable
 fun AppToolbarButton(

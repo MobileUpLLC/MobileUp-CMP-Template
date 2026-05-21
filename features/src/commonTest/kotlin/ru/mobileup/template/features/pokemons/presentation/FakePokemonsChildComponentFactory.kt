@@ -1,6 +1,7 @@
 package ru.mobileup.template.features.pokemons.presentation
 
 import com.arkivanov.decompose.ComponentContext
+import ru.mobileup.template.features.pokemons.domain.DetailedPokemon
 import ru.mobileup.template.features.pokemons.domain.PokemonId
 import ru.mobileup.template.features.pokemons.presentation.details.FakePokemonDetailsComponent
 import ru.mobileup.template.features.pokemons.presentation.details.PokemonDetailsComponent
@@ -20,6 +21,6 @@ class FakePokemonsChildComponentFactory : PokemonsChildComponentFactory {
         componentContext: ComponentContext,
         pokemonId: PokemonId
     ): PokemonDetailsComponent {
-        return FakePokemonDetailsComponent(pokemonId)
+        return FakePokemonDetailsComponent(DetailedPokemon.FAKE.copy(id = pokemonId))
     }
 }

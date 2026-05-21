@@ -133,6 +133,6 @@ internal expect fun messagePopupProperties(): PopupProperties
 @Composable
 private fun MessageUiPreview() {
     AppTheme {
-        MessageUi(FakeMessageComponent(), 40.dp)
+        MessageUi(FakeMessageComponent(Message.FAKE), 40.dp)
     }
 }
