@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -81,9 +83,16 @@ private fun PokemonListContent(
         onRefresh = component::onRefresh,
         modifier = modifier
     ) { pokemons, contentPadding ->
+
+        val lazyListState = rememberLazyListState()
+        LaunchedEffect(pokemons) {
+            lazyListState.scrollToItem(0)
+        }
+
         if (pokemons.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
+                state = lazyListState,
                 contentPadding = contentPadding + PaddingValues(vertical = 12.dp)
             ) {
                 items(
