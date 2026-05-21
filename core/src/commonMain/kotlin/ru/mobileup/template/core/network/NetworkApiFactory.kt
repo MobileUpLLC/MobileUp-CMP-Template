@@ -15,7 +15,7 @@ import io.ktor.client.plugins.logging.Logger as KtorLogger
  * Creates implementations of Ktorfit APIs.
  */
 class NetworkApiFactory(
-    private val backendUrl: BackendUrl,
+    private val backendUrl: String,
     private val httpClientEngine: HttpClientEngine,
     private val ktorLogger: KtorLogger? = null
 ) {
@@ -57,7 +57,7 @@ class NetworkApiFactory(
             }
 
             defaultRequest {
-                url(backendUrl.value)
+                url(backendUrl)
             }
 
             if (authorized) {
@@ -70,7 +70,7 @@ class NetworkApiFactory(
 
     private fun createKtorfit(httpClient: HttpClient): Ktorfit {
         return Ktorfit.Builder()
-            .baseUrl(backendUrl.value)
+            .baseUrl(backendUrl)
             .httpClient(httpClient)
             .build()
     }

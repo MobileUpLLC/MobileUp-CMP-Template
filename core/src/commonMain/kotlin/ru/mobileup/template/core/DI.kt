@@ -15,7 +15,6 @@ import ru.mobileup.template.core.message.data.MessageService
 import ru.mobileup.template.core.message.data.MessageServiceImpl
 import ru.mobileup.template.core.message.presentation.MessageComponent
 import ru.mobileup.template.core.message.presentation.RealMessageComponent
-import ru.mobileup.template.core.network.BackendUrl
 import ru.mobileup.template.core.network.NetworkApiFactory
 
 fun coreModule(configuration: Configuration) = module {
@@ -30,7 +29,7 @@ fun coreModule(configuration: Configuration) = module {
     }
     single {
         NetworkApiFactory(
-            backendUrl = BackendUrl.getMainUrl(configuration.backend),
+            backendUrl = configuration.backendUrl,
             httpClientEngine = get(),
             ktorLogger = getOrNull()
         )

@@ -128,7 +128,7 @@ fun <T : Any> PullRefreshLceWidget(
             content(data, contentPadding + PaddingValues(top = pullRefreshTopPadding))
         }
 
-        if(refreshOverlay != null) {
+        if (refreshOverlay != null) {
             refreshOverlay(refreshOverlayVisible, contentPadding)
         }
     }

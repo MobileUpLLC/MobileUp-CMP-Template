@@ -66,7 +66,7 @@ fun <T : Any> LceWidget(
         when {
             data != null -> {
                 content(data, contentPadding)
-                if(refreshOverlay != null) {
+                if (refreshOverlay != null) {
                     refreshOverlay(loading, contentPadding)
                 }
             }

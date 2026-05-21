@@ -1,4 +1,6 @@
 TEAM_ID=
+SLASH=/
+BACKEND_URL=https:$(SLASH)/pokeapi.co/
 
 PRODUCT_NAME=MobileUpTemplate
 PRODUCT_BUNDLE_IDENTIFIER=ru.mobileup.template

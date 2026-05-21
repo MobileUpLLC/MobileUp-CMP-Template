@@ -19,15 +19,22 @@ struct iOSApp: App {
 private func makeConfiguration() -> Configuration {
     #if DEBUG
     let buildType = BuildType.debug
-    let backend = Backend.development
     #else
     let buildType = BuildType.release_
-    let backend = Backend.production
     #endif
 
     return Configuration(
         platform: Platform(),
         buildType: buildType,
-        backend: backend
+        backendUrl: getBackendUrl()
     )
+}
+
+private func getBackendUrl() -> String {
+    guard let backendUrl = Bundle.main.object(forInfoDictionaryKey: "BACKEND_URL") as? String,
+          !backendUrl.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        fatalError("BACKEND_URL is not configured")
+    }
+
+    return backendUrl
 }

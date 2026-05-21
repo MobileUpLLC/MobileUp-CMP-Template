@@ -11,7 +11,6 @@ import org.koin.dsl.module
 import ru.mobileup.template.core.error_handling.ErrorHandler
 import ru.mobileup.template.core.external_app.ExternalAppService
 import ru.mobileup.template.core.message.data.MessageService
-import ru.mobileup.template.core.network.BackendUrl
 import ru.mobileup.template.core.network.NetworkApiFactory
 import ru.mobileup.template.core.permissions.PermissionService
 import ru.mobileup.template.core_testing.network.MockServer
@@ -50,7 +49,7 @@ private fun coreTestModule(
     single { MockServer() }
     single {
         NetworkApiFactory(
-            backendUrl = BackendUrl("https://test/"),
+            backendUrl = "https://test/",
             httpClientEngine = get()
         )
     }

@@ -1,7 +1,6 @@
 package ru.mobileup.template
 
 import android.app.Application
-import ru.mobileup.template.core.configuration.Backend
 import ru.mobileup.template.core.configuration.BuildType
 import ru.mobileup.template.core.configuration.Configuration
 import ru.mobileup.template.core.configuration.Platform
@@ -26,7 +25,7 @@ class App : Application(), SharedAppProvider {
             application = this,
             debugTools = AndroidDebugToolsImpl(applicationContext)
         ),
-        buildType = if (BuildConfig.DEBUG) BuildType.Debug else BuildType.Release,
-        backend = if (BuildConfig.FLAVOR == "dev") Backend.Development else Backend.Production
+        buildType = if (BuildConfig.BUILD_TYPE == "debug") BuildType.Debug else BuildType.Release,
+        backendUrl = BuildConfig.BACKEND_URL
     )
 }
