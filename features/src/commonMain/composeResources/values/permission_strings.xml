@@ -1,0 +1,11 @@
+<resources>
+    <string name="permission_title">Permission</string>
+    <string name="permission_camera_button">Request camera permission</string>
+    <string name="permission_camera_status">Camera permission granted: %1$s</string>
+    <string name="permission_camera_granted">Camera permission granted</string>
+    <string name="permission_camera_denied">Camera permission denied</string>
+    <string name="permission_settings_title">Camera permission is disabled</string>
+    <string name="permission_settings_message">Open app settings to allow camera access.</string>
+    <string name="permission_settings_open">Open settings</string>
+    <string name="permission_settings_cancel">Cancel</string>
+</resources>

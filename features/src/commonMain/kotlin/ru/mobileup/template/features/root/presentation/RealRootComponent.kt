@@ -6,7 +6,10 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import kotlinx.serialization.Serializable
+import ru.mobileup.template.core.utils.safePush
 import ru.mobileup.template.core.utils.toStateFlow
+import ru.mobileup.template.features.menu.domain.Sample
+import ru.mobileup.template.features.menu.presentation.MenuComponent
 
 class RealRootComponent(
     componentContext: ComponentContext,
@@ -17,7 +20,7 @@ class RealRootComponent(
 
     override val childStack = childStack(
         source = navigation,
-        initialConfiguration = ChildConfig.Pokemons,
+        initialConfiguration = ChildConfig.Menu,
         serializer = ChildConfig.serializer(),
         handleBackButton = true,
         childFactory = ::createChild
@@ -31,10 +34,45 @@ class RealRootComponent(
         config: ChildConfig,
         componentContext: ComponentContext
     ): RootComponent.Child = when (config) {
-        is ChildConfig.Pokemons -> {
+        ChildConfig.Menu -> {
+            RootComponent.Child.Menu(
+                childComponentFactory.createMenuComponent(
+                    componentContext,
+                    ::onMenuOutput
+                )
+            )
+        }
+
+        ChildConfig.Pokemons -> {
             RootComponent.Child.Pokemons(
                 childComponentFactory.createPokemonsComponent(componentContext)
             )
+        }
+
+        ChildConfig.Dialogs -> {
+            RootComponent.Child.Dialogs(
+                childComponentFactory.createDialogsComponent(componentContext)
+            )
+        }
+
+        ChildConfig.Permission -> {
+            RootComponent.Child.Permission(
+                childComponentFactory.createPermissionComponent(componentContext)
+            )
+        }
+
+        ChildConfig.Settings -> {
+            RootComponent.Child.Settings(
+                childComponentFactory.createSettingsComponent(componentContext)
+            )
+        }
+    }
+
+    private fun onMenuOutput(output: MenuComponent.Output) {
+        when (output) {
+            is MenuComponent.Output.SampleRequested -> {
+                navigation.safePush(output.sample.toChildConfig())
+            }
         }
     }
 
@@ -44,6 +82,25 @@ class RealRootComponent(
     sealed interface ChildConfig {
 
         @Serializable
+        data object Menu : ChildConfig
+
+        @Serializable
         data object Pokemons : ChildConfig
+
+        @Serializable
+        data object Dialogs : ChildConfig
+
+        @Serializable
+        data object Permission : ChildConfig
+
+        @Serializable
+        data object Settings : ChildConfig
+    }
+
+    private fun Sample.toChildConfig(): ChildConfig = when (this) {
+        Sample.Pokemons -> ChildConfig.Pokemons
+        Sample.Dialogs -> ChildConfig.Dialogs
+        Sample.Permission -> ChildConfig.Permission
+        Sample.Settings -> ChildConfig.Settings
     }
 }

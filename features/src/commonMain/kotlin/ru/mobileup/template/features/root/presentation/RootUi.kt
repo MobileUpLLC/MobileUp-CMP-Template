@@ -13,7 +13,11 @@ import ru.mobileup.template.core.utils.ConfigureSystemBars
 import ru.mobileup.template.core.utils.LocalSystemBarsSettings
 import ru.mobileup.template.core.utils.accumulate
 import ru.mobileup.template.core.utils.predictiveBackAnimation
+import ru.mobileup.template.features.dialogs.presentation.DialogsUi
+import ru.mobileup.template.features.menu.presentation.MenuUi
+import ru.mobileup.template.features.permission.presentation.PermissionUi
 import ru.mobileup.template.features.pokemons.presentation.PokemonsUi
+import ru.mobileup.template.features.settings.presentation.SettingsUi
 
 @Composable
 fun RootUi(
@@ -29,7 +33,11 @@ fun RootUi(
         animation = component.predictiveBackAnimation()
     ) { child ->
         when (val instance = child.instance) {
+            is RootComponent.Child.Menu -> MenuUi(instance.component)
             is RootComponent.Child.Pokemons -> PokemonsUi(instance.component)
+            is RootComponent.Child.Dialogs -> DialogsUi(instance.component)
+            is RootComponent.Child.Permission -> PermissionUi(instance.component)
+            is RootComponent.Child.Settings -> SettingsUi(instance.component)
         }
     }
 

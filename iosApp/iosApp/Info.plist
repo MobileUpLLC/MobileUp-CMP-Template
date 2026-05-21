@@ -6,5 +6,7 @@
 	<string>$(BACKEND_URL)</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera permission is used to verify permission requests.</string>
 </dict>
 </plist>

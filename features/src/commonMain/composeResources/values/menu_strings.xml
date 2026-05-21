@@ -1,0 +1,7 @@
+<resources>
+    <string name="menu_title">Samples</string>
+    <string name="menu_pokemons">Pokemons</string>
+    <string name="menu_dialogs">Dialogs</string>
+    <string name="menu_permission">Permission</string>
+    <string name="menu_settings">Settings</string>
+</resources>

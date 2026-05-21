@@ -1,0 +1,18 @@
+<resources>
+    <string name="settings_open">Settings</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_description">This screen helps verify regular and encrypted settings storage using the same set of keys and value types.</string>
+    <string name="settings_regular_title">Regular settings</string>
+    <string name="settings_regular_description">Backed by standard app settings storage.</string>
+    <string name="settings_encrypted_title">Encrypted settings</string>
+    <string name="settings_encrypted_description">Backed by encrypted settings storage on each platform.</string>
+    <string name="settings_string_label">String</string>
+    <string name="settings_long_label">Long</string>
+    <string name="settings_boolean_label">Boolean</string>
+    <string name="settings_int_label">Int</string>
+    <string name="settings_float_label">Float</string>
+    <string name="settings_save_all">Save all</string>
+    <string name="settings_load_all">Load all</string>
+    <string name="settings_clear_storage">Clear storage</string>
+    <string name="settings_remove_key">Remove key</string>
+</resources>

@@ -8,14 +8,14 @@ import ru.mobileup.template.features.utils.componentTest
 
 class RootComponentTest : FunSpec({
 
-    componentTest("shows pokemons flow as initial screen") {
+    componentTest("shows menu as initial screen") {
         // 🛠️ Prepare root flow
         val childComponentFactory = FakeRootChildComponentFactory()
         val component = setupComponent {
             createRootComponent(it, childComponentFactory)
         }
 
-        // ✅ Verify pokemons flow is shown initially
-        component.childStack.activeChild.shouldBeInstanceOf<RootComponent.Child.Pokemons>()
+        // ✅ Verify menu is shown initially
+        component.childStack.activeChild.shouldBeInstanceOf<RootComponent.Child.Menu>()
     }
 })

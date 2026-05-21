@@ -19,15 +19,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.mobileup.template.core.theme.AppTheme
-import ru.mobileup.template.core.widget.toolbar.AppToolbar
 import ru.mobileup.template.core.utils.plus
 import ru.mobileup.template.core.widget.EmptyPlaceholder
 import ru.mobileup.template.core.widget.PullRefreshLceWidget
+import ru.mobileup.template.core.widget.switch.AppSwitch
+import ru.mobileup.template.core.widget.toolbar.AppToolbar
 import ru.mobileup.template.features.generated.resources.Res
 import ru.mobileup.template.features.generated.resources.pokemons_empty_description
 import ru.mobileup.template.features.generated.resources.pokemons_select_type
@@ -59,6 +64,7 @@ private fun PokemonListToolbar(component: PokemonListComponent) {
 
     AppToolbar(
         title = stringResource(Res.string.pokemons_select_type),
+        showBackButton = true,
         bottomContent = {
             PokemonTypesRow(
                 types = component.types,
@@ -76,6 +82,7 @@ private fun PokemonListContent(
     modifier: Modifier = Modifier
 ) {
     val pokemonsState by component.pokemonsState.collectAsState()
+    var switchStates by rememberSaveable { mutableStateOf(mapOf<String, Boolean>()) }
 
     PullRefreshLceWidget(
         state = pokemonsState,
@@ -101,6 +108,12 @@ private fun PokemonListContent(
                 ) { pokemon ->
                     PokemonItem(
                         pokemon = pokemon,
+                        isChecked = switchStates[pokemon.id.value] ?: false,
+                        onCheckedChange = {
+                            switchStates = switchStates.toMutableMap().apply {
+                                set(pokemon.id.value, it)
+                            }
+                        },
                         onClick = { component.onPokemonClick(pokemon.id) }
                     )
 
@@ -144,16 +157,29 @@ private fun PokemonTypesRow(
 @Composable
 private fun PokemonItem(
     pokemon: Pokemon,
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Text(
+    Row(
         modifier = modifier
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .fillMaxWidth(),
-        text = pokemon.name
-    )
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = pokemon.name
+        )
+        AppSwitch(
+            checked = isChecked,
+            onCheckedChange = onCheckedChange,
+            enabled = pokemon.name.length % 2 == 0
+        )
+    }
 }
 
 @Preview
