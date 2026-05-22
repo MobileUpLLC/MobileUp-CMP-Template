@@ -3,6 +3,7 @@ package ru.mobileup.template.core_testing.component_test
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import io.kotest.core.test.TestScope
 import ru.mobileup.template.core.ComponentFactory
+import ru.mobileup.template.core.settings.SettingsFactory
 import ru.mobileup.template.core_testing.network.MockServer
 import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
 import ru.mobileup.template.core_testing.test_services.TestExternalAppService
@@ -20,6 +21,7 @@ interface ComponentTestScope : TestScope {
     val messageService: TestMessageService
     val permissionService: TestPermissionService
     val externalAppService: TestExternalAppService
+    val settingsFactory: SettingsFactory
     val networkConnectivityProvider: TestNetworkConnectivityProvider
 
     /**

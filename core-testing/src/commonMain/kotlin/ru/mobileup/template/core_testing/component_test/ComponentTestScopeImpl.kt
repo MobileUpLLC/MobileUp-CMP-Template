@@ -11,6 +11,7 @@ import ru.mobileup.template.core.ComponentFactory
 import ru.mobileup.template.core.external_app.ExternalAppService
 import ru.mobileup.template.core.message.data.MessageService
 import ru.mobileup.template.core.permissions.PermissionService
+import ru.mobileup.template.core.settings.SettingsFactory
 import ru.mobileup.template.core_testing.network.MockServer
 import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
 import ru.mobileup.template.core_testing.test_services.TestExternalAppService
@@ -42,6 +43,8 @@ internal class ComponentTestScopeImpl(
 
     override val externalAppService: TestExternalAppService =
         koin.get<ExternalAppService>() as TestExternalAppService
+
+    override val settingsFactory: SettingsFactory = koin.get()
 
     override val networkConnectivityProvider: TestNetworkConnectivityProvider =
         koin.get<NetworkConnectivityProvider>() as TestNetworkConnectivityProvider

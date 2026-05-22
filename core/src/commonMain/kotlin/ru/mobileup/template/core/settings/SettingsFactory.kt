@@ -2,7 +2,7 @@ package ru.mobileup.template.core.settings
 
 interface SettingsFactory {
 
-    fun createSettings(name: String): Settings
+    fun getSettings(name: String): Settings
 
-    fun createEncryptedSettings(name: String): Settings
+    fun getEncryptedSettings(name: String): Settings
 }

@@ -12,21 +12,32 @@ internal class AndroidSettingsFactory(
     private val dispatcher: CoroutineDispatcher,
 ) : SettingsFactory {
 
-    override fun createSettings(
-        name: String,
-    ): Settings = AndroidSettings(
-        sharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE),
-        dispatcher = dispatcher
-    )
+    private val settingsCache = mutableMapOf<String, Settings>()
+    private val encryptedSettingsCache = mutableMapOf<String, Settings>()
 
-    override fun createEncryptedSettings(
+    override fun getSettings(
         name: String,
-    ): Settings = AndroidSettings(
-        sharedPreferences = EncryptedSharedPreferences(
-            context = context,
-            fileName = name,
-            masterKey = MasterKey(context = context),
-        ),
-        dispatcher = dispatcher
-    )
+    ): Settings = synchronized(settingsCache) {
+        settingsCache.getOrPut(name) {
+            AndroidSettings(
+                sharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE),
+                dispatcher = dispatcher
+            )
+        }
+    }
+
+    override fun getEncryptedSettings(
+        name: String,
+    ): Settings = synchronized(encryptedSettingsCache) {
+        encryptedSettingsCache.getOrPut(name) {
+            AndroidSettings(
+                sharedPreferences = EncryptedSharedPreferences(
+                    context = context,
+                    fileName = name,
+                    masterKey = MasterKey(context = context),
+                ),
+                dispatcher = dispatcher
+            )
+        }
+    }
 }

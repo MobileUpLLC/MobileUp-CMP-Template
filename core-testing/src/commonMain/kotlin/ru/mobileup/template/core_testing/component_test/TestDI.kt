@@ -13,13 +13,15 @@ import ru.mobileup.template.core.external_app.ExternalAppService
 import ru.mobileup.template.core.message.data.MessageService
 import ru.mobileup.template.core.network.NetworkApiFactory
 import ru.mobileup.template.core.permissions.PermissionService
+import ru.mobileup.template.core.settings.SettingsFactory
 import ru.mobileup.template.core_testing.network.MockServer
 import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
+import ru.mobileup.template.core_testing.network.TestReplicaTimeProvider
 import ru.mobileup.template.core_testing.network.createMockHttpEngine
 import ru.mobileup.template.core_testing.test_services.TestExternalAppService
 import ru.mobileup.template.core_testing.test_services.TestMessageService
 import ru.mobileup.template.core_testing.test_services.TestPermissionService
-import ru.mobileup.template.core_testing.network.TestReplicaTimeProvider
+import ru.mobileup.template.core_testing.test_services.TestSettingsFactory
 
 internal fun createKoin(
     testScheduler: TestCoroutineScheduler,
@@ -42,6 +44,7 @@ private fun coreTestModule(
     single<MessageService> { TestMessageService() }
     single<PermissionService> { TestPermissionService() }
     single<ExternalAppService> { TestExternalAppService() }
+    single<SettingsFactory> { TestSettingsFactory() }
 
     single<HttpClientEngine> {
         createMockHttpEngine(get(), testDispatcher)
