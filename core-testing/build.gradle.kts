@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "ru.mobileup.template.features"
+        namespace = "ru.mobileup.template.core_testing"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 

@@ -17,7 +17,7 @@ After cloning the template:
 7. Continue with product feature implementation.
 
 ## Modules
-The project is based on three gradle modules:
+The project is based on five modules:
 
 #### core
 It contains general purpose things: error handing, message showing, network, theme, utils, reusable widgets.
