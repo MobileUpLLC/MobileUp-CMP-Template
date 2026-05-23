@@ -26,7 +26,6 @@ hyperionAddons = "0.3.3"
 composeRules = "0.5.8"
 composeMultiplatform = "1.11.0"
 material3 = "1.11.0-alpha07"
-materialIcons = "1.7.3"
 form = "2.2.0"
 securityCrypto = "1.1.0"
 kotest = "6.1.11"
@@ -41,7 +40,6 @@ compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.re
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
-compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIcons" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }

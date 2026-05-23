@@ -20,9 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -45,9 +42,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
+import org.jetbrains.compose.resources.painterResource
 import ru.mobileup.kmm_form_validation.control.InputControl
 import ru.mobileup.kmm_form_validation.options.OnlyDigitsTextTransformation
 import ru.mobileup.kmm_form_validation.validation.control.ValidationError
+import ru.mobileup.template.core.generated.resources.Res
+import ru.mobileup.template.core.generated.resources.ic_add_24
 import ru.mobileup.template.core.theme.AppTheme
 import ru.mobileup.template.core.theme.custom.CustomTheme
 import ru.mobileup.template.core.utils.StringDesc
@@ -326,13 +326,13 @@ private fun AppTextFieldPreview() {
                 headerText = "Header",
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Clear,
+                        painter = painterResource(Res.drawable.ic_add_24),
                         contentDescription = null
                     )
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Email,
+                        painter = painterResource(Res.drawable.ic_add_24),
                         contentDescription = null
                     )
                 }

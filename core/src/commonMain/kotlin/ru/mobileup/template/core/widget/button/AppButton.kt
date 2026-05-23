@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -39,6 +37,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.painterResource
+import ru.mobileup.template.core.generated.resources.Res
+import ru.mobileup.template.core.generated.resources.ic_add_24
 import ru.mobileup.template.core.theme.AppTheme
 
 @Composable
@@ -199,7 +200,10 @@ private fun AppButtonPreview() {
                 onClick = {},
                 contentPadding = PaddingValues(12.dp)
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                Icon(
+                    painter = painterResource(Res.drawable.ic_add_24),
+                    contentDescription = null
+                )
                 Spacer(Modifier.width(8.dp))
                 Text("Add")
             }
