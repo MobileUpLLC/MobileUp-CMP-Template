@@ -65,6 +65,7 @@ kotlin {
         androidMain.dependencies {
             // Kotlin
             implementation(libs.coroutines.android)
+            implementation(libs.coroutines.play.services)
 
             // UI
             implementation(libs.activity.compose)
@@ -79,6 +80,10 @@ kotlin {
 
             // Permissions
             implementation(libs.bundles.moko.permissions)
+
+            // Map
+            api(libs.yandex.mapkit)
+            implementation(libs.play.services.location)
         }
 
         iosMain.dependencies {

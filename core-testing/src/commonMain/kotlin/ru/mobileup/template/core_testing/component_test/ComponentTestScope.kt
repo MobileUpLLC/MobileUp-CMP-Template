@@ -7,6 +7,7 @@ import ru.mobileup.template.core.settings.SettingsFactory
 import ru.mobileup.template.core_testing.network.MockServer
 import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
 import ru.mobileup.template.core_testing.test_services.TestExternalAppService
+import ru.mobileup.template.core_testing.test_services.TestLocationService
 import ru.mobileup.template.core_testing.test_services.TestMessageService
 import ru.mobileup.template.core_testing.test_services.TestPermissionService
 import kotlin.time.Duration
@@ -20,6 +21,7 @@ interface ComponentTestScope : TestScope {
     val mockServer: MockServer
     val messageService: TestMessageService
     val permissionService: TestPermissionService
+    val locationService: TestLocationService
     val externalAppService: TestExternalAppService
     val settingsFactory: SettingsFactory
     val networkConnectivityProvider: TestNetworkConnectivityProvider

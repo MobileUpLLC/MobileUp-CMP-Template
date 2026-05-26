@@ -24,8 +24,13 @@ class TestExternalAppService : ExternalAppService {
         _all += Interaction.OpenAppSettings
     }
 
+    override suspend fun openLocationSettings() {
+        _all += Interaction.OpenLocationSettings
+    }
+
     sealed class Interaction {
         data class OpenUrl(val url: String) : Interaction()
         data object OpenAppSettings : Interaction()
+        data object OpenLocationSettings : Interaction()
     }
 }

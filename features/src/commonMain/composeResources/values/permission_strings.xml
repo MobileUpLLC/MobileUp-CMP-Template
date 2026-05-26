@@ -6,6 +6,4 @@
     <string name="permission_camera_denied">Camera permission denied</string>
     <string name="permission_settings_title">Camera permission is disabled</string>
     <string name="permission_settings_message">Open app settings to allow camera access.</string>
-    <string name="permission_settings_open">Open settings</string>
-    <string name="permission_settings_cancel">Cancel</string>
 </resources>

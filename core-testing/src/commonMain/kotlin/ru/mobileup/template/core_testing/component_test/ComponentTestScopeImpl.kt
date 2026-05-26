@@ -9,12 +9,14 @@ import me.aartikov.replica.network.NetworkConnectivityProvider
 import org.koin.core.Koin
 import ru.mobileup.template.core.ComponentFactory
 import ru.mobileup.template.core.external_app.ExternalAppService
+import ru.mobileup.template.core.location.LocationService
 import ru.mobileup.template.core.message.data.MessageService
 import ru.mobileup.template.core.permissions.PermissionService
 import ru.mobileup.template.core.settings.SettingsFactory
 import ru.mobileup.template.core_testing.network.MockServer
 import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
 import ru.mobileup.template.core_testing.test_services.TestExternalAppService
+import ru.mobileup.template.core_testing.test_services.TestLocationService
 import ru.mobileup.template.core_testing.test_services.TestMessageService
 import ru.mobileup.template.core_testing.test_services.TestPermissionService
 import kotlin.time.Duration
@@ -40,6 +42,9 @@ internal class ComponentTestScopeImpl(
 
     override val permissionService: TestPermissionService =
         koin.get<PermissionService>() as TestPermissionService
+
+    override val locationService: TestLocationService =
+        koin.get<LocationService>() as TestLocationService
 
     override val externalAppService: TestExternalAppService =
         koin.get<ExternalAppService>() as TestExternalAppService

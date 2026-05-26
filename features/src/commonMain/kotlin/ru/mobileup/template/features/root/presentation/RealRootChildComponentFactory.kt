@@ -10,6 +10,8 @@ import ru.mobileup.template.features.menu.createMenuComponent
 import ru.mobileup.template.features.menu.presentation.MenuComponent
 import ru.mobileup.template.features.permission.createPermissionComponent
 import ru.mobileup.template.features.permission.presentation.PermissionComponent
+import ru.mobileup.template.features.places.createPlacesComponent
+import ru.mobileup.template.features.places.presentation.PlacesComponent
 import ru.mobileup.template.features.pokemons.createPokemonsComponent
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
 import ru.mobileup.template.features.settings.createSettingsComponent
@@ -40,6 +42,10 @@ class RealRootChildComponentFactory(
 
     override fun createSettingsComponent(componentContext: ComponentContext): SettingsComponent {
         return componentFactory.createSettingsComponent(componentContext)
+    }
+
+    override fun createPlacesComponent(componentContext: ComponentContext): PlacesComponent {
+        return componentFactory.createPlacesComponent(componentContext)
     }
 
     override fun createMessageComponent(componentContext: ComponentContext): MessageComponent {

@@ -11,6 +11,8 @@ import ru.mobileup.template.core.configuration.BuildType
 import ru.mobileup.template.core.configuration.Configuration
 import ru.mobileup.template.core.external_app.AndroidExternalAppService
 import ru.mobileup.template.core.external_app.ExternalAppService
+import ru.mobileup.template.core.location.AndroidLocationService
+import ru.mobileup.template.core.location.LocationService
 import ru.mobileup.template.core.network.createKtorLogger
 import ru.mobileup.template.core.network.createOkHttpEngine
 import ru.mobileup.template.core.permissions.AndroidPermissionService
@@ -31,4 +33,5 @@ actual fun platformCoreModule(configuration: Configuration) = module {
     single<SettingsFactory> { AndroidSettingsFactory(get(), Dispatchers.IO) }
     single<PermissionService>(createdAtStart = true) { AndroidPermissionService(get(), get(), get()) }
     single<ExternalAppService> { AndroidExternalAppService(get()) }
+    single<LocationService> { AndroidLocationService(get()) }
 }

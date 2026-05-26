@@ -1,4 +1,14 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+fun getLocalProperty(key: String): String? {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (!localPropertiesFile.exists()) return null
+
+    return Properties()
+        .apply { load(localPropertiesFile.inputStream()) }
+        .getProperty(key)
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -16,6 +26,9 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0.0"
+
+        val yandexMapApiKey = getLocalProperty("yandex.map.api.key")
+        buildConfigField("String", "YANDEX_MAP_API_KEY", "\"$yandexMapApiKey\"")
     }
 
     signingConfigs {

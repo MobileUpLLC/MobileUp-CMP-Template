@@ -8,5 +8,7 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera permission is used to verify permission requests.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location permission is used to show your current position on the map.</string>
 </dict>
 </plist>

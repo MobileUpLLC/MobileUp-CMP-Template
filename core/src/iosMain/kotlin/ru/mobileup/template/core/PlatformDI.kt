@@ -7,6 +7,8 @@ import ru.mobileup.template.core.configuration.BuildType
 import ru.mobileup.template.core.configuration.Configuration
 import ru.mobileup.template.core.external_app.ExternalAppService
 import ru.mobileup.template.core.external_app.IosExternalAppService
+import ru.mobileup.template.core.location.IosLocationService
+import ru.mobileup.template.core.location.LocationService
 import ru.mobileup.template.core.network.createKtorLogger
 import ru.mobileup.template.core.network.createOkHttpEngine
 import ru.mobileup.template.core.permissions.IosPermissionService
@@ -22,4 +24,5 @@ actual fun platformCoreModule(configuration: Configuration) = module {
     single<SettingsFactory> { IosSettingsFactory(Dispatchers.IO) }
     single<PermissionService> { IosPermissionService() }
     single<ExternalAppService> { IosExternalAppService() }
+    single<LocationService> { IosLocationService() }
 }

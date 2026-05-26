@@ -10,6 +10,8 @@ import ru.mobileup.template.core.dialog.standard.standardDialogControl
 import ru.mobileup.template.core.error_handling.ErrorHandler
 import ru.mobileup.template.core.error_handling.safeLaunch
 import ru.mobileup.template.core.external_app.ExternalAppService
+import ru.mobileup.template.core.generated.resources.common_cancel
+import ru.mobileup.template.core.generated.resources.common_open_settings
 import ru.mobileup.template.core.message.data.MessageService
 import ru.mobileup.template.core.message.domain.Message
 import ru.mobileup.template.core.permissions.Permission
@@ -18,11 +20,10 @@ import ru.mobileup.template.core.permissions.PermissionService
 import ru.mobileup.template.core.utils.componentScope
 import ru.mobileup.template.core.utils.resourceDesc
 import ru.mobileup.template.features.generated.resources.Res
+import ru.mobileup.template.core.generated.resources.Res as CoreRes
 import ru.mobileup.template.features.generated.resources.permission_camera_denied
 import ru.mobileup.template.features.generated.resources.permission_camera_granted
-import ru.mobileup.template.features.generated.resources.permission_settings_cancel
 import ru.mobileup.template.features.generated.resources.permission_settings_message
-import ru.mobileup.template.features.generated.resources.permission_settings_open
 import ru.mobileup.template.features.generated.resources.permission_settings_title
 
 class RealPermissionComponent(
@@ -72,11 +73,11 @@ class RealPermissionComponent(
                 title = Res.string.permission_settings_title.resourceDesc(),
                 message = Res.string.permission_settings_message.resourceDesc(),
                 confirmButton = DialogButton(
-                    text = Res.string.permission_settings_open.resourceDesc(),
+                    text = CoreRes.string.common_open_settings.resourceDesc(),
                     action = ::openAppSettings
                 ),
                 cancelButton = DialogButton(
-                    text = Res.string.permission_settings_cancel.resourceDesc()
+                    text = CoreRes.string.common_cancel.resourceDesc()
                 )
             )
         )

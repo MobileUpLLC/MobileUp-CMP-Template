@@ -6,12 +6,7 @@ class FakeMenuComponent(
     private val onOutput: (MenuComponent.Output) -> Unit = {}
 ) : MenuComponent {
 
-    override val samples = listOf(
-        Sample.Pokemons,
-        Sample.Dialogs,
-        Sample.Permission,
-        Sample.Settings
-    )
+    override val samples = Sample.entries
 
     override fun onSampleClick(sample: Sample) = Unit
 

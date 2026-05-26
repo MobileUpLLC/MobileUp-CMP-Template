@@ -8,12 +8,7 @@ class RealMenuComponent(
     private val onOutput: (MenuComponent.Output) -> Unit
 ) : ComponentContext by componentContext, MenuComponent {
 
-    override val samples = listOf(
-        Sample.Pokemons,
-        Sample.Dialogs,
-        Sample.Permission,
-        Sample.Settings
-    )
+    override val samples = Sample.entries
 
     override fun onSampleClick(sample: Sample) {
         onOutput(MenuComponent.Output.SampleRequested(sample))

@@ -10,6 +10,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import ru.mobileup.template.core.error_handling.ErrorHandler
 import ru.mobileup.template.core.external_app.ExternalAppService
+import ru.mobileup.template.core.location.LocationService
 import ru.mobileup.template.core.message.data.MessageService
 import ru.mobileup.template.core.network.NetworkApiFactory
 import ru.mobileup.template.core.permissions.PermissionService
@@ -19,6 +20,7 @@ import ru.mobileup.template.core_testing.network.TestNetworkConnectivityProvider
 import ru.mobileup.template.core_testing.network.TestReplicaTimeProvider
 import ru.mobileup.template.core_testing.network.createMockHttpEngine
 import ru.mobileup.template.core_testing.test_services.TestExternalAppService
+import ru.mobileup.template.core_testing.test_services.TestLocationService
 import ru.mobileup.template.core_testing.test_services.TestMessageService
 import ru.mobileup.template.core_testing.test_services.TestPermissionService
 import ru.mobileup.template.core_testing.test_services.TestSettingsFactory
@@ -44,6 +46,7 @@ private fun coreTestModule(
     single<MessageService> { TestMessageService() }
     single<PermissionService> { TestPermissionService() }
     single<ExternalAppService> { TestExternalAppService() }
+    single<LocationService> { TestLocationService() }
     single<SettingsFactory> { TestSettingsFactory() }
 
     single<HttpClientEngine> {

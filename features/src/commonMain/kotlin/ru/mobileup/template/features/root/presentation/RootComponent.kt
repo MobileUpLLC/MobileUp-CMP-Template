@@ -7,6 +7,7 @@ import ru.mobileup.template.core.utils.PredictiveBackComponent
 import ru.mobileup.template.features.dialogs.presentation.DialogsComponent
 import ru.mobileup.template.features.menu.presentation.MenuComponent
 import ru.mobileup.template.features.permission.presentation.PermissionComponent
+import ru.mobileup.template.features.places.presentation.PlacesComponent
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
 import ru.mobileup.template.features.settings.presentation.SettingsComponent
 
@@ -27,5 +28,6 @@ interface RootComponent : PredictiveBackComponent {
         class Dialogs(val component: DialogsComponent) : Child
         class Permission(val component: PermissionComponent) : Child
         class Settings(val component: SettingsComponent) : Child
+        class Places(val component: PlacesComponent) : Child
     }
 }

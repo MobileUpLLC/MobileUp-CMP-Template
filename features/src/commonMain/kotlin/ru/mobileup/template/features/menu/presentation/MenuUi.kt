@@ -23,6 +23,7 @@ import ru.mobileup.template.core.widget.toolbar.AppToolbar
 import ru.mobileup.template.features.generated.resources.Res
 import ru.mobileup.template.features.generated.resources.menu_dialogs
 import ru.mobileup.template.features.generated.resources.menu_permission
+import ru.mobileup.template.features.generated.resources.menu_places
 import ru.mobileup.template.features.generated.resources.menu_pokemons
 import ru.mobileup.template.features.generated.resources.menu_settings
 import ru.mobileup.template.features.generated.resources.menu_title
@@ -76,6 +77,7 @@ private val Sample.title: StringResource
         Sample.Dialogs -> Res.string.menu_dialogs
         Sample.Permission -> Res.string.menu_permission
         Sample.Settings -> Res.string.menu_settings
+        Sample.Places -> Res.string.menu_places
     }
 
 @Preview

@@ -1,0 +1,11 @@
+<resources>
+    <string name="places_title">Places</string>
+    <string name="places_lat">Lat = %1$s</string>
+    <string name="places_lng">Lng = %1$s</string>
+    <string name="places_cannot_determine_location">Couldn’t determine location</string>
+    <string name="places_permission_denied_title">Location permission is required</string>
+    <string name="places_permission_denied_message">Allow location access in app settings to show your current position on the map.</string>
+    <string name="places_location_disabled_title">Location is disabled</string>
+    <string name="places_location_disabled_message">Enable device location services to show your current position on the map.</string>
+    <string name="places_location_disabled_confirm">Open location settings</string>
+</resources>

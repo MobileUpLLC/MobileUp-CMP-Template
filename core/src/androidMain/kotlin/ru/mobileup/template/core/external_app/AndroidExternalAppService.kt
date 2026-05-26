@@ -31,6 +31,13 @@ class AndroidExternalAppService(
         safeStartActivity(intent)
     }
 
+    override suspend fun openLocationSettings() {
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        safeStartActivity(intent)
+    }
+
     private fun safeStartActivity(intent: Intent) {
         try {
             context.startActivity(intent)

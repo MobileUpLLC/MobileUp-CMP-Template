@@ -30,11 +30,14 @@ form = "2.2.0"
 securityCrypto = "1.1.0"
 kotest = "6.1.11"
 mokoPermissions = "0.20.1"
+yandexMapKit = "4.36.0-lite"
+playServicesLocation = "21.3.0"
 
 [libraries]
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
@@ -69,6 +72,9 @@ moko-permissions-camera = { module = "dev.icerock.moko:permissions-camera", vers
 moko-permissions-contacts = { module = "dev.icerock.moko:permissions-contacts", version.ref = "mokoPermissions" }
 moko-permissions-location = { module = "dev.icerock.moko:permissions-location", version.ref = "mokoPermissions" }
 moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "mokoPermissions" }
+
+yandex-mapkit = { module = "com.yandex.android:maps.mobile", version.ref = "yandexMapKit" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 logger-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }

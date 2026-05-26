@@ -1,6 +1,7 @@
 package ru.mobileup.template
 
 import android.app.Application
+import com.yandex.mapkit.MapKitFactory
 import ru.mobileup.template.core.configuration.BuildType
 import ru.mobileup.template.core.configuration.Configuration
 import ru.mobileup.template.core.configuration.Platform
@@ -15,6 +16,7 @@ class App : Application(), SharedAppProvider {
 
     override fun onCreate() {
         super.onCreate()
+        MapKitFactory.setApiKey(BuildConfig.YANDEX_MAP_API_KEY)
         sharedApp = SharedApp(getConfiguration())
         sharedApp.launchAndroidDebugTools()
     }
