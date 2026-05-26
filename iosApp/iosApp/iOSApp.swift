@@ -24,7 +24,7 @@ private func makeConfiguration() -> Configuration {
     #endif
 
     return Configuration(
-        platform: Platform(),
+        platform: Platform(iosMapControllerFactory: IosDebugMapControllerFactory()),
         buildType: buildType,
         backendUrl: getBackendUrl()
     )

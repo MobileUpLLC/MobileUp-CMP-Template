@@ -1,36 +1,49 @@
 package ru.mobileup.template.core.map.internal
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.UIKitView
+import ru.mobileup.template.core.configuration.LocalPlatform
 import ru.mobileup.template.core.map.MapCameraPosition
 import ru.mobileup.template.core.map.MapMarker
-import ru.mobileup.template.core.theme.custom.CustomTheme
 
 @Composable
 internal actual fun PlatformMap(
-    initialCameraPosition: MapCameraPosition,
     onMapReady: (MapController) -> Unit,
     onCameraPositionChange: (MapCameraPosition) -> Unit,
     onMarkerClick: (MapMarker) -> Unit,
     onClusterClick: (List<MapMarker>) -> Unit,
     modifier: Modifier
 ) {
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(horizontal = 80.dp),
-            text = "Map is not implemented for iOS",
-            color = CustomTheme.colors.text.primary,
-            style = CustomTheme.typography.caption.regular
+    val platform = LocalPlatform.current
+
+    val currentOnCameraPositionChange by rememberUpdatedState(onCameraPositionChange)
+    val currentOnMarkerClick by rememberUpdatedState(onMarkerClick)
+    val currentOnClusterClick by rememberUpdatedState(onClusterClick)
+    val currentOnMapReady by rememberUpdatedState(onMapReady)
+
+    val mapController = remember(platform.iosMapControllerFactory) {
+        platform.iosMapControllerFactory.create(
+            onCameraPositionChange = { currentOnCameraPositionChange(it) },
+            onMarkerClick = { currentOnMarkerClick(it) },
+            onClusterClick = { currentOnClusterClick(it) }
         )
     }
+
+    DisposableEffect(mapController) {
+        currentOnMapReady(mapController)
+
+        onDispose {
+            mapController.dispose()
+        }
+    }
+
+    UIKitView(
+        modifier = modifier,
+        factory = { mapController.view }
+    )
 }

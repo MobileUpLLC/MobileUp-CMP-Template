@@ -33,8 +33,10 @@ fun Map(
     var mapController by remember { mutableStateOf<MapController?>(null) }
     PlatformMap(
         modifier = modifier,
-        initialCameraPosition = savedCameraPosition,
-        onMapReady = { mapController = it },
+        onMapReady = { controller ->
+            controller.moveCamera(savedCameraPosition, animate = false)
+            mapController = controller
+        },
         onCameraPositionChange = { savedCameraPosition = it },
         onMarkerClick = onMarkerClick,
         onClusterClick = onClusterClick

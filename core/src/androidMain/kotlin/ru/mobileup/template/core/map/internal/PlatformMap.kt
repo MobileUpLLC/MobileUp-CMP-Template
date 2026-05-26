@@ -23,7 +23,6 @@ import ru.mobileup.template.core.map.MapMarker
 
 @Composable
 internal actual fun PlatformMap(
-    initialCameraPosition: MapCameraPosition,
     onMapReady: (MapController) -> Unit,
     onCameraPositionChange: (MapCameraPosition) -> Unit,
     onMarkerClick: (MapMarker) -> Unit,
@@ -58,7 +57,6 @@ internal actual fun PlatformMap(
     }
 
     DisposableEffect(lifecycleOwner, mapController) {
-        mapController.moveCamera(initialCameraPosition, animate = false)
         currentOnMapReady(mapController)
 
         val lifecycleEventObserver = LifecycleEventObserver { _, event ->

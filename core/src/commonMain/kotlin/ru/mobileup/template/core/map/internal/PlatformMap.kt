@@ -7,7 +7,6 @@ import ru.mobileup.template.core.map.MapMarker
 
 @Composable
 internal expect fun PlatformMap(
-    initialCameraPosition: MapCameraPosition,
     onMapReady: (MapController) -> Unit,
     onCameraPositionChange: (MapCameraPosition) -> Unit,
     onMarkerClick: (MapMarker) -> Unit,
