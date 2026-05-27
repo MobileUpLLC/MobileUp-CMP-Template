@@ -33,6 +33,7 @@ final class IosDebugMapController: NSObject, IosMapController {
     private var markers: [MapMarker] = []
     private var isCurrentLocationMarkerVisible = false
     private var theme: MapTheme = .default_
+    private var logoPosition = "not set"
     private var lastAction = "created"
     private var isDisposed = false
 
@@ -70,6 +71,7 @@ final class IosDebugMapController: NSObject, IosMapController {
             return nil
         }
 
+        // TODO: неправильные формулы, нужно использовать метод из Yandex Map SDK для рассчетов
         let latitude = coordinates.map(\.latitude).reduce(0.0, +) / Double(coordinates.count)
         let longitude = coordinates.map(\.longitude).reduce(0.0, +) / Double(coordinates.count)
         lastAction = "calculateBoundingBoxCameraPosition(count: \(coordinates.count))"
@@ -98,6 +100,12 @@ final class IosDebugMapController: NSObject, IosMapController {
     func setTheme(theme: MapTheme) {
         self.theme = theme
         lastAction = "setTheme(\(theme.name))"
+        updateDebugText()
+    }
+
+    func setLogoPosition(position: MapLogoPosition) {
+        logoPosition = "\(position.horizontalAlignment.name)/\(position.verticalAlignment.name), padding: \(position.horizontalPaddingPx)x\(position.verticalPaddingPx)"
+        lastAction = "setLogoPosition"
         updateDebugText()
     }
 
@@ -146,6 +154,7 @@ final class IosDebugMapController: NSObject, IosMapController {
         markers: \(markers.count)
         current location: \(isCurrentLocationMarkerVisible)
         theme: \(theme.name)
+        logo: \(logoPosition)
         last action: \(lastAction)
         disposed: \(isDisposed)
         """

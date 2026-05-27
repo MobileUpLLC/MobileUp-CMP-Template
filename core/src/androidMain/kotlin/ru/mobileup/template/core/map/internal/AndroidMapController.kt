@@ -1,15 +1,11 @@
 package ru.mobileup.template.core.map.internal
 
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.logo.HorizontalAlignment
-import com.yandex.mapkit.logo.Padding
-import com.yandex.mapkit.logo.VerticalAlignment
 import com.yandex.mapkit.mapview.MapView
 import ru.mobileup.template.core.location.GeoCoordinate
 import ru.mobileup.template.core.map.MapCameraPosition
 import ru.mobileup.template.core.map.MapMarker
 import ru.mobileup.template.core.map.MapTheme
-import com.yandex.mapkit.logo.Alignment as LogoAlignment
 
 internal class AndroidMapController(
     private val mapView: MapView,
@@ -33,6 +29,8 @@ internal class AndroidMapController(
 
     private val themeController = ThemeController(mapView)
 
+    private val logoController = LogoController(mapView)
+
     override val cameraPosition: MapCameraPosition
         get() = cameraController.cameraPosition
 
@@ -44,15 +42,6 @@ internal class AndroidMapController(
     fun stop() {
         mapView.onStop()
         MapKitFactory.getInstance().onStop()
-    }
-
-    fun setLogoPadding(horizontalPadding: Int, verticalPadding: Int) {
-        mapView.mapWindow.map.logo.setAlignment(
-            LogoAlignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP)
-        )
-        mapView.mapWindow.map.logo.setPadding(
-            Padding(horizontalPadding, verticalPadding)
-        )
     }
 
     override fun moveCamera(
@@ -78,5 +67,9 @@ internal class AndroidMapController(
 
     override fun setTheme(theme: MapTheme) {
         themeController.setTheme(theme)
+    }
+
+    override fun setLogoPosition(position: MapLogoPosition) {
+        logoController.setPosition(position)
     }
 }

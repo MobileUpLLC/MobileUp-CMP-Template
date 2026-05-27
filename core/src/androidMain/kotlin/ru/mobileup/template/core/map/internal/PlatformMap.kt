@@ -1,18 +1,12 @@
 package ru.mobileup.template.core.map.internal
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -45,15 +39,6 @@ internal actual fun PlatformMap(
             onMarkerClick = { currentOnMarkerClick(it) },
             onClusterClick = { currentOnClusterClick(it) }
         )
-    }
-
-    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val density = LocalDensity.current
-    val logoHorizontalPadding = with(density) { 8.dp.toPx() }.toInt()
-    val logoVerticalPadding = with(density) { (statusBarPadding + 8.dp).toPx() }.toInt()
-
-    LaunchedEffect(mapController, logoHorizontalPadding, logoVerticalPadding) {
-        mapController.setLogoPadding(logoHorizontalPadding, logoVerticalPadding)
     }
 
     DisposableEffect(lifecycleOwner, mapController) {

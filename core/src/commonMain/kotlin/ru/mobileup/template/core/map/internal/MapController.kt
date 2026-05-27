@@ -18,4 +18,6 @@ interface MapController {
     fun setCurrentLocationMarkerVisible(isVisible: Boolean)
 
     fun setTheme(theme: MapTheme)
+
+    fun setLogoPosition(position: MapLogoPosition)
 }
