@@ -2,7 +2,11 @@ package ru.mobileup.template.core_testing.component_test
 
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import io.kotest.core.test.TestScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestDispatcher
 import me.aartikov.replica.network.NetworkConnectivityProvider
@@ -56,6 +60,13 @@ internal class ComponentTestScopeImpl(
 
     private val componentFactory = ComponentFactory(koin)
 
+    private val collectedFlowJobs = mutableListOf<Job>()
+
+    override fun runCurrent() {
+        testScheduler.runCurrent()
+        replicaBehaviourScheduler.runCurrent()
+    }
+
     override fun advanceUntilIdle() {
         val startTime = testScheduler.currentTime
         testScheduler.advanceUntilIdle()
@@ -66,6 +77,14 @@ internal class ComponentTestScopeImpl(
     override fun advanceTimeBy(delayTime: Duration) {
         testScheduler.advanceTimeBy(delayTime)
         replicaBehaviourScheduler.advanceTimeBy(delayTime)
+    }
+
+    override fun <T> collectFlow(flow: Flow<T>, values: MutableList<T>): Job {
+        val job = launch(start = CoroutineStart.UNDISPATCHED) {
+            flow.collect { values += it }
+        }
+        collectedFlowJobs += job
+        return job
     }
 
     override fun <T> setupComponent(
@@ -83,5 +102,10 @@ internal class ComponentTestScopeImpl(
         val component = componentFactory.create(lifecycle)
         lifecycle.moveToState(targetState)
         return component to lifecycle
+    }
+
+    fun cancelCollectedFlows() {
+        collectedFlowJobs.forEach { it.cancel() }
+        collectedFlowJobs.clear()
     }
 }

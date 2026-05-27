@@ -2,6 +2,8 @@ package ru.mobileup.template.core_testing.component_test
 
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import io.kotest.core.test.TestScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import ru.mobileup.template.core.ComponentFactory
 import ru.mobileup.template.core.settings.SettingsFactory
 import ru.mobileup.template.core_testing.network.MockServer
@@ -27,6 +29,11 @@ interface ComponentTestScope : TestScope {
     val networkConnectivityProvider: TestNetworkConnectivityProvider
 
     /**
+     * Runs already scheduled tasks at the current virtual time.
+     */
+    fun runCurrent()
+
+    /**
      * Advances virtual time until no pending tasks remain.
      */
     fun advanceUntilIdle()
@@ -35,6 +42,11 @@ interface ComponentTestScope : TestScope {
      * Advances virtual time by [delayTime].
      */
     fun advanceTimeBy(delayTime: Duration)
+
+    /**
+     * Collects [flow] into [values] until the end of component test.
+     */
+    fun <T> collectFlow(flow: Flow<T>, values: MutableList<T>): Job
 
     /**
      * Creates a component and moves lifecycle to [targetState].

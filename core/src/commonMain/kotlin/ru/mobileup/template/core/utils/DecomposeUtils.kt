@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.KSerializer
+import ru.mobileup.template.core.dialog.DialogControl
 
 /**
  * Creates a [ChildStack] with a single active component. Should be used to create a stack for Jetpack Compose preview.
@@ -122,6 +123,12 @@ val ChildStack<*, *>.activeChild: Any
  */
 val StateFlow<ChildStack<*, *>>.activeChild: Any
     get() = value.activeChild
+
+/**
+ * Returns the currently active child instance from the dialog slot.
+ */
+val <T : Any> DialogControl<*, T>.activeChild: T?
+    get() = dialogSlot.value.child?.instance
 
 /**
  * Returns all child instances of type [C] from the child stack.

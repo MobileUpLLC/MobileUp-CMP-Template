@@ -1,5 +1,6 @@
 package ru.mobileup.template.core_testing.test_services
 
+import kotlinx.coroutines.delay
 import ru.mobileup.template.core.location.GeoCoordinate
 import ru.mobileup.template.core.location.GeoLocation
 import ru.mobileup.template.core.location.LocationError
@@ -28,6 +29,7 @@ class TestLocationService : LocationService {
     }
 
     override suspend fun getCurrentLocation(params: LocationRequestParams): LocationResult {
+        delay(1000) // virtual time delay
         return result ?: error("TestLocationService result is not configured")
     }
 }

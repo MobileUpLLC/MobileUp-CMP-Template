@@ -9,23 +9,23 @@ import ru.mobileup.template.core.external_app.ExternalAppService
  */
 class TestExternalAppService : ExternalAppService {
 
-    private val _all = mutableListOf<Interaction>()
+    private val _interactions = mutableListOf<Interaction>()
 
-    val all: List<Interaction> get() = _all
-    val last: Interaction? get() = _all.lastOrNull()
-    val first: Interaction? get() = _all.firstOrNull()
-    val isEmpty: Boolean get() = _all.isEmpty()
+    val interactions: List<Interaction> get() = _interactions
+    val lastInteraction: Interaction? get() = _interactions.lastOrNull()
+    val firstInteraction: Interaction? get() = _interactions.firstOrNull()
+    val wasNoInteractions: Boolean get() = _interactions.isEmpty()
 
     override suspend fun openUrl(url: String) {
-        _all += Interaction.OpenUrl(url)
+        _interactions += Interaction.OpenUrl(url)
     }
 
     override suspend fun openAppSettings() {
-        _all += Interaction.OpenAppSettings
+        _interactions += Interaction.OpenAppSettings
     }
 
     override suspend fun openLocationSettings() {
-        _all += Interaction.OpenLocationSettings
+        _interactions += Interaction.OpenLocationSettings
     }
 
     sealed class Interaction {
