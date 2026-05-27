@@ -6,8 +6,13 @@ import ru.mobileup.template.core.location.GeoCoordinate
 import ru.mobileup.template.core.map.MapCameraPosition
 import ru.mobileup.template.core.map.MapMarker
 import ru.mobileup.template.core.map.MapTheme
+import ru.mobileup.template.core.map.internal.subcontrollers.CameraController
+import ru.mobileup.template.core.map.internal.subcontrollers.CurrentLocationMarkerController
+import ru.mobileup.template.core.map.internal.subcontrollers.LogoController
+import ru.mobileup.template.core.map.internal.subcontrollers.ClusterizedMarkersController
+import ru.mobileup.template.core.map.internal.subcontrollers.ThemeController
 
-internal class AndroidMapController(
+internal class AndroidYandexMapController(
     private val mapView: MapView,
     onCameraPositionChange: (MapCameraPosition) -> Unit,
     onMarkerClick: (MapMarker) -> Unit,
@@ -19,7 +24,7 @@ internal class AndroidMapController(
         onCameraPositionChange = onCameraPositionChange
     )
 
-    private val markersController = MarkersController(
+    private val clusterizedMarkersController = ClusterizedMarkersController(
         mapView = mapView,
         onMarkerClick = onMarkerClick,
         onClusterClick = onClusterClick
@@ -54,11 +59,11 @@ internal class AndroidMapController(
     override fun calculateBoundingBoxCameraPosition(
         coordinates: List<GeoCoordinate>
     ): MapCameraPosition? {
-        return cameraController.calculateCameraPosition(coordinates)
+        return cameraController.calculateBoundingBoxCameraPosition(coordinates)
     }
 
     override fun setMarkers(markers: List<MapMarker>) {
-        markersController.setMarkers(markers)
+        clusterizedMarkersController.setMarkers(markers)
     }
 
     override fun setCurrentLocationMarkerVisible(isVisible: Boolean) {

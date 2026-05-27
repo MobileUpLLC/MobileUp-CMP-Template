@@ -1,9 +1,12 @@
-package ru.mobileup.template.core.map.internal
+package ru.mobileup.template.core.map.internal.subcontrollers
 
 import com.yandex.mapkit.logo.HorizontalAlignment
 import com.yandex.mapkit.logo.Padding
 import com.yandex.mapkit.logo.VerticalAlignment
 import com.yandex.mapkit.mapview.MapView
+import ru.mobileup.template.core.map.internal.MapLogoHorizontalAlignment
+import ru.mobileup.template.core.map.internal.MapLogoPosition
+import ru.mobileup.template.core.map.internal.MapLogoVerticalAlignment
 import com.yandex.mapkit.logo.Alignment as LogoAlignment
 
 internal class LogoController(

@@ -1,4 +1,4 @@
-package ru.mobileup.template.core.map.internal
+package ru.mobileup.template.core.map.internal.subcontrollers
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb

@@ -1,4 +1,4 @@
-package ru.mobileup.template.core.map.internal
+package ru.mobileup.template.core.map.internal.subcontrollers
 
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Geometry
@@ -36,7 +36,7 @@ internal class CameraController(
         mapView.mapWindow.map.moveCamera(position.toYandexCameraPosition(), animate)
     }
 
-    fun calculateCameraPosition(coordinates: List<GeoCoordinate>): MapCameraPosition? {
+    fun calculateBoundingBoxCameraPosition(coordinates: List<GeoCoordinate>): MapCameraPosition? {
         if (coordinates.isEmpty()) return null
 
         val geometry = Geometry.fromPolyline(Polyline(coordinates.map { it.toPoint() }))

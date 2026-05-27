@@ -1,4 +1,4 @@
-package ru.mobileup.template.core.map.internal
+package ru.mobileup.template.core.map.internal.subcontrollers
 
 import com.yandex.mapkit.mapview.MapView
 import ru.mobileup.template.core.map.MapTheme

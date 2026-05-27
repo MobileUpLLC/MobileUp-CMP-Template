@@ -1,4 +1,4 @@
-package ru.mobileup.template.core.map.internal
+package ru.mobileup.template.core.map.internal.subcontrollers
 
 import android.view.LayoutInflater
 import android.widget.TextView
@@ -17,7 +17,7 @@ private const val CLUSTER_RADIUS = 40.0
 private const val CLUSTER_MIN_ZOOM = 12
 private const val PLACE_PIN_SCALE = 0.2f
 
-internal class MarkersController(
+internal class ClusterizedMarkersController(
     private val mapView: MapView,
     private val onMarkerClick: (MapMarker) -> Unit,
     private val onClusterClick: (List<MapMarker>) -> Unit

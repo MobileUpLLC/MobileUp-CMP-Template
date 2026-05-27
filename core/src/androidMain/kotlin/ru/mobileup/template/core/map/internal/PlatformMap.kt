@@ -33,7 +33,7 @@ internal actual fun PlatformMap(
 
     val mapView = remember { MapView(context) }
     val mapController = remember(mapView) {
-        AndroidMapController(
+        AndroidYandexMapController(
             mapView = mapView,
             onCameraPositionChange = { currentOnCameraPositionChange(it) },
             onMarkerClick = { currentOnMarkerClick(it) },
