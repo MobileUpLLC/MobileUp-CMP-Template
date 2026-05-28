@@ -8,6 +8,7 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
+import co.touchlab.kermit.Logger
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY
@@ -16,6 +17,7 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeoutOrNull
+import ru.mobileup.template.core.utils.e
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration
 import kotlin.time.Instant
@@ -53,9 +55,11 @@ class AndroidLocationService(
             }
         } catch (e: CancellationException) {
             throw e
-        } catch (_: SecurityException) {
+        } catch (e: SecurityException) {
+            Logger.e(e)
             LocationResult.Failure(LocationError.PermissionDenied)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Logger.e(e)
             LocationResult.Failure(LocationError.CannotDetermineLocation)
         }
     }
@@ -77,10 +81,9 @@ class AndroidLocationService(
             throw e
         } catch (e: SecurityException) {
             throw e
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Logger.e(e)
             null
-        } finally {
-            cancellationTokenSource.cancel()
         }
     }
 
@@ -90,7 +93,7 @@ class AndroidLocationService(
             FallbackLocationPolicy.Disabled -> null
 
             is FallbackLocationPolicy.LastKnown -> {
-                client.lastLocation.await()
+                client.lastLocation.await<Location?>()
                     ?.takeIf { location -> location.isNotOlderThan(policy.maxAge) }
             }
         }
