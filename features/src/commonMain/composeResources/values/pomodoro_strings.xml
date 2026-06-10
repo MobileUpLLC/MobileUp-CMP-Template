@@ -1,0 +1,14 @@
+<resources>
+    <string name="pomodoro_title">Pomodoro</string>
+    <string name="pomodoro_phase_work">Focus</string>
+    <string name="pomodoro_phase_short_break">Short break</string>
+    <string name="pomodoro_phase_long_break">Long break</string>
+    <string name="pomodoro_start">Start</string>
+    <string name="pomodoro_pause">Pause</string>
+    <string name="pomodoro_reset">Reset</string>
+    <string name="pomodoro_skip">Skip</string>
+    <string name="pomodoro_cycle_label">Cycle %1$d / %2$d</string>
+    <string name="pomodoro_message_work">Time to focus 🍅</string>
+    <string name="pomodoro_message_short_break">Take a short break ☕</string>
+    <string name="pomodoro_message_long_break">Enjoy a long break 🌿</string>
+</resources>

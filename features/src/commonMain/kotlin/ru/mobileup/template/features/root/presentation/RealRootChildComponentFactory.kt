@@ -12,6 +12,8 @@ import ru.mobileup.template.features.permission.createPermissionComponent
 import ru.mobileup.template.features.permission.presentation.PermissionComponent
 import ru.mobileup.template.features.pokemons.createPokemonsComponent
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
+import ru.mobileup.template.features.pomodoro.createPomodoroComponent
+import ru.mobileup.template.features.pomodoro.presentation.PomodoroComponent
 import ru.mobileup.template.features.settings.createSettingsComponent
 import ru.mobileup.template.features.settings.presentation.SettingsComponent
 
@@ -40,6 +42,10 @@ class RealRootChildComponentFactory(
 
     override fun createSettingsComponent(componentContext: ComponentContext): SettingsComponent {
         return componentFactory.createSettingsComponent(componentContext)
+    }
+
+    override fun createPomodoroComponent(componentContext: ComponentContext): PomodoroComponent {
+        return componentFactory.createPomodoroComponent(componentContext)
     }
 
     override fun createMessageComponent(componentContext: ComponentContext): MessageComponent {

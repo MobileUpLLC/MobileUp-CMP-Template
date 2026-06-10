@@ -6,6 +6,7 @@ import ru.mobileup.template.features.dialogs.presentation.DialogsComponent
 import ru.mobileup.template.features.menu.presentation.MenuComponent
 import ru.mobileup.template.features.permission.presentation.PermissionComponent
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
+import ru.mobileup.template.features.pomodoro.presentation.PomodoroComponent
 import ru.mobileup.template.features.settings.presentation.SettingsComponent
 
 interface RootChildComponentFactory {
@@ -22,6 +23,8 @@ interface RootChildComponentFactory {
     fun createPermissionComponent(componentContext: ComponentContext): PermissionComponent
 
     fun createSettingsComponent(componentContext: ComponentContext): SettingsComponent
+
+    fun createPomodoroComponent(componentContext: ComponentContext): PomodoroComponent
 
     fun createMessageComponent(componentContext: ComponentContext): MessageComponent
 }

@@ -24,6 +24,7 @@ import ru.mobileup.template.features.generated.resources.Res
 import ru.mobileup.template.features.generated.resources.menu_dialogs
 import ru.mobileup.template.features.generated.resources.menu_permission
 import ru.mobileup.template.features.generated.resources.menu_pokemons
+import ru.mobileup.template.features.generated.resources.menu_pomodoro
 import ru.mobileup.template.features.generated.resources.menu_settings
 import ru.mobileup.template.features.generated.resources.menu_title
 import ru.mobileup.template.features.menu.domain.Sample
@@ -76,6 +77,7 @@ private val Sample.title: StringResource
         Sample.Dialogs -> Res.string.menu_dialogs
         Sample.Permission -> Res.string.menu_permission
         Sample.Settings -> Res.string.menu_settings
+        Sample.Pomodoro -> Res.string.menu_pomodoro
     }
 
 @Preview

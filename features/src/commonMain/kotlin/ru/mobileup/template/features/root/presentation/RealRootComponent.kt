@@ -66,6 +66,12 @@ class RealRootComponent(
                 childComponentFactory.createSettingsComponent(componentContext)
             )
         }
+
+        ChildConfig.Pomodoro -> {
+            RootComponent.Child.Pomodoro(
+                childComponentFactory.createPomodoroComponent(componentContext)
+            )
+        }
     }
 
     private fun onMenuOutput(output: MenuComponent.Output) {
@@ -95,6 +101,9 @@ class RealRootComponent(
 
         @Serializable
         data object Settings : ChildConfig
+
+        @Serializable
+        data object Pomodoro : ChildConfig
     }
 
     private fun Sample.toChildConfig(): ChildConfig = when (this) {
@@ -102,5 +111,6 @@ class RealRootComponent(
         Sample.Dialogs -> ChildConfig.Dialogs
         Sample.Permission -> ChildConfig.Permission
         Sample.Settings -> ChildConfig.Settings
+        Sample.Pomodoro -> ChildConfig.Pomodoro
     }
 }

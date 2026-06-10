@@ -11,6 +11,8 @@ import ru.mobileup.template.features.permission.presentation.FakePermissionCompo
 import ru.mobileup.template.features.permission.presentation.PermissionComponent
 import ru.mobileup.template.features.pokemons.presentation.FakePokemonsComponent
 import ru.mobileup.template.features.pokemons.presentation.PokemonsComponent
+import ru.mobileup.template.features.pomodoro.presentation.FakePomodoroComponent
+import ru.mobileup.template.features.pomodoro.presentation.PomodoroComponent
 import ru.mobileup.template.features.settings.presentation.FakeSettingsComponent
 import ru.mobileup.template.features.settings.presentation.SettingsComponent
 
@@ -37,6 +39,10 @@ class FakeRootChildComponentFactory : RootChildComponentFactory {
 
     override fun createSettingsComponent(componentContext: ComponentContext): SettingsComponent {
         return FakeSettingsComponent()
+    }
+
+    override fun createPomodoroComponent(componentContext: ComponentContext): PomodoroComponent {
+        return FakePomodoroComponent()
     }
 
     override fun createMessageComponent(componentContext: ComponentContext): MessageComponent {

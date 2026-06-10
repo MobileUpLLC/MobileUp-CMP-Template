@@ -4,5 +4,6 @@ enum class Sample {
     Pokemons,
     Dialogs,
     Permission,
-    Settings
+    Settings,
+    Pomodoro
 }

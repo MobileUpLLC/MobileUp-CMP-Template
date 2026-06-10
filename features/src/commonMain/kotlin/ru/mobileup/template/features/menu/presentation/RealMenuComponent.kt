@@ -12,7 +12,8 @@ class RealMenuComponent(
         Sample.Pokemons,
         Sample.Dialogs,
         Sample.Permission,
-        Sample.Settings
+        Sample.Settings,
+        Sample.Pomodoro
     )
 
     override fun onSampleClick(sample: Sample) {

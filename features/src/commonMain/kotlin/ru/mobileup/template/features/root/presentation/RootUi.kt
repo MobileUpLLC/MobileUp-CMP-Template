@@ -17,6 +17,7 @@ import ru.mobileup.template.features.dialogs.presentation.DialogsUi
 import ru.mobileup.template.features.menu.presentation.MenuUi
 import ru.mobileup.template.features.permission.presentation.PermissionUi
 import ru.mobileup.template.features.pokemons.presentation.PokemonsUi
+import ru.mobileup.template.features.pomodoro.presentation.PomodoroUi
 import ru.mobileup.template.features.settings.presentation.SettingsUi
 
 @Composable
@@ -38,6 +39,7 @@ fun RootUi(
             is RootComponent.Child.Dialogs -> DialogsUi(instance.component)
             is RootComponent.Child.Permission -> PermissionUi(instance.component)
             is RootComponent.Child.Settings -> SettingsUi(instance.component)
+            is RootComponent.Child.Pomodoro -> PomodoroUi(instance.component)
         }
     }
 
