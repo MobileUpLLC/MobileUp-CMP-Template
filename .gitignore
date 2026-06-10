@@ -19,6 +19,7 @@ captures/
 .kotlin/
 
 # iOS
+Secrets.xcconfig
 *.generated.swift
 **/xcuserdata/
 DerivedData/

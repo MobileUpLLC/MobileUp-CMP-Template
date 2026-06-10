@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic_my_location_arrow.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

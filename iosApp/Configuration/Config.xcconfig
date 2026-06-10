@@ -1,3 +1,7 @@
+// Secrets (API keys etc.) are kept out of version control.
+// Copy Secrets.xcconfig.example to Secrets.xcconfig and fill in the values.
+#include? "Secrets.xcconfig"
+
 TEAM_ID=
 SLASH=/
 BACKEND_URL=https:$(SLASH)/pokeapi.co/
@@ -7,3 +11,7 @@ PRODUCT_BUNDLE_IDENTIFIER=ru.mobileup.template
 
 CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0
+
+// Yandex MapKit ships as a static framework; -ObjC ensures its Objective-C
+// categories (e.g. +[YMKMapKit setApiKey:]) are loaded at runtime.
+OTHER_LDFLAGS=$(inherited) -ObjC

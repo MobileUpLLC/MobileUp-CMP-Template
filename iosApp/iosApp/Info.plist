@@ -10,5 +10,7 @@
 	<string>Camera permission is used to verify permission requests.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location permission is used to show your current position on the map.</string>
+	<key>YANDEX_MAP_API_KEY</key>
+	<string>$(YANDEX_MAP_API_KEY)</string>
 </dict>
 </plist>
