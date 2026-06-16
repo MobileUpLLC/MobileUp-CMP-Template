@@ -47,6 +47,12 @@ Treat the blueprint as the contract for suite name, test type, test names, step 
 - Use the scope for test services, mock server infrastructure, virtual time, and component setup helpers.
 - Inspect the current `ComponentTestScope` definition when a test needs capabilities beyond nearby examples.
 
+### Command And Event Flows
+
+- Use `collectFlow(flow, values)` for hot command/event `Flow` exposed by components.
+- Start collection inside `setupComponent { ... }` so startup events are not missed.
+- Use `runCurrent()` after an action to deliver emitted events to the collector before asserting.
+
 ### Screen Components
 
 - Use `FunSpec` plus `componentTest(...)`.
@@ -65,7 +71,8 @@ Treat the blueprint as the contract for suite name, test type, test names, step 
 
 ### Time And Loading
 
-- Use `advanceUntilIdle()` for queued async work.
+- Use `runCurrent()` after a synchronous action when the test needs to deliver already emitted commands/events to collectors.
+- Use `advanceUntilIdle()` for data loading and other async work.
 - Use `advanceTimeBy(...)` only when duration matters.
 - Check intermediate loading state only when the blueprint includes it.
 
@@ -82,6 +89,7 @@ Treat the blueprint as the contract for suite name, test type, test names, step 
 
 - Use Kotest matchers such as `shouldBe`, `shouldNotBeNull`, and `shouldBeInstanceOf`.
 - Use `OutputCapturer<T>` for component outputs.
+- Use `dialogControl.activeChild` for dialog assertions instead of reading `dialogSlot.value.child?.instance` directly.
 - Prefer observable state and output assertions.
 - Check recorded mock server requests only when the request itself is the behavior under test.
 

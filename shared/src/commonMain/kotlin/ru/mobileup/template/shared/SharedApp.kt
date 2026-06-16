@@ -7,13 +7,13 @@ import org.koin.core.Koin
 import ru.mobileup.template.core.ComponentFactory
 import ru.mobileup.template.core.configuration.BuildType
 import ru.mobileup.template.core.configuration.Configuration
-import ru.mobileup.template.core.configuration.PlatformType
+import ru.mobileup.template.core.configuration.Platform
 import ru.mobileup.template.features.root.createRootComponent
 import ru.mobileup.template.features.root.presentation.RootComponent
 
 class SharedApp(configuration: Configuration) {
 
-    internal val platformType: PlatformType = configuration.platform.type
+    internal val platform: Platform = configuration.platform
 
     private val koin: Koin
     private val componentFactory: ComponentFactory

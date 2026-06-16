@@ -4,4 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-expect fun FullscreenCircularProgress(modifier: Modifier = Modifier)
+expect fun FullscreenCircularProgress(
+    modifier: Modifier = Modifier,
+    overlay: Boolean = false
+)

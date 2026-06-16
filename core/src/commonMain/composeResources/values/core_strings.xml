@@ -2,6 +2,8 @@
     <!-- Common -->
     <string name="common_back">Back</string>
     <string name="common_retry">Retry</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_open_settings">Open settings</string>
 
     <!-- Errors -->
     <string name="error_unexpected">Something went wrong. The developers are already fixing the problem.</string>

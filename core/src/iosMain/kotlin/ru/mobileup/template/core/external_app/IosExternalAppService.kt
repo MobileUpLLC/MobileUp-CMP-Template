@@ -16,12 +16,18 @@ class IosExternalAppService : ExternalAppService {
     }
 
     override suspend fun openAppSettings() {
+        // TODO: проверь, правильный ли экран открывается
         val link = NSURL(string = UIApplicationOpenSettingsURLString)
         openLink(link)
     }
 
+    override suspend fun openLocationSettings() {
+        // TODO: разобраться, как делать правильно
+        openAppSettings()
+    }
+
     private suspend fun openLink(link: NSURL) {
-        suspendCancellableCoroutine<Unit> { continuation ->
+        suspendCancellableCoroutine { continuation ->
             UIApplication.sharedApplication.openURL(
                 link,
                 options = emptyMap<Any?, Any>(),

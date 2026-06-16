@@ -12,17 +12,17 @@ import ru.mobileup.template.core.message.domain.Message
  */
 class TestMessageService : MessageService {
     private val _messageFlow = MutableSharedFlow<Message>(extraBufferCapacity = 16)
-    private val _all = mutableListOf<Message>()
+    private val _messages = mutableListOf<Message>()
 
-    val all: List<Message> get() = _all
-    val last: Message? get() = _all.lastOrNull()
-    val first: Message? get() = _all.firstOrNull()
-    val isEmpty: Boolean get() = _all.isEmpty()
+    val messages: List<Message> get() = _messages
+    val lastMessage: Message? get() = _messages.lastOrNull()
+    val firstMessage: Message? get() = _messages.firstOrNull()
+    val wasNoMessages: Boolean get() = _messages.isEmpty()
 
     override val messageFlow: Flow<Message> = _messageFlow
 
     override fun showMessage(message: Message) {
-        _all += message
+        _messages += message
         _messageFlow.tryEmit(message)
     }
 }

@@ -35,7 +35,7 @@ fun SharedApp.launchInActivity(activity: ComponentActivity) {
 
     activity.setContent {
         CompositionLocalProvider(
-            LocalPlatformType provides platformType,
+            LocalPlatformType provides platform.type,
             LocalSystemBarIconsColorHandler provides systemBarIconsColorHandler,
             LocalBackAction provides backAction
         ) {

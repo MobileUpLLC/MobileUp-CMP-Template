@@ -4,6 +4,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.backhandler.BackDispatcher
 import com.arkivanov.essenty.lifecycle.ApplicationLifecycle
+import ru.mobileup.template.core.configuration.LocalPlatform
 import ru.mobileup.template.core.configuration.LocalPlatformType
 import ru.mobileup.template.core.theme.AppTheme
 import ru.mobileup.template.core.utils.LocalBackAction
@@ -22,7 +23,8 @@ fun SharedApp.createRootViewController(): RootViewController {
 
     return RootViewController(backDispatcher) {
         CompositionLocalProvider(
-            LocalPlatformType provides platformType,
+            LocalPlatformType provides platform.type,
+            LocalPlatform provides platform,
             LocalBackAction provides backDispatcher::back
         ) {
             AppTheme {

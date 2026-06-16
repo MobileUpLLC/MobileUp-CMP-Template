@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.koin.core.module.Module
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalStdlibApi::class, ExperimentalCoroutinesApi::class)
 fun FunSpecRootScope.componentTestImpl(
@@ -13,7 +14,7 @@ fun FunSpecRootScope.componentTestImpl(
     featureModules: List<Module>,
     block: suspend ComponentTestScope.() -> Unit,
 ) {
-    test(name).config(coroutineTestScope = true) {
+    test(name).config(coroutineTestScope = true, timeout = 500.milliseconds) {
         // Use UnconfinedTestDispatcher to approximate Dispatchers.Main.immediate:
         // coroutines start eagerly so no runCurrent required.
         val testDispatcher = UnconfinedTestDispatcher(testCoroutineScheduler)
@@ -54,10 +55,11 @@ fun FunSpecRootScope.componentTestImpl(
     }
 }
 
-private suspend fun ComponentTestScope.finishTest(primaryFailure: Throwable?) {
+private suspend fun ComponentTestScopeImpl.finishTest(primaryFailure: Throwable?) {
     try {
         advanceUntilIdle()
         mockServer.verify()
+        cancelCollectedFlows()
     } catch (throwable: Throwable) {
         if (primaryFailure == null) {
             throw throwable
