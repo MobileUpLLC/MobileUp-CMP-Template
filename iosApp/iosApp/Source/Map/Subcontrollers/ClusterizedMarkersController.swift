@@ -5,7 +5,7 @@ final class ClusterizedMarkersController: NSObject, YMKClusterListener, YMKClust
 
     private static let clusterRadius: Double = 40.0
     private static let clusterMinZoom: UInt = 12
-    private static let placePinScale: NSNumber = 0.2
+    private static let placePinScale: NSNumber = 0.6
 
     private let mapView: YMKMapView
     private let onMarkerClick: (MapMarker) -> Void
