@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1A2B3C4D5E6F708192A3B4C7 /* YandexMapsMobileLite in Frameworks */ = {isa = PBXBuildFile; productRef = 1A2B3C4D5E6F708192A3B4C6 /* YandexMapsMobileLite */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A68E58A401A4E96F7AC5CDBE /* MobileUpTemplate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MobileUpTemplate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A2B3C4D5E6F708192A3B4C7 /* YandexMapsMobileLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +90,7 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				1A2B3C4D5E6F708192A3B4C6 /* YandexMapsMobileLite */,
 			);
 			productName = iosApp;
 			productReference = A68E58A401A4E96F7AC5CDBE /* MobileUpTemplate.app */;
@@ -116,6 +122,9 @@
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53594BCC22AAB55048191C20 /* Products */;
+			packageReferences = (
+				1A2B3C4D5E6F708192A3B4C5 /* XCRemoteSwiftPackageReference "mapkit-ios-lite" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -368,6 +377,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1A2B3C4D5E6F708192A3B4C5 /* XCRemoteSwiftPackageReference "mapkit-ios-lite" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yandex/mapkit-ios-lite";
+			requirement = {
+				kind = exactVersion;
+				version = 4.36.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1A2B3C4D5E6F708192A3B4C6 /* YandexMapsMobileLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A2B3C4D5E6F708192A3B4C5 /* XCRemoteSwiftPackageReference "mapkit-ios-lite" */;
+			productName = YandexMapsMobileLite;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1357A1FAA1C83533CA516A91 /* Project object */;
 }

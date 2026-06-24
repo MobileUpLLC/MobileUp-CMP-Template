@@ -1,11 +1,17 @@
 import UIKit
 import SwiftUI
 import Shared
+import YandexMapsMobile
 
 
 @main
 struct iOSApp: App {
-    private let sharedApp = SharedApp(configuration: makeConfiguration())
+    private let sharedApp: SharedApp
+
+    init() {
+        iOSApp.initializeMapKit()
+        sharedApp = SharedApp(configuration: makeConfiguration())
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -13,6 +19,20 @@ struct iOSApp: App {
                 .ignoresSafeArea(edges: .all)
                 .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
         }
+    }
+
+    private static func initializeMapKit() {
+        guard let apiKey = Bundle.main.object(forInfoDictionaryKey: "YANDEX_MAP_API_KEY") as? String,
+              !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            fatalError(
+                "YANDEX_MAP_API_KEY is not configured. "
+                + "Copy iosApp/Configuration/Secrets.xcconfig.example to Secrets.xcconfig and set the key."
+            )
+        }
+
+        YMKMapKit.setApiKey(apiKey)
+        YMKMapKit.setLocale("ru_RU")
+        _ = YMKMapKit.sharedInstance()
     }
 }
 
@@ -24,7 +44,7 @@ private func makeConfiguration() -> Configuration {
     #endif
 
     return Configuration(
-        platform: Platform(iosMapControllerFactory: IosDebugMapControllerFactory()),
+        platform: Platform(iosMapControllerFactory: IosYandexMapControllerFactory()),
         buildType: buildType,
         backendUrl: getBackendUrl()
     )
